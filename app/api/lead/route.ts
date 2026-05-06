@@ -1,19 +1,3 @@
-/**
- * POST /api/lead
- *
- * 필요한 패키지:
- *   npm install @supabase/supabase-js nodemailer
- *   npm install -D @types/nodemailer
- *
- * 필요한 환경변수 (.env.local):
- *   NEXT_PUBLIC_SUPABASE_URL=
- *   SUPABASE_SERVICE_ROLE_KEY=     ← anon key 아님, service_role key 사용
- *   DISCORD_WEBHOOK_URL=
- *   EMAIL_USER=                    ← Gmail 주소 (예: yourname@gmail.com)
- *   EMAIL_PASS=                    ← Gmail 앱 비밀번호 (2단계 인증 후 생성)
- *   EMAIL_TO=                      ← 수신할 관리자 이메일
- */
-
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
@@ -226,7 +210,7 @@ async function sendEmailAlert(lead: LeadPayload) {
 </html>`.trim();
 
   await transporter.sendMail({
-    from: `"WeddingCare 상담" <${EMAIL_USER}>`,
+    from: `"웨딩케어 상담" <${EMAIL_USER}>`,
     to: EMAIL_TO,
     subject: `[상담 신청] ${lead.name}님 · ${categoryLabel}`,
     html,

@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useConsultation } from '@/hooks/useConsultation';
 import ConsultationModal from '@/components/consultation/ConsultationModal';
-import { Icons } from '@/components/common/Icons';
 
 // ───────────────────────────────
 // 데이터
@@ -11,7 +10,7 @@ import { Icons } from '@/components/common/Icons';
 const FEATURES = [
   {
     href: '/dashboard',
-    icon: 'calendar',
+    emoji: '📅',
     tag: 'D-Day',
     title: '결혼 준비 타임라인',
     description:
@@ -21,7 +20,7 @@ const FEATURES = [
   },
   {
     href: '/healthcare',
-    icon: 'activity',
+    emoji: '💪',
     tag: '건강관리',
     title: '건강 루틴 가이드',
     description:
@@ -31,7 +30,7 @@ const FEATURES = [
   },
   {
     href: '/wedding',
-    icon: 'wedding',
+    emoji: '💍',
     tag: '웨딩',
     title: '웨딩 패키지 탐색',
     description:
@@ -41,7 +40,7 @@ const FEATURES = [
   },
   {
     href: '/beauty',
-    icon: 'sparkles',
+    emoji: '✨',
     tag: '뷰티',
     title: '뷰티·의료 정보',
     description:
@@ -53,22 +52,15 @@ const FEATURES = [
 
 const SOCIAL_PROOF = [
   { value: '2,400+', label: '이번 달 상담 신청' },
-  { value: '48h', label: '평균 응답 시간' },
-  { value: '4개', label: '전문 케어 영역' },
+  { value: '48h',    label: '평균 응답 시간' },
+  { value: '4개',    label: '전문 케어 영역' },
 ];
 
 const ACCENT_COLORS: Record<string, { bg: string; text: string; tag: string }> = {
-  rose: { bg: 'bg-rose-50', text: 'text-rose-600', tag: 'bg-rose-100 text-rose-600' },
+  rose:    { bg: 'bg-rose-50',    text: 'text-rose-600',    tag: 'bg-rose-100 text-rose-600' },
   emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', tag: 'bg-emerald-100 text-emerald-600' },
-  pink: { bg: 'bg-pink-50', text: 'text-pink-600', tag: 'bg-pink-100 text-pink-600' },
+  pink:    { bg: 'bg-pink-50',    text: 'text-pink-600',    tag: 'bg-pink-100 text-pink-600' },
   fuchsia: { bg: 'bg-fuchsia-50', text: 'text-fuchsia-600', tag: 'bg-fuchsia-100 text-fuchsia-600' },
-};
-
-const FEATURE_ICONS: Record<string, React.ReactNode> = {
-  calendar: <Icons.Calendar size={24} className="text-rose-500" />,
-  activity: <Icons.Activity size={24} className="text-emerald-500" />,
-  wedding: <Icons.Wedding size={24} className="text-pink-500" />,
-  sparkles: <Icons.Sparkles size={24} className="text-fuchsia-500" />,
 };
 
 // ───────────────────────────────
@@ -106,7 +98,7 @@ export default function LandingPage() {
               <em className="not-italic text-rose-500">완벽한 준비</em>
             </h1>
 
-            <p className="fade-up fade-up-delay-2 mx-auto mb-8 max-w-md text-base font-medium leading-relaxed text-stone-600 sm:text-lg">
+            <p className="fade-up fade-up-delay-2 mx-auto mb-8 max-w-md text-base leading-relaxed text-stone-500 sm:text-lg">
               웨딩 준비부터 건강 관리, 뷰티 케어까지.
               <br className="hidden sm:block" />
               모든 과정을 한 곳에서 안내받으세요.
@@ -116,9 +108,9 @@ export default function LandingPage() {
             <div className="fade-up fade-up-delay-3 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <button
                 onClick={() => openModal('hero', 'wedding')}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-rose-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-rose-200 transition-all hover:bg-rose-600 hover:shadow-xl hover:shadow-rose-200 active:scale-[0.98] sm:w-auto"
+                className="w-full rounded-full bg-rose-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-rose-200 transition-all hover:bg-rose-600 hover:shadow-xl hover:shadow-rose-200 active:scale-[0.98] sm:w-auto"
               >
-                무료 상담 신청하기 <Icons.ArrowRight />
+                무료 상담 신청하기 →
               </button>
               <Link
                 href="/dashboard"
@@ -135,10 +127,10 @@ export default function LandingPage() {
           <div className="mx-auto flex max-w-2xl justify-around">
             {SOCIAL_PROOF.map((item) => (
               <div key={item.label} className="text-center">
-                <p className="font-body text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+                <p className="font-display text-2xl font-semibold text-stone-800 sm:text-3xl">
                   {item.value}
                 </p>
-                <p className="mt-1 text-xs font-medium text-stone-500">{item.label}</p>
+                <p className="mt-0.5 text-xs text-stone-400">{item.label}</p>
               </div>
             ))}
           </div>
@@ -151,7 +143,7 @@ export default function LandingPage() {
               <h2 className="font-display mb-2 text-3xl font-semibold text-stone-800 sm:text-4xl">
                 결혼 준비, 이렇게 도와드립니다
               </h2>
-              <p className="text-sm font-medium text-stone-500">
+              <p className="text-sm text-stone-400">
                 입력하신 조건을 바탕으로 맞춤형 정보를 안내합니다.
               </p>
             </div>
@@ -165,21 +157,19 @@ export default function LandingPage() {
                     className={`rounded-2xl p-6 ${color.bg} transition-transform hover:-translate-y-0.5`}
                   >
                     <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm">
-                        {FEATURE_ICONS[feature.icon]}
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
+                        {feature.emoji}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="mb-2 flex items-center gap-2">
-                          <span
-                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${color.tag}`}
-                          >
+                          <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${color.tag}`}>
                             {feature.tag}
                           </span>
                         </div>
-                        <h3 className={`mb-2 font-display text-xl font-bold ${color.text}`}>
+                        <h3 className={`mb-1 font-display text-lg font-semibold ${color.text}`}>
                           {feature.title}
                         </h3>
-                        <p className="mb-5 text-sm font-medium leading-relaxed text-stone-700">
+                        <p className="mb-4 text-sm leading-relaxed text-stone-500">
                           {feature.description}
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -191,11 +181,12 @@ export default function LandingPage() {
                           </Link>
                           <button
                             onClick={() => openModal('feature-' + feature.tag, 'wedding')}
-                            className={`rounded-full px-4 py-2 text-xs font-semibold text-white transition-all ${feature.accent === 'emerald' ? 'bg-emerald-500 hover:bg-emerald-600' :
-                              feature.accent === 'pink' ? 'bg-pink-500 hover:bg-pink-600' :
-                                feature.accent === 'fuchsia' ? 'bg-fuchsia-500 hover:bg-fuchsia-600' :
-                                  'bg-rose-500 hover:bg-rose-600'
-                              }`}
+                            className={`rounded-full px-4 py-2 text-xs font-semibold text-white transition-all ${
+                              feature.accent === 'emerald' ? 'bg-emerald-500 hover:bg-emerald-600' :
+                              feature.accent === 'pink'    ? 'bg-pink-500 hover:bg-pink-600' :
+                              feature.accent === 'fuchsia' ? 'bg-fuchsia-500 hover:bg-fuchsia-600' :
+                                                             'bg-rose-500 hover:bg-rose-600'
+                            }`}
                           >
                             상담 신청
                           </button>
@@ -212,32 +203,30 @@ export default function LandingPage() {
         {/* ── 하단 강조 CTA ─────────────────── */}
         <section className="px-4 pb-16">
           <div className="mx-auto max-w-2xl">
-            <div className="relative overflow-hidden rounded-3xl bg-rose-50 border border-rose-100 px-8 py-12 text-center">
+            <div className="relative overflow-hidden rounded-3xl bg-stone-900 px-8 py-12 text-center">
               {/* 배경 장식 */}
-              <div aria-hidden="true" className="pointer-events-none absolute -left-10 -top-10 h-48 w-48 rounded-full bg-white/60 blur-2xl" />
-              <div aria-hidden="true" className="pointer-events-none absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-rose-200/40 blur-2xl" />
+              <div aria-hidden="true" className="pointer-events-none absolute -left-10 -top-10 h-48 w-48 rounded-full bg-rose-500/20 blur-2xl" />
+              <div aria-hidden="true" className="pointer-events-none absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-rose-500/15 blur-2xl" />
 
               <div className="relative">
-                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-rose-500">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-rose-400">
                   무료 상담
                 </p>
-                <h2 className="font-display mb-3 text-3xl font-semibold text-stone-900 sm:text-4xl">
+                <h2 className="font-display mb-3 text-3xl font-semibold text-white sm:text-4xl">
                   지금 시작해보세요
                 </h2>
-                <p className="mx-auto mb-8 max-w-md text-base font-medium leading-relaxed text-stone-700">
-                  간단한 정보만 남겨주시면 <span className="text-rose-600 font-bold">48시간 이내</span>에
-                  <br className="hidden sm:block" />
-                  전문 담당자가 직접 연락드립니다.
+                <p className="mx-auto mb-8 max-w-sm text-sm leading-relaxed text-stone-400">
+                  간단한 정보만 남겨주시면 48시간 이내에 전문 담당자가 직접 연락드립니다.
                 </p>
 
                 <button
                   onClick={() => openModal('landing-bottom', 'wedding')}
-                  className="flex items-center justify-center gap-2 mx-auto rounded-full bg-rose-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-rose-200 transition-all hover:bg-rose-600 active:scale-[0.98]"
+                  className="rounded-full bg-rose-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-rose-900/40 transition-all hover:bg-rose-400 active:scale-[0.98]"
                 >
-                  무료 상담 신청하기 <Icons.ArrowRight />
+                  무료 상담 신청하기 →
                 </button>
 
-                <p className="mt-4 text-xs font-medium text-stone-400">
+                <p className="mt-4 text-xs text-stone-500">
                   비용 없음 · 부담 없음 · 48시간 이내 응답
                 </p>
               </div>

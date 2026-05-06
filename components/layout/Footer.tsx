@@ -1,11 +1,10 @@
 import Link from 'next/link';
-import { Icons } from '../common/Icons';
 
 const NAV_LINKS = [
-  { href: '/dashboard', label: 'D-Day 대시보드' },
-  { href: '/healthcare', label: '건강 관리' },
-  { href: '/wedding', label: '웨딩 서비스' },
-  { href: '/beauty', label: '뷰티 · 의료 정보' },
+  { href: '/dashboard',    label: 'D-Day 대시보드' },
+  { href: '/healthcare',   label: '건강 관리' },
+  { href: '/wedding',      label: '웨딩 서비스' },
+  { href: '/beauty',       label: '뷰티 · 의료 정보' },
   { href: '/consultation', label: '상담 신청' },
 ];
 
@@ -19,9 +18,8 @@ export default function Footer() {
             <p className="font-display mb-2 text-lg font-semibold italic text-stone-800">
               WeddingCare
             </p>
-            <p className="text-sm leading-relaxed text-stone-500">
+            <p className="text-sm leading-relaxed text-stone-400">
               결혼 준비의 모든 과정을 한 곳에서 안내합니다.
-              <br />
               웨딩, 건강 관리, 뷰티 정보까지.
             </p>
           </div>
@@ -32,7 +30,7 @@ export default function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-stone-500 transition-colors hover:text-rose-600"
+                className="text-sm text-stone-400 transition-colors hover:text-rose-500"
               >
                 {link.label}
               </Link>
@@ -41,11 +39,11 @@ export default function Footer() {
         </div>
 
         {/* 신뢰 배지 */}
-        <div className="mb-6 flex flex-wrap gap-x-6 gap-y-3">
+        <div className="mb-6 flex flex-wrap gap-4">
           {TRUST_ITEMS.map((item) => (
             <div key={item.label} className="flex items-center gap-2">
-              <span className="text-rose-400">{item.icon}</span>
-              <span className="text-xs font-medium text-stone-600">{item.label}</span>
+              <span className="text-base">{item.icon}</span>
+              <span className="text-xs text-stone-400">{item.label}</span>
             </div>
           ))}
         </div>
@@ -60,20 +58,20 @@ export default function Footer() {
           </p>
           <Link
             href="/consultation"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-rose-500 transition-all hover:bg-rose-50"
+            className="inline-block rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-rose-500 transition-all hover:bg-rose-50"
           >
-            무료 상담 신청하기 <Icons.ArrowRight />
+            무료 상담 신청하기 →
           </Link>
         </div>
 
         {/* 법적 고지 */}
         <div className="border-t border-stone-200 pt-6">
-          <p className="text-xs leading-relaxed text-stone-500">
+          <p className="text-xs leading-relaxed text-stone-400">
             본 플랫폼에서 제공하는 건강 관리 및 의료 관련 정보는{' '}
-            <strong className="text-stone-700">일반적인 안내 목적</strong>으로만 제공되며, 의료 진단·치료 추천이 아닙니다.
+            <strong>일반적인 안내 목적</strong>으로만 제공되며, 의료 진단·치료 추천이 아닙니다.
             개인의 건강 상태에 따라 차이가 있을 수 있으며, 전문의 상담을 권장합니다.
           </p>
-          <p className="mt-3 text-xs text-stone-400">
+          <p className="mt-3 text-xs text-stone-300">
             © {new Date().getFullYear()} WeddingCare. All rights reserved.
           </p>
         </div>
@@ -83,8 +81,8 @@ export default function Footer() {
 }
 
 const TRUST_ITEMS = [
-  { icon: <Icons.Bolt size={18} />, label: '48시간 이내 응답' },
-  { icon: <Icons.Shield size={18} />, label: '개인정보 안전 보호' },
-  { icon: <Icons.Message size={18} />, label: '무료 상담' },
-  { icon: <Icons.CheckCircle size={18} />, label: '전문 파트너 연결' },
+  { icon: '⚡', label: '48시간 이내 응답' },
+  { icon: '🔒', label: '개인정보 안전 보호' },
+  { icon: '💬', label: '무료 상담' },
+  { icon: '✅', label: '전문 파트너 연결' },
 ];

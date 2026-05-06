@@ -3,16 +3,15 @@
 import { useMemo } from 'react';
 import { timelineTasks, TimelineTask } from '@/data/timelineTasks';
 import TaskCard from './TaskCard';
-import { Icons } from '../common/Icons';
 
 type Milestone = TimelineTask['milestone'];
 
 const MILESTONES: { key: Milestone; label: string; minDday: number }[] = [
-  { key: 'D-90', label: 'D-90 · 준비 시작', minDday: 60 },
-  { key: 'D-60', label: 'D-60 · 본격 준비', minDday: 30 },
-  { key: 'D-30', label: 'D-30 · 마무리 단계', minDday: 14 },
-  { key: 'D-14', label: 'D-14 · 최종 점검', minDday: 7 },
-  { key: 'D-7', label: 'D-7 · 컨디션 관리', minDday: 0 },
+  { key: 'D-90', label: 'D-90 · 준비 시작',    minDday: 60 },
+  { key: 'D-60', label: 'D-60 · 본격 준비',    minDday: 30 },
+  { key: 'D-30', label: 'D-30 · 마무리 단계',  minDday: 14 },
+  { key: 'D-14', label: 'D-14 · 최종 점검',    minDday: 7 },
+  { key: 'D-7',  label: 'D-7 · 컨디션 관리',   minDday: 0 },
 ];
 
 interface TimelineViewProps {
@@ -59,7 +58,7 @@ export default function TimelineView({ dday, onCTAClick }: TimelineViewProps) {
                 className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold
                   ${isActive ? 'bg-rose-500 text-white' : isPast ? 'bg-stone-200 text-stone-400' : 'bg-stone-100 text-stone-400'}`}
               >
-                {isPast ? <Icons.Check size={14} /> : ''}
+                {isPast ? '✓' : ''}
               </div>
               <span
                 className={`text-sm font-semibold ${isActive ? 'text-rose-600' : isPast ? 'text-stone-400 line-through' : 'text-stone-500'}`}

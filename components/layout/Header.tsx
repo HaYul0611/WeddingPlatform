@@ -46,13 +46,25 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* 데스크톱 CTA */}
-          <button
-            onClick={() => openModal('header', 'wedding')}
-            className="hidden rounded-full bg-rose-500 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-600 active:scale-[0.98] sm:block"
-          >
-            무료 상담 신청
-          </button>
+          {/* 데스크톱 CTA + 관리자 진입점 */}
+          <div className="hidden items-center gap-2 sm:flex">
+            <Link
+              href="/admin"
+              className="group flex h-9 w-9 items-center justify-center rounded-full text-stone-200 transition-all hover:bg-stone-100 hover:text-stone-400"
+              title="관리자 페이지"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </Link>
+            <button
+              onClick={() => openModal('header', 'wedding')}
+              className="rounded-full bg-rose-500 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-600 active:scale-[0.98]"
+            >
+              무료 상담 신청
+            </button>
+          </div>
 
           {/* 모바일: 햄버거 */}
           <button

@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { ConsultationCategory, LeadData } from '@/types/consultation';
+import { ConsultationCategory, BudgetRange, LeadData } from '@/types/consultation';
 import { createLead, submitLead } from '@/lib/leadHandler';
 import SuccessMessage from './SuccessMessage';
-import { Icons } from '../common/Icons';
 
 // ───────────────────────────────
 // 타입
@@ -13,7 +12,7 @@ interface FormValues {
   name: string;
   phone: string;
   category: ConsultationCategory;
-  budget: string;
+  budget: BudgetRange;
   message: string;
 }
 
@@ -33,20 +32,26 @@ interface ConsultationFormProps {
 // ───────────────────────────────
 // 상수
 // ───────────────────────────────
-const CATEGORY_OPTIONS: { value: ConsultationCategory; label: string; icon: React.ReactNode }[] = [
-  { value: 'wedding', label: '웨딩 서비스', icon: <Icons.Wedding size={18} className="text-rose-500" /> },
-  { value: 'beauty', label: '뷰티 / 피부 관리', icon: <Icons.Sparkles size={18} className="text-rose-500" /> },
-  { value: 'healthcare', label: '건강 / 다이어트', icon: <Icons.Activity size={18} className="text-rose-500" /> },
-  { value: 'medical', label: '의료 / 시술 정보', icon: <Icons.Medical size={18} className="text-rose-500" /> },
+const CATEGORY_OPTIONS: { value: ConsultationCategory; label: string }[] = [
+  { value: 'wedding',    label: '💍 웨딩 서비스' },
+  { value: 'beauty',     label: '✨ 뷰티 / 피부 관리' },
+  { value: 'healthcare', label: '💪 건강 / 다이어트' },
+  { value: 'medical',    label: '🏥 의료 / 시술 정보' },
 ];
 
-const MIN_BUDGET = 500000; // 최소 50만원
+const BUDGET_OPTIONS: { value: BudgetRange; label: string }[] = [
+  { value: 'undecided',  label: '아직 미정이에요' },
+  { value: 'under_500',  label: '50만원 미만' },
+  { value: '500_1000',   label: '50만원 ~ 100만원' },
+  { value: '1000_3000',  label: '100만원 ~ 300만원' },
+  { value: 'over_3000',  label: '300만원 이상' },
+];
 
 const INITIAL_VALUES: FormValues = {
   name: '',
   phone: '',
   category: 'wedding',
-  budget: '',
+  budget: 'undecided',
   message: '',
 };
 
@@ -62,32 +67,14 @@ function validate(values: FormValues): FormErrors {
     errors.name = '이름을 입력해 주세요.';
   }
 
-  const phoneDigits = values.phone.replace(/\D/g, '');
   if (!values.phone.trim()) {
     errors.phone = '연락처를 입력해 주세요.';
-  } else if (!PHONE_REGEX.test(phoneDigits)) {
+  } else if (!PHONE_REGEX.test(values.phone.replace(/-/g, ''))) {
     errors.phone = '올바른 연락처 형식을 입력해 주세요. (예: 010-1234-5678)';
-  }
-
-  if (values.budget && parseInt(values.budget.replace(/\D/g, '')) < MIN_BUDGET) {
-    errors.budget = `최소 ${MIN_BUDGET.toLocaleString()}원부터 상담이 가능합니다.`;
   }
 
   return errors;
 }
-
-const formatPhone = (val: string) => {
-  const digits = val.replace(/\D/g, '').slice(0, 11);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-};
-
-const formatCurrency = (val: string) => {
-  const digits = val.replace(/\D/g, '');
-  if (!digits) return '';
-  return parseInt(digits).toLocaleString();
-};
 
 function hasErrors(errors: FormErrors): boolean {
   return Object.keys(errors).length > 0;
@@ -124,16 +111,6 @@ export default function ConsultationForm({
     }
   }
 
-  function handlePhoneChange(val: string) {
-    const formatted = formatPhone(val);
-    handleChange('phone', formatted);
-  }
-
-  function handleBudgetChange(val: string) {
-    const formatted = formatCurrency(val);
-    handleChange('budget', formatted);
-  }
-
   // 필드 blur → touched 마킹 + 즉시 검사
   function handleBlur(field: keyof FormValues) {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -154,9 +131,9 @@ export default function ConsultationForm({
     setIsLoading(true);
     const lead: LeadData = createLead({
       name: values.name.trim(),
-      phone: values.phone.replace(/\D/g, ''),
+      phone: values.phone.trim(),
       category: values.category,
-      budget: (values.budget.replace(/\D/g, '') || '0') as any, // 010-1234-5678 -> 01012345678
+      budget: values.budget,
       message: values.message.trim() || undefined,
       sourcePage,
     });
@@ -187,10 +164,8 @@ export default function ConsultationForm({
       {/* 헤더 */}
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-stone-800">무료 상담 신청</h2>
-        <p className="mt-1 text-sm font-medium leading-relaxed text-stone-600">
-          간단한 정보만 남겨주시면 <span className="text-rose-600 font-bold">48시간 이내</span>에
-          <br />
-          전문 담당자가 직접 연락드립니다.
+        <p className="mt-1 text-sm text-stone-500">
+          간단한 정보만 남겨주시면 48시간 이내에 연락드립니다.
         </p>
       </div>
 
@@ -213,7 +188,7 @@ export default function ConsultationForm({
             type="tel"
             placeholder="010-1234-5678"
             value={values.phone}
-            onChange={(e) => handlePhoneChange(e.target.value)}
+            onChange={(e) => handleChange('phone', e.target.value)}
             onBlur={() => handleBlur('phone')}
             className={inputClass(!!touched.phone && !!errors.phone)}
           />
@@ -229,31 +204,25 @@ export default function ConsultationForm({
                 onClick={() => handleChange('category', opt.value)}
                 className={categoryButtonClass(values.category === opt.value)}
               >
-                <span className="flex items-center justify-center gap-2">
-                  {opt.icon}
-                  {opt.label}
-                </span>
+                {opt.label}
               </button>
             ))}
           </div>
         </Field>
 
         {/* 예산 */}
-        <Field label="예산 범위" error={touched.budget ? errors.budget : undefined}>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="직접 입력 (예: 500,000)"
-              value={values.budget}
-              onChange={(e) => handleBudgetChange(e.target.value)}
-              onBlur={() => handleBlur('budget')}
-              className={inputClass(!!touched.budget && !!errors.budget)}
-            />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-stone-400">원</span>
-          </div>
-          <p className="mt-1 text-[11px] text-stone-400">
-            * 최소 {MIN_BUDGET.toLocaleString()}원부터 상담이 가능합니다.
-          </p>
+        <Field label="예산 범위">
+          <select
+            value={values.budget}
+            onChange={(e) => handleChange('budget', e.target.value as BudgetRange)}
+            className={inputClass(false)}
+          >
+            {BUDGET_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </Field>
 
         {/* 메시지 (선택) */}
@@ -314,12 +283,12 @@ function Field({
       <label className="flex items-center gap-1 text-sm font-medium text-stone-700">
         {label}
         {required && <span className="text-rose-400">*</span>}
-        {optional && <span className="text-xs font-normal text-stone-500">(선택)</span>}
+        {optional && <span className="text-xs font-normal text-stone-400">(선택)</span>}
       </label>
       {children}
       {error && (
         <p className="flex items-center gap-1 text-xs text-rose-500">
-          <Icons.Alert /> {error}
+          <span>⚠</span> {error}
         </p>
       )}
     </div>
