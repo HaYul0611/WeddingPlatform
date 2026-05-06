@@ -36,19 +36,53 @@ interface LeadPayload {
 // 상수
 // ─────────────────────────────────────────
 const CATEGORY_LABEL: Record<string, string> = {
-  wedding:    '💍 웨딩 서비스',
-  beauty:     '✨ 뷰티 / 피부 관리',
+  wedding: '💍 웨딩 서비스',
+  beauty: '✨ 뷰티 / 피부 관리',
   healthcare: '💪 건강 / 다이어트',
-  medical:    '🏥 의료 / 시술 정보',
+  medical: '🏥 의료 / 시술 정보',
 };
 
 const BUDGET_LABEL: Record<string, string> = {
-  undecided:   '미정',
-  under_500:   '50만원 미만',
-  '500_1000':  '50 ~ 100만원',
+  undecided: '미정',
+  under_500: '50만원 미만',
+  '500_1000': '50 ~ 100만원',
   '1000_3000': '100 ~ 300만원',
-  over_3000:   '300만원 이상',
+  over_3000: '300만원 이상',
 };
+
+// ─────────────────────────────────────────
+// 헬퍼 함수
+// ─────────────────────────────────────────
+
+/**
+ * 연락처 자동 하이픈 (01012345678 -> 010-1234-5678)
+ */
+function formatPhone(phone: string) {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 11) {
+    return digits.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+  } else if (digits.length === 10) {
+    if (digits.startsWith('02')) {
+      return digits.replace(/(\d{2})(\d{4})(\d{4})/, '$1-$2-$3');
+    }
+    return digits.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+  }
+  return phone;
+}
+
+/**
+ * 예산 포맷팅 (콤마 추가 또는 라벨 반환)
+ */
+function formatBudgetDisplay(budget: string) {
+  const label = BUDGET_LABEL[budget];
+  if (label) return label;
+
+  const num = parseInt(budget.replace(/\D/g, ''), 10);
+  if (!isNaN(num)) {
+    return num.toLocaleString('ko-KR') + '원';
+  }
+  return budget;
+}
 
 // ─────────────────────────────────────────
 // Supabase 클라이언트 (서버 전용)
@@ -72,33 +106,33 @@ async function sendDiscordAlert(lead: LeadPayload, isError?: boolean, errorMsg?:
 
   const payload = isError
     ? {
-        embeds: [{
-          title: '🚨 상담 저장 실패',
-          color: 0xE53E3E,
-          fields: [
-            { name: '이름',   value: lead.name,                    inline: true },
-            { name: '연락처', value: lead.phone,                   inline: true },
-            { name: '오류',   value: errorMsg ?? 'Unknown error',  inline: false },
-          ],
-          timestamp: lead.timestamp,
-        }],
-      }
+      embeds: [{
+        title: '🚨 상담 저장 실패',
+        color: 0xE53E3E,
+        fields: [
+          { name: '이름', value: lead.name, inline: true },
+          { name: '연락처', value: lead.phone, inline: true },
+          { name: '오류', value: errorMsg ?? 'Unknown error', inline: false },
+        ],
+        timestamp: lead.timestamp,
+      }],
+    }
     : {
-        embeds: [{
-          title: '📋 새 상담 신청',
-          color: 0xE2626E,
-          fields: [
-            { name: '이름',      value: CATEGORY_LABEL[lead.category] ? lead.name : lead.name, inline: true },
-            { name: '연락처',    value: lead.phone,                                            inline: true },
-            { name: '분야',      value: CATEGORY_LABEL[lead.category] ?? lead.category,        inline: true },
-            { name: '예산',      value: BUDGET_LABEL[lead.budget]     ?? lead.budget,          inline: true },
-            { name: '유입 경로', value: lead.sourcePage,                                       inline: true },
-            { name: '메시지',    value: lead.message?.trim() || '(없음)',                      inline: false },
-          ],
-          footer: { text: 'WeddingCare 상담 시스템' },
-          timestamp: lead.timestamp,
-        }],
-      };
+      embeds: [{
+        title: '🔔 새로운 상담 신청이 도착했습니다',
+        color: 0xE2626E,
+        fields: [
+          { name: '👤 성함', value: `**${lead.name}**`, inline: true },
+          { name: '📞 연락처', value: `**${formatPhone(lead.phone)}**`, inline: true },
+          { name: '🏷️ 상담 분야', value: CATEGORY_LABEL[lead.category] ?? lead.category, inline: true },
+          { name: '💰 희망 예산', value: `**${formatBudgetDisplay(lead.budget)}**`, inline: true },
+          { name: '🔗 유입 경로', value: lead.sourcePage, inline: true },
+          { name: '💬 메시지', value: `\`\`\`${lead.message?.trim() || '(없음)'}\`\`\``, inline: false },
+        ],
+        footer: { text: '웨딩케어 상담 관리 시스템' },
+        timestamp: lead.timestamp,
+      }],
+    };
 
   const res = await fetch(webhookUrl, {
     method: 'POST',
@@ -138,8 +172,8 @@ async function sendEmailAlert(lead: LeadPayload) {
   });
 
   const categoryLabel = CATEGORY_LABEL[lead.category] ?? lead.category;
-  const budgetLabel   = BUDGET_LABEL[lead.budget]     ?? lead.budget;
-  const receivedAt    = new Date(lead.timestamp).toLocaleString('ko-KR', {
+  const budgetLabel = BUDGET_LABEL[lead.budget] ?? lead.budget;
+  const receivedAt = new Date(lead.timestamp).toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
   });
 
@@ -156,17 +190,17 @@ async function sendEmailAlert(lead: LeadPayload) {
       <table width="100%" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
         <tr>
           <td style="background:#E2626E;padding:28px 32px;">
-            <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.75);letter-spacing:1px;">WEDDINGCARE</p>
+            <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.75);letter-spacing:1px;font-weight:700;">웨딩케어</p>
             <h1 style="margin:6px 0 0;font-size:22px;color:#ffffff;font-weight:600;">새 상담 신청이 도착했습니다</h1>
           </td>
         </tr>
         <tr>
           <td style="padding:32px;">
             <table width="100%" cellpadding="0" cellspacing="0">
-              ${infoRow('이름',      lead.name)}
-              ${infoRow('연락처',    lead.phone)}
+              ${infoRow('이름', lead.name)}
+              ${infoRow('연락처', formatPhone(lead.phone))}
               ${infoRow('상담 분야', categoryLabel)}
-              ${infoRow('예산',      budgetLabel)}
+              ${infoRow('예산', formatBudgetDisplay(lead.budget))}
               ${infoRow('유입 경로', lead.sourcePage)}
               <tr>
                 <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
@@ -181,7 +215,7 @@ async function sendEmailAlert(lead: LeadPayload) {
         <tr>
           <td style="background:#fafafa;padding:20px 32px;border-top:1px solid #f0f0f0;">
             <p style="margin:0;font-size:12px;color:#aaa;text-align:center;">
-              이 메일은 WeddingCare 상담 시스템에서 자동 발송되었습니다.
+              이 메일은 웨딩케어 상담 시스템에서 자동 발송되었습니다.
             </p>
           </td>
         </tr>
@@ -193,7 +227,7 @@ async function sendEmailAlert(lead: LeadPayload) {
 
   await transporter.sendMail({
     from: `"WeddingCare 상담" <${EMAIL_USER}>`,
-    to:      EMAIL_TO,
+    to: EMAIL_TO,
     subject: `[상담 신청] ${lead.name}님 · ${categoryLabel}`,
     html,
   });
@@ -221,14 +255,14 @@ export async function POST(req: NextRequest) {
     // 1) Supabase 저장
     const supabase = getSupabase();
     const { error: dbError } = await supabase.from('leads').insert([{
-      id:          lead.id,
-      name:        lead.name,
-      phone:       lead.phone,
-      category:    lead.category,
-      budget:      lead.budget,
-      message:     lead.message ?? '',
-      source_page: lead.sourcePage,
-      created_at:  lead.timestamp,
+      id: lead.id,
+      name: lead.name,
+      phone: lead.phone,
+      category: lead.category,
+      budget: lead.budget,
+      message: lead.message ?? '',
+      source: lead.sourcePage,
+      created_at: lead.timestamp,
     }]);
 
     if (dbError) {
