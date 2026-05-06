@@ -13,6 +13,7 @@ export interface BodyInfo {
 }
 
 export interface RoutineOutput {
+  bmi: number;
   workoutDaysPerWeek: number;
   workoutFocus: string[];
   dietGuidelines: string[];

@@ -8,18 +8,18 @@ interface BodyInfoFormProps {
 }
 
 const GOAL_OPTIONS: { value: FitnessGoal; label: string; desc: string }[] = [
-  { value: 'diet', label: '체중 감량', desc: '웨딩 전 체중을 줄이고 싶어요' },
-  { value: 'tone', label: '라인 관리', desc: '탄력 있는 몸매를 만들고 싶어요' },
-  { value: 'maintain', label: '유지 관리', desc: '현재 상태를 건강하게 유지하고 싶어요' },
+  { value: 'diet',     label: '체중 감량',   desc: '웨딩 전 체중을 줄이고 싶어요' },
+  { value: 'tone',     label: '라인 관리',   desc: '탄력 있는 몸매를 만들고 싶어요' },
+  { value: 'maintain', label: '유지 관리',   desc: '현재 상태를 건강하게 유지하고 싶어요' },
 ];
 
 const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
-  { value: 'low', label: '낮음 (주 1회 이하)' },
+  { value: 'low',    label: '낮음 (주 1회 이하)' },
   { value: 'medium', label: '보통 (주 2~3회)' },
-  { value: 'high', label: '높음 (주 4회 이상)' },
+  { value: 'high',   label: '높음 (주 4회 이상)' },
 ];
 
-const EMPTY: Omit<BodyInfo, 'weddingDday' | 'height' | 'weight'> & { height: string; weight: string } = {
+const EMPTY: Omit<BodyInfo, 'weddingDday'> & { height: string; weight: string } = {
   height: '',
   weight: '',
   goal: 'diet',
@@ -35,7 +35,7 @@ export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
     const h = Number(values.height);
     const w = Number(values.weight);
     if (!values.height || isNaN(h) || h < 100 || h > 250) e.height = '올바른 키를 입력해 주세요. (100~250cm)';
-    if (!values.weight || isNaN(w) || w < 30 || w > 200) e.weight = '올바른 몸무게를 입력해 주세요. (30~200kg)';
+    if (!values.weight || isNaN(w) || w < 30 || w > 200)  e.weight = '올바른 몸무게를 입력해 주세요. (30~200kg)';
     return e;
   }
 
@@ -45,7 +45,7 @@ export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
 
     const savedDate = localStorage.getItem('wcp_wedding_date');
     const weddingDday = savedDate
-      ? Math.ceil((new Date(savedDate).getTime() - new Date().setHours(0, 0, 0, 0)) / 86400000)
+      ? Math.ceil((new Date(savedDate).getTime() - new Date().setHours(0,0,0,0)) / 86400000)
       : 180; // 날짜 미설정 시 기본값
 
     onSubmit({
@@ -91,10 +91,11 @@ export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
                 key={opt.value}
                 type="button"
                 onClick={() => setValues((p) => ({ ...p, goal: opt.value }))}
-                className={`w-full rounded-xl border px-4 py-3 text-left transition-all ${values.goal === opt.value
+                className={`w-full rounded-xl border px-4 py-3 text-left transition-all ${
+                  values.goal === opt.value
                     ? 'border-rose-400 bg-rose-50'
                     : 'border-stone-200 bg-white hover:border-rose-200'
-                  }`}
+                }`}
               >
                 <p className={`text-sm font-semibold ${values.goal === opt.value ? 'text-rose-600' : 'text-stone-700'}`}>
                   {opt.label}
@@ -114,10 +115,11 @@ export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
                 key={opt.value}
                 type="button"
                 onClick={() => setValues((p) => ({ ...p, activityLevel: opt.value }))}
-                className={`rounded-xl border py-2.5 text-center text-xs font-semibold transition-all ${values.activityLevel === opt.value
+                className={`rounded-xl border py-2.5 text-center text-xs font-semibold transition-all ${
+                  values.activityLevel === opt.value
                     ? 'border-rose-400 bg-rose-50 text-rose-600'
                     : 'border-stone-200 bg-white text-stone-500 hover:border-rose-200'
-                  }`}
+                }`}
               >
                 {opt.label}
               </button>

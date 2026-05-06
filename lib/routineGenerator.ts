@@ -10,8 +10,8 @@ const DISCLAIMER =
 // 운동 횟수 결정 (goal + activity)
 // ───────────────────────────────
 const WORKOUT_DAYS: Record<FitnessGoal, Record<ActivityLevel, number>> = {
-  diet:     { low: 3, medium: 4, high: 5 },
-  tone:     { low: 3, medium: 4, high: 5 },
+  diet: { low: 3, medium: 4, high: 5 },
+  tone: { low: 3, medium: 4, high: 5 },
   maintain: { low: 2, medium: 3, high: 4 },
 };
 
@@ -81,10 +81,10 @@ export function generateRoutine(info: BodyInfo): RoutineOutput {
 
   const dietGuidelines = [
     ...DIET_GUIDELINES[goal],
-    `현재 BMI: ${bmi} — 이 수치는 일반적인 참고 지표이며, 개인차가 있습니다.`,
   ];
 
   return {
+    bmi,
     workoutDaysPerWeek: WORKOUT_DAYS[goal][activityLevel],
     workoutFocus,
     dietGuidelines,

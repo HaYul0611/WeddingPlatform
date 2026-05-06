@@ -32,19 +32,51 @@ interface ConsultationFormProps {
 // ───────────────────────────────
 // 상수
 // ───────────────────────────────
-const CATEGORY_OPTIONS: { value: ConsultationCategory; label: string }[] = [
-  { value: 'wedding',    label: '💍 웨딩 서비스' },
-  { value: 'beauty',     label: '✨ 뷰티 / 피부 관리' },
-  { value: 'healthcare', label: '💪 건강 / 다이어트' },
-  { value: 'medical',    label: '🏥 의료 / 시술 정보' },
+const CATEGORY_OPTIONS: { value: ConsultationCategory; label: string; icon: React.ReactNode }[] = [
+  {
+    value: 'wedding',
+    label: '웨딩 서비스',
+    icon: (
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.921-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.175 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+      </svg>
+    )
+  },
+  {
+    value: 'beauty',
+    label: '뷰티 / 피부 관리',
+    icon: (
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4M4 19h4m12-12v4m-2-2h4m-5 9l-1.1-1.1a2 2 0 00-2.8 0L9 18m5 0l1.1 1.1a2 2 0 002.8 0L19 18" />
+      </svg>
+    )
+  },
+  {
+    value: 'healthcare',
+    label: '건강 / 다이어트',
+    icon: (
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    )
+  },
+  {
+    value: 'medical',
+    label: '의료 / 시술 정보',
+    icon: (
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    )
+  },
 ];
 
 const BUDGET_OPTIONS: { value: BudgetRange; label: string }[] = [
-  { value: 'undecided',  label: '아직 미정이에요' },
-  { value: 'under_500',  label: '50만원 미만' },
-  { value: '500_1000',   label: '50만원 ~ 100만원' },
-  { value: '1000_3000',  label: '100만원 ~ 300만원' },
-  { value: 'over_3000',  label: '300만원 이상' },
+  { value: 'undecided', label: '아직 미정이에요' },
+  { value: 'under_500', label: '50만원 미만' },
+  { value: '500_1000', label: '50만원 ~ 100만원' },
+  { value: '1000_3000', label: '100만원 ~ 300만원' },
+  { value: 'over_3000', label: '300만원 이상' },
 ];
 
 const INITIAL_VALUES: FormValues = {
@@ -102,7 +134,21 @@ export default function ConsultationForm({
     field: keyof FormValues,
     value: string,
   ) {
-    const updated = { ...values, [field]: value };
+    let finalValue = value;
+
+    // 연락처 자동 하이픈
+    if (field === 'phone') {
+      const digits = value.replace(/\D/g, '').slice(0, 11);
+      if (digits.length <= 3) {
+        finalValue = digits;
+      } else if (digits.length <= 7) {
+        finalValue = `${digits.slice(0, 3)}-${digits.slice(3)}`;
+      } else {
+        finalValue = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+      }
+    }
+
+    const updated = { ...values, [field]: finalValue };
     setValues(updated);
 
     // 터치된 필드만 실시간 재검사
@@ -202,9 +248,15 @@ export default function ConsultationForm({
                 key={opt.value}
                 type="button"
                 onClick={() => handleChange('category', opt.value)}
-                className={categoryButtonClass(values.category === opt.value)}
+                className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all break-keep ${values.category === opt.value
+                    ? 'border-rose-400 bg-rose-50 text-rose-600'
+                    : 'border-stone-200 bg-white text-stone-600 hover:border-rose-200 hover:bg-rose-50/50'
+                  }`}
               >
-                {opt.label}
+                <span className={values.category === opt.value ? 'text-rose-500' : 'text-stone-400'}>
+                  {opt.icon}
+                </span>
+                <span>{opt.label}</span>
               </button>
             ))}
           </div>
@@ -288,7 +340,10 @@ function Field({
       {children}
       {error && (
         <p className="flex items-center gap-1 text-xs text-rose-500">
-          <span>⚠</span> {error}
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          {error}
         </p>
       )}
     </div>

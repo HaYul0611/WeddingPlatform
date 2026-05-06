@@ -24,8 +24,8 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-lg space-y-6 px-4 py-8">
         {/* 페이지 타이틀 */}
         <div>
-          <h1 className="text-2xl font-bold text-stone-800">웨딩 대시보드</h1>
-          <p className="mt-1 text-sm text-stone-500">
+          <h1 className="text-2xl font-bold text-stone-800 break-keep">웨딩 대시보드</h1>
+          <p className="mt-1 text-sm text-stone-500 break-keep">
             결혼 예정일을 입력하고 단계별 준비 일정을 확인하세요.
           </p>
         </div>

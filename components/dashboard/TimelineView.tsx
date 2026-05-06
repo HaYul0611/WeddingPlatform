@@ -7,11 +7,11 @@ import TaskCard from './TaskCard';
 type Milestone = TimelineTask['milestone'];
 
 const MILESTONES: { key: Milestone; label: string; minDday: number }[] = [
-  { key: 'D-90', label: 'D-90 · 준비 시작',    minDday: 60 },
-  { key: 'D-60', label: 'D-60 · 본격 준비',    minDday: 30 },
-  { key: 'D-30', label: 'D-30 · 마무리 단계',  minDday: 14 },
-  { key: 'D-14', label: 'D-14 · 최종 점검',    minDday: 7 },
-  { key: 'D-7',  label: 'D-7 · 컨디션 관리',   minDday: 0 },
+  { key: 'D-90', label: 'D-90 · 준비 시작', minDday: 60 },
+  { key: 'D-60', label: 'D-60 · 본격 준비', minDday: 30 },
+  { key: 'D-30', label: 'D-30 · 마무리 단계', minDday: 14 },
+  { key: 'D-14', label: 'D-14 · 최종 점검', minDday: 7 },
+  { key: 'D-7', label: 'D-7 · 컨디션 관리', minDday: 0 },
 ];
 
 interface TimelineViewProps {
@@ -42,7 +42,7 @@ export default function TimelineView({ dday, onCTAClick }: TimelineViewProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-base font-semibold text-stone-800">준비 타임라인</h2>
+      <h2 className="text-base font-semibold text-stone-800 break-keep">준비 타임라인</h2>
 
       {MILESTONES.map(({ key, label }) => {
         const isActive = key === activeMilestone;

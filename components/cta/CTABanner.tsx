@@ -31,13 +31,13 @@ export default function CTABanner({
 }: CTABannerProps) {
   if (variant === 'bold') {
     return (
-      <section className="rounded-2xl bg-rose-500 px-6 py-8 text-center text-white">
-        <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-        <p className="mb-5 text-sm text-rose-100">{description}</p>
+      <section className="rounded-3xl bg-gradient-to-br from-rose-50 to-orange-50 border border-rose-100 px-6 py-10 text-center shadow-sm">
+        <h3 className="mb-2 text-2xl font-bold text-stone-800 break-keep">{title}</h3>
+        <p className="mb-6 text-sm text-stone-600 break-keep">{description}</p>
         <button
           type="button"
           onClick={onClickCTA}
-          className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-rose-500 shadow transition-all hover:bg-rose-50 active:scale-[0.98]"
+          className="rounded-full bg-rose-500 px-10 py-3 text-base font-semibold text-white shadow-lg shadow-rose-200 transition-all hover:bg-rose-600 hover:-translate-y-0.5 active:scale-95"
         >
           {buttonLabel} →
         </button>
@@ -49,8 +49,8 @@ export default function CTABanner({
     <section className="rounded-2xl border border-rose-100 bg-rose-50 px-6 py-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="font-semibold text-stone-800">{title}</h3>
-          <p className="mt-1 text-sm text-stone-500">{description}</p>
+          <h3 className="font-semibold text-stone-800 break-keep">{title}</h3>
+          <p className="mt-1 text-sm text-stone-500 break-keep">{description}</p>
         </div>
         <CTAButton
           onClick={onClickCTA}

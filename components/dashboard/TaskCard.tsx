@@ -3,10 +3,10 @@
 import { TimelineTask } from '@/data/timelineTasks';
 
 const CATEGORY_STYLE: Record<TimelineTask['category'], { bg: string; text: string; dot: string }> = {
-  wedding:    { bg: 'bg-rose-50',   text: 'text-rose-600',   dot: 'bg-rose-400' },
-  beauty:     { bg: 'bg-pink-50',   text: 'text-pink-600',   dot: 'bg-pink-400' },
-  healthcare: { bg: 'bg-emerald-50',text: 'text-emerald-600',dot: 'bg-emerald-400' },
-  admin:      { bg: 'bg-stone-50',  text: 'text-stone-500',  dot: 'bg-stone-400' },
+  wedding: { bg: 'bg-rose-50', text: 'text-rose-600', dot: 'bg-rose-400' },
+  beauty: { bg: 'bg-pink-50', text: 'text-pink-600', dot: 'bg-pink-400' },
+  healthcare: { bg: 'bg-emerald-50', text: 'text-emerald-600', dot: 'bg-emerald-400' },
+  admin: { bg: 'bg-stone-50', text: 'text-stone-500', dot: 'bg-stone-400' },
 };
 
 const CATEGORY_LABEL: Record<TimelineTask['category'], string> = {
@@ -32,8 +32,8 @@ export default function TaskCard({ task, onCTAClick }: TaskCardProps) {
           {CATEGORY_LABEL[task.category]}
         </span>
       </div>
-      <p className="mb-1 text-sm font-semibold text-stone-800">{task.title}</p>
-      <p className="text-xs text-stone-500">{task.description}</p>
+      <p className="mb-1 text-sm font-semibold text-stone-800 break-keep">{task.title}</p>
+      <p className="text-xs text-stone-500 break-keep">{task.description}</p>
 
       {task.hasCTA && onCTAClick && (
         <button

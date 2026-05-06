@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { isValidSession } from '@/lib/auth';
+import { isValidSession } from '../api/admin/auth/route';
 import AdminClient from './_components/AdminClient';
 
 export const metadata = {

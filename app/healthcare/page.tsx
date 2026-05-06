@@ -32,8 +32,8 @@ export default function HealthcarePage() {
     <>
       <main className="mx-auto max-w-lg space-y-6 px-4 py-8">
         <div>
-          <h1 className="text-2xl font-bold text-stone-800">건강 관리</h1>
-          <p className="mt-1 text-sm text-stone-500">
+          <h1 className="text-2xl font-bold text-stone-800 break-keep">건강 관리</h1>
+          <p className="mt-1 text-sm text-stone-500 break-keep">
             입력하신 정보를 바탕으로 일반적인 건강 관리 안내를 제공합니다.
           </p>
         </div>

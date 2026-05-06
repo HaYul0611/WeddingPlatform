@@ -37,16 +37,19 @@ export default function BeautyPage() {
     <>
       <main className="mx-auto max-w-lg space-y-6 px-4 py-8">
         <div>
-          <h1 className="text-2xl font-bold text-stone-800">뷰티 · 의료 정보</h1>
-          <p className="mt-1 text-sm text-stone-500">
+          <h1 className="text-2xl font-bold text-stone-800 break-keep">뷰티 · 의료 정보</h1>
+          <p className="mt-1 text-sm text-stone-500 break-keep">
             웨딩 전 뷰티 관리에 참고할 수 있는 일반 정보를 제공합니다.
           </p>
         </div>
 
         {/* 의료 고지 (상단 고정) */}
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-          <p className="text-xs leading-relaxed text-amber-700">
-            ⚠ 이 페이지의 모든 정보는 <strong>일반적인 안내 목적</strong>으로만 제공됩니다.
+        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <p className="text-xs leading-relaxed text-amber-700 break-keep">
+            이 페이지의 모든 정보는 <strong>일반적인 안내 목적</strong>으로만 제공됩니다.
             의료 진단이나 치료 추천이 아니며, 시술 여부는 반드시 전문의와 상담하시기 바랍니다.
           </p>
         </div>
@@ -72,11 +75,10 @@ export default function BeautyPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${
-                activeTab === tab
-                  ? 'bg-white text-stone-800 shadow-sm'
-                  : 'text-stone-400 hover:text-stone-600'
-              }`}
+              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${activeTab === tab
+                ? 'bg-white text-stone-800 shadow-sm'
+                : 'text-stone-400 hover:text-stone-600'
+                }`}
             >
               {tab === 'clinics' ? `클리닉 (${filteredClinics.length})` : `시술 정보 (${filteredProcedures.length})`}
             </button>
