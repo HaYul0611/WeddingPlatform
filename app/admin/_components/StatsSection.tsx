@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, Inbox, BadgeCheck, Clock, ArrowUpRight, type LucideProps } from './Icons';
+import { Users, Inbox, BadgeCheck, Clock, ArrowUpRight, type IconProps } from './Icons';
 import { StatsSkeleton } from './Skeletons';
 import { getDemoStats } from '@/lib/demo-seed';
 import type { StatsData } from '@/types/crm';
@@ -12,10 +12,10 @@ interface StatsSectionProps {
 }
 
 interface StatCard {
-  key:     keyof StatsData;
-  label:   string;
-  icon:    React.FC<LucideProps>;
-  color:   { bg: string; icon: string; value: string; ring: string };
+  key: keyof StatsData;
+  label: string;
+  icon: React.FC<IconProps>;
+  color: { bg: string; icon: string; value: string; ring: string };
 }
 
 const CARDS: StatCard[] = [
@@ -46,7 +46,7 @@ const CARDS: StatCard[] = [
 ];
 
 export default function StatsSection({ isDemoMode, refreshKey }: StatsSectionProps) {
-  const [stats, setStats]     = useState<StatsData | null>(null);
+  const [stats, setStats] = useState<StatsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function StatsSection({ isDemoMode, refreshKey }: StatsSectionPro
         await new Promise((r) => setTimeout(r, 400)); // 자연스러운 로딩
         setStats(getDemoStats());
       } else {
-        const res  = await fetch('/api/admin/stats');
+        const res = await fetch('/api/admin/stats');
         const json = await res.json();
         if (json.success) setStats(json.data);
       }
@@ -74,7 +74,7 @@ export default function StatsSection({ isDemoMode, refreshKey }: StatsSectionPro
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {CARDS.map((card) => {
-        const Icon  = card.icon;
+        const Icon = card.icon;
         const value = stats[card.key];
         const { bg, icon, value: valueCls, ring } = card.color;
 

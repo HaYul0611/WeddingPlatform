@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { isValidSession } from '../auth/route';
+import { isValidSession } from '@/lib/auth';
 
 function getSupabase() {
   return createClient(
@@ -30,8 +30,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        total:     total.count     ?? 0,
-        new:       newCount.count       ?? 0,
+        total: total.count ?? 0,
+        new: newCount.count ?? 0,
         contacted: contactedCount.count ?? 0,
         completed: completedCount.count ?? 0,
       },

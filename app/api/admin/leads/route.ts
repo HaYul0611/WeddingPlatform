@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { isValidSession } from '../auth/route';
+import { isValidSession } from '@/lib/auth';
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -26,13 +26,13 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = req.nextUrl;
-  const page     = Math.max(1, Number(searchParams.get('page')     ?? 1));
+  const page = Math.max(1, Number(searchParams.get('page') ?? 1));
   const pageSize = Math.min(50, Math.max(1, Number(searchParams.get('pageSize') ?? 20)));
   const category = searchParams.get('category') ?? 'all';
-  const status   = searchParams.get('status')   ?? 'all';
+  const status = searchParams.get('status') ?? 'all';
 
   const from = (page - 1) * pageSize;
-  const to   = from + pageSize - 1;
+  const to = from + pageSize - 1;
 
   try {
     const supabase = getSupabase();
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       .range(from, to);
 
     if (category !== 'all') query = query.eq('category', category);
-    if (status   !== 'all') query = query.eq('status',   status);
+    if (status !== 'all') query = query.eq('status', status);
 
     const { data, count, error } = await query;
 

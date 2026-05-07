@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { isValidSession } from '../../auth/route';
+import { isValidSession } from '@/lib/auth';
 
 const VALID_STATUSES = ['new', 'contacted', 'completed'] as const;
 type Status = typeof VALID_STATUSES[number];

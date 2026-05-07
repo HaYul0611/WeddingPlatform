@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { isValidSession } from '../auth/route';
+import { isValidSession } from '@/lib/auth';
 
 function getSupabase() {
   return createClient(
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = req.nextUrl;
-  const category  = searchParams.get('category')  ?? 'all';
+  const category = searchParams.get('category') ?? 'all';
   const activeFilter = searchParams.get('is_active') ?? 'true';
 
   try {
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       .select('*')
       .order('name', { ascending: true });
 
-    if (category !== 'all')    query = query.eq('category', category);
+    if (category !== 'all') query = query.eq('category', category);
     if (activeFilter !== 'all') query = query.eq('is_active', activeFilter === 'true');
 
     const { data, error } = await query;

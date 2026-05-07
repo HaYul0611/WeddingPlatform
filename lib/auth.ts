@@ -1,6 +1,7 @@
 import { createHmac } from 'crypto';
 
-const COOKIE_NAME = 'admin_session';
+export const COOKIE_NAME = 'admin_session';
+export const COOKIE_MAX_AGE = 60 * 60 * 8; // 8시간
 
 export function signToken(password: string): string {
   const secret = process.env.ADMIN_SESSION_SECRET ?? 'fallback-secret';

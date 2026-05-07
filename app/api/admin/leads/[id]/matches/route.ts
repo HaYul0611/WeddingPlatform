@@ -10,15 +10,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { isValidSession } from '../../../auth/route';
+import { isValidSession } from '@/lib/auth';
 
 // 리드 budget key → 만원 단위 숫자 범위
 const BUDGET_RANGE: Record<string, { min: number; max: number }> = {
-  under_500:   { min: 0,   max: 50  },
-  '500_1000':  { min: 50,  max: 100 },
+  under_500: { min: 0, max: 50 },
+  '500_1000': { min: 50, max: 100 },
   '1000_3000': { min: 100, max: 300 },
-  over_3000:   { min: 300, max: 99999 },
-  undecided:   { min: 0,   max: 99999 },
+  over_3000: { min: 300, max: 99999 },
+  undecided: { min: 0, max: 99999 },
 };
 
 function getSupabase() {
@@ -85,7 +85,7 @@ export async function GET(
       data: companies ?? [],
       meta: {
         lead_category: lead.category,
-        lead_budget:   lead.budget,
+        lead_budget: lead.budget,
         matched_count: companies?.length ?? 0,
       },
     });
