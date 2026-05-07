@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { isValidSession } from '@/lib/auth';
+import { getSessionData } from '@/lib/auth';
 
 function getSupabase() {
   return createClient(
@@ -11,18 +11,21 @@ function getSupabase() {
 
 export async function GET(req: NextRequest) {
   const session = req.cookies.get('admin_session')?.value;
-  if (!isValidSession(session)) {
+  const { isValid, companyId } = getSessionData(session);
+
+  if (!isValid || !companyId) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const supabase = getSupabase();
 
+    // 업체별 데이터 필터링 적용
     const [total, newCount, contactedCount, completedCount] = await Promise.all([
-      supabase.from('leads').select('id', { count: 'exact', head: true }),
-      supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'new'),
-      supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'contacted'),
-      supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'completed'),
+      supabase.from('leads').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
+      supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'new').eq('company_id', companyId),
+      supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'contacted').eq('company_id', companyId),
+      supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'completed').eq('company_id', companyId),
     ]);
 
     if (total.error) throw total.error;

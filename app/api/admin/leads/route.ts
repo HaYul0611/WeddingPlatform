@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { isValidSession } from '@/lib/auth';
+import { getSessionData } from '@/lib/auth';
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -19,9 +19,11 @@ function getSupabase() {
 }
 
 export async function GET(req: NextRequest) {
-  // 인증 검증
+  // 인증 및 업체 식별자 추출
   const session = req.cookies.get('admin_session')?.value;
-  if (!isValidSession(session)) {
+  const { isValid, companyId } = getSessionData(session);
+
+  if (!isValid || !companyId) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -45,6 +47,9 @@ export async function GET(req: NextRequest) {
 
     if (category !== 'all') query = query.eq('category', category);
     if (status !== 'all') query = query.eq('status', status);
+
+    // 업체별 데이터 격리 필터
+    query = query.eq('company_id', companyId);
 
     const { data, count, error } = await query;
 

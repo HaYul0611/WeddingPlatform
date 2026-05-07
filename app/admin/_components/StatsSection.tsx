@@ -51,16 +51,22 @@ export default function StatsSection({ isDemoMode, refreshKey }: StatsSectionPro
 
   useEffect(() => {
     async function load() {
-      setIsLoading(true);
-      if (isDemoMode) {
-        await new Promise((r) => setTimeout(r, 400)); // 자연스러운 로딩
-        setStats(getDemoStats());
-      } else {
-        const res = await fetch('/api/admin/stats');
-        const json = await res.json();
-        if (json.success) setStats(json.data);
+      try {
+        setIsLoading(true);
+        if (isDemoMode) {
+          await new Promise((r) => setTimeout(r, 400));
+          setStats(getDemoStats());
+        } else {
+          const res = await fetch('/api/admin/stats');
+          if (!res.ok) throw new Error('Failed to fetch stats');
+          const json = await res.json();
+          if (json.success) setStats(json.data);
+        }
+      } catch (err) {
+        console.error('Stats load error:', err);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
     load();
   }, [isDemoMode, refreshKey]);

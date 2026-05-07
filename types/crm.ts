@@ -1,6 +1,6 @@
-export type LeadStatus   = 'new' | 'contacted' | 'completed';
+export type LeadStatus = 'new' | 'qualified' | 'matched' | 'contacted' | 'completed' | 'lost';
 export type LeadCategory = 'wedding' | 'beauty' | 'healthcare' | 'medical';
-export type BudgetKey    = 'undecided' | 'under_500' | '500_1000' | '1000_3000' | 'over_3000';
+export type BudgetKey = 'undecided' | 'under_500' | '500_1000' | '1000_3000' | 'over_3000';
 
 export interface Lead {
   id: string;
@@ -12,6 +12,16 @@ export interface Lead {
   source_page: string;
   created_at: string;
   status: LeadStatus;
+}
+
+export interface ActivityLog {
+  id: string;
+  lead_id: string;
+  action: 'status_change' | 'matched' | 'note_added';
+  from_status?: LeadStatus;
+  to_status?: LeadStatus;
+  note?: string;
+  created_at: string;
 }
 
 export interface Company {
@@ -33,8 +43,11 @@ export interface Company {
 export interface StatsData {
   total: number;
   new: number;
+  qualified: number;
+  matched: number;
   contacted: number;
   completed: number;
+  lost: number;
 }
 
 export interface PaginatedLeads {

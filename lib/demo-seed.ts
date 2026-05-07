@@ -93,12 +93,12 @@ export const DEMO_COMPANIES: Company[] = [
 // ─────────────────────────────────────────
 // 데모 리드 (25개)
 // ─────────────────────────────────────────
-const NAMES   = ['김민준','이서연','박지훈','최수아','정도윤','강민서','조예린','윤재현','임하은','한소희','신동혁','권나리','오준혁','배유진','송민지','류채원','문지호','안세진','황지민','심은지','차준호','노아린','구세현','백다영','엄태준'];
-const PHONES  = ['010-2345-6789','010-3456-7890','010-4567-8901','010-5678-9012','010-6789-0123','010-7890-1234','010-8901-2345','010-9012-3456','010-1122-3344','010-2233-4455','010-3344-5566','010-4455-6677','010-5566-7788','010-6677-8899','010-7788-9900','010-8899-0011','010-9900-1122','010-1234-9876','010-2345-8765','010-3456-7654','010-4567-6543','010-5678-5432','010-6789-4321','010-7890-3210','010-8901-2109'];
-const PAGES   = ['landing', 'hero', 'dashboard', 'beauty', 'healthcare', 'wedding', 'feature-웨딩', 'feature-뷰티', 'floating-cta', 'header'];
-const CATS:   LeadCategory[] = ['wedding','beauty','healthcare','medical','wedding','beauty','wedding','healthcare','wedding','beauty','medical','healthcare','wedding','beauty','wedding','healthcare','beauty','wedding','medical','healthcare','wedding','beauty','wedding','healthcare','wedding'];
-const STATS:  LeadStatus[]   = ['new','new','contacted','completed','new','contacted','new','completed','new','new','contacted','completed','new','contacted','new','new','completed','contacted','new','new','contacted','new','completed','new','contacted'];
-const BUDGETS: BudgetKey[]   = ['500_1000','1000_3000','under_500','1000_3000','undecided','500_1000','1000_3000','under_500','over_3000','500_1000','undecided','1000_3000','500_1000','under_500','1000_3000','undecided','500_1000','over_3000','1000_3000','under_500','500_1000','1000_3000','undecided','500_1000','over_3000'];
+const NAMES = ['김민준', '이서연', '박지훈', '최수아', '정도윤', '강민서', '조예린', '윤재현', '임하은', '한소희', '신동혁', '권나리', '오준혁', '배유진', '송민지', '류채원', '문지호', '안세진', '황지민', '심은지', '차준호', '노아린', '구세현', '백다영', '엄태준'];
+const PHONES = ['010-2345-6789', '010-3456-7890', '010-4567-8901', '010-5678-9012', '010-6789-0123', '010-7890-1234', '010-8901-2345', '010-9012-3456', '010-1122-3344', '010-2233-4455', '010-3344-5566', '010-4455-6677', '010-5566-7788', '010-6677-8899', '010-7788-9900', '010-8899-0011', '010-9900-1122', '010-1234-9876', '010-2345-8765', '010-3456-7654', '010-4567-6543', '010-5678-5432', '010-6789-4321', '010-7890-3210', '010-8901-2109'];
+const PAGES = ['landing', 'hero', 'dashboard', 'beauty', 'healthcare', 'wedding', 'feature-웨딩', 'feature-뷰티', 'floating-cta', 'header'];
+const CATS: LeadCategory[] = ['wedding', 'beauty', 'healthcare', 'medical', 'wedding', 'beauty', 'wedding', 'healthcare', 'wedding', 'beauty', 'medical', 'healthcare', 'wedding', 'beauty', 'wedding', 'healthcare', 'beauty', 'wedding', 'medical', 'healthcare', 'wedding', 'beauty', 'wedding', 'healthcare', 'wedding'];
+const STATS: LeadStatus[] = ['new', 'new', 'contacted', 'completed', 'new', 'contacted', 'new', 'completed', 'new', 'new', 'contacted', 'completed', 'new', 'contacted', 'new', 'new', 'completed', 'contacted', 'new', 'new', 'contacted', 'new', 'completed', 'new', 'contacted'];
+const BUDGETS: BudgetKey[] = ['500_1000', '1000_3000', 'under_500', '1000_3000', 'undecided', '500_1000', '1000_3000', 'under_500', 'over_3000', '500_1000', 'undecided', '1000_3000', '500_1000', 'under_500', '1000_3000', 'undecided', '500_1000', 'over_3000', '1000_3000', 'under_500', '500_1000', '1000_3000', 'undecided', '500_1000', 'over_3000'];
 const MSGS = [
   '결혼 준비를 시작하려는데 어디서부터 해야 할지 막막합니다. 상담 부탁드립니다.',
   '웨딩 사진 스타일이 미니멀한 편을 원하는데 관련 패키지 있나요?',
@@ -135,15 +135,15 @@ function daysAgo(n: number): string {
 }
 
 export const DEMO_LEADS: Lead[] = NAMES.map((name, i) => ({
-  id:          `demo-lead-${String(i + 1).padStart(3, '0')}`,
+  id: `demo-lead-${String(i + 1).padStart(3, '0')}`,
   name,
-  phone:       PHONES[i],
-  category:    CATS[i],
-  budget:      BUDGETS[i],
-  message:     MSGS[i] || undefined,
+  phone: PHONES[i],
+  category: CATS[i],
+  budget: BUDGETS[i],
+  message: MSGS[i] || undefined,
   source_page: PAGES[i % PAGES.length],
-  created_at:  daysAgo(i * 1.2),
-  status:      STATS[i],
+  created_at: daysAgo(i * 1.2),
+  status: STATS[i],
 }));
 
 // ─────────────────────────────────────────
@@ -151,10 +151,13 @@ export const DEMO_LEADS: Lead[] = NAMES.map((name, i) => ({
 // ─────────────────────────────────────────
 export function getDemoStats(): StatsData {
   return {
-    total:     DEMO_LEADS.length,
-    new:       DEMO_LEADS.filter((l) => l.status === 'new').length,
+    total: DEMO_LEADS.length,
+    new: DEMO_LEADS.filter((l) => l.status === 'new').length,
+    qualified: DEMO_LEADS.filter((l) => l.status === 'qualified').length,
+    matched: DEMO_LEADS.filter((l) => l.status === 'matched').length,
     contacted: DEMO_LEADS.filter((l) => l.status === 'contacted').length,
     completed: DEMO_LEADS.filter((l) => l.status === 'completed').length,
+    lost: DEMO_LEADS.filter((l) => l.status === 'lost').length,
   };
 }
 
@@ -178,10 +181,10 @@ export function filterDemoLeads(
     );
   }
 
-  const total    = result.length;
-  const page     = opts.page ?? 1;
+  const total = result.length;
+  const page = opts.page ?? 1;
   const pageSize = opts.pageSize ?? 12;
-  const start    = (page - 1) * pageSize;
+  const start = (page - 1) * pageSize;
 
   return { data: result.slice(start, start + pageSize), total };
 }
@@ -190,11 +193,11 @@ export function filterDemoLeads(
 // 매칭 로직 (demo)
 // ─────────────────────────────────────────
 const BUDGET_RANGE: Record<string, { min: number; max: number }> = {
-  under_500:   { min: 0,   max: 50   },
-  '500_1000':  { min: 50,  max: 100  },
-  '1000_3000': { min: 100, max: 300  },
-  over_3000:   { min: 300, max: 99999 },
-  undecided:   { min: 0,   max: 99999 },
+  under_500: { min: 0, max: 50 },
+  '500_1000': { min: 50, max: 100 },
+  '1000_3000': { min: 100, max: 300 },
+  over_3000: { min: 300, max: 99999 },
+  undecided: { min: 0, max: 99999 },
 };
 
 export function getDemoMatches(category: string, budget: string): Company[] {

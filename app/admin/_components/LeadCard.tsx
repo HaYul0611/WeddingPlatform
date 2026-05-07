@@ -18,9 +18,21 @@ export const CATEGORY_CONFIG: Record<string, { label: string; bg: string; text: 
 
 export const STATUS_CONFIG: Record<LeadStatus, { label: string; bg: string; text: string; bar: string }> = {
   new: { label: '신규', bg: 'bg-blue-50', text: 'text-blue-700', bar: 'bg-blue-400' },
+  qualified: { label: '적합', bg: 'bg-violet-50', text: 'text-violet-700', bar: 'bg-violet-400' },
+  matched: { label: '매칭됨', bg: 'bg-indigo-50', text: 'text-indigo-700', bar: 'bg-indigo-400' },
   contacted: { label: '연락함', bg: 'bg-amber-50', text: 'text-amber-700', bar: 'bg-amber-400' },
   completed: { label: '완료', bg: 'bg-emerald-50', text: 'text-emerald-700', bar: 'bg-emerald-400' },
+  lost: { label: '이탈', bg: 'bg-red-50', text: 'text-red-700', bar: 'bg-red-400' },
 };
+
+export const STATUS_BUTTONS: { value: LeadStatus; label: string; active: string; idle: string }[] = [
+  { value: 'new', label: '신규', active: 'bg-blue-500 text-white shadow-sm', idle: 'border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100' },
+  { value: 'qualified', label: '적합', active: 'bg-violet-500 text-white shadow-sm', idle: 'border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100' },
+  { value: 'matched', label: '매칭', active: 'bg-indigo-500 text-white shadow-sm', idle: 'border border-indigo-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-100' },
+  { value: 'contacted', label: '연락함', active: 'bg-amber-500 text-white shadow-sm', idle: 'border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100' },
+  { value: 'completed', label: '완료', active: 'bg-emerald-500 text-white shadow-sm', idle: 'border border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100' },
+  { value: 'lost', label: '이탈', active: 'bg-red-500 text-white shadow-sm', idle: 'border border-red-200 bg-red-50 text-red-600 hover:bg-red-100' },
+];
 
 export const BUDGET_LABEL: Record<string, string> = {
   undecided: '예산 미정',

@@ -29,25 +29,51 @@ export async function PATCH(
     );
   }
 
-  const { status } = await req.json();
-  if (!VALID_STATUSES.includes(status as Status)) {
+  const { status: toStatus } = await req.json();
+  if (!VALID_STATUSES.includes(toStatus as Status)) {
     return NextResponse.json(
       { success: false, error: `status must be one of: ${VALID_STATUSES.join(', ')}` },
       { status: 400 },
     );
   }
 
-  const { error } = await getSupabase()
+  const supabase = getSupabase();
+
+  // 1) 기존 상태 및 업체 식별자 조회 (이력 기록용)
+  const { data: oldLead, error: fetchError } = await supabase
     .from('leads')
-    .update({ status })
+    .select('status, company_id')
+    .eq('id', id)
+    .single();
+
+  if (fetchError || !oldLead) {
+    return NextResponse.json({ success: false, error: 'Lead not found' }, { status: 404 });
+  }
+
+  const fromStatus = oldLead.status;
+  const companyId = oldLead.company_id;
+
+  // 2) 상태 업데이트
+  const { error: updateError } = await supabase
+    .from('leads')
+    .update({ status: toStatus })
     .eq('id', id);
 
-  if (error) {
-    console.error('[Status Update]', error.message);
-    return NextResponse.json(
-      { success: false, error: 'Database error' },
-      { status: 500 },
-    );
+  if (updateError) {
+    console.error('[Status Update Error]', updateError.message);
+    return NextResponse.json({ success: false, error: 'Database error' }, { status: 500 });
+  }
+
+  // 3) 활동 이력 자동 기록 (SaaS 완성도 향상)
+  if (fromStatus !== toStatus) {
+    await supabase.from('lead_activities').insert([{
+      lead_id: id,
+      company_id: companyId,
+      action: 'status_change',
+      from_status: fromStatus,
+      to_status: toStatus,
+      note: `상태 변경: ${fromStatus} → ${toStatus}`,
+    }]);
   }
 
   return NextResponse.json({ success: true });
