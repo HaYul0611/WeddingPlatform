@@ -25,18 +25,18 @@ interface PageState {
 
 // ── 필터 옵션 ──────────────────────────────
 const STATUS_OPTS = [
-  { value: 'all',       label: '전체 상태' },
-  { value: 'new',       label: '신규' },
+  { value: 'all', label: '전체 상태' },
+  { value: 'new', label: '신규' },
   { value: 'contacted', label: '연락함' },
   { value: 'completed', label: '완료' },
 ];
 
 const CATEGORY_OPTS = [
-  { value: 'all',        label: '전체 분야' },
-  { value: 'wedding',    label: '웨딩' },
-  { value: 'beauty',     label: '뷰티' },
+  { value: 'all', label: '전체 분야' },
+  { value: 'wedding', label: '웨딩' },
+  { value: 'beauty', label: '뷰티' },
   { value: 'healthcare', label: '건강관리' },
-  { value: 'medical',    label: '의료' },
+  { value: 'medical', label: '의료' },
 ];
 
 // ── 컴포넌트 ─────────────────────────────
@@ -47,7 +47,7 @@ export default function LeadsList({
   onLeadSelect,
   refreshKey,
 }: LeadsListProps) {
-  const [page, setPage]         = useState(1);
+  const [page, setPage] = useState(1);
   const [pageState, setPageState] = useState<PageState>({ data: [], total: 0, totalPages: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -60,28 +60,28 @@ export default function LeadsList({
     if (isDemoMode) {
       await new Promise((r) => setTimeout(r, 300));
       const { data, total } = filterDemoLeads(DEMO_LEADS, {
-        status:   filters.status,
+        status: filters.status,
         category: filters.category,
-        search:   filters.search,
+        search: filters.search,
         page,
         pageSize: PAGE_SIZE,
       });
       setPageState({ data, total, totalPages: Math.ceil(total / PAGE_SIZE) });
     } else {
       const params = new URLSearchParams({
-        page:     String(page),
+        page: String(page),
         pageSize: String(PAGE_SIZE),
-        status:   filters.status,
+        status: filters.status,
         category: filters.category,
       });
       if (filters.search) params.set('search', filters.search);
 
-      const res  = await fetch(`/api/admin/leads?${params}`);
+      const res = await fetch(`/api/admin/leads?${params}`);
       const json = await res.json();
       if (json.success) {
         setPageState({
-          data:       json.data,
-          total:      json.pagination.total,
+          data: json.data,
+          total: json.pagination.total,
           totalPages: json.pagination.totalPages,
         });
       }
@@ -109,9 +109,9 @@ export default function LeadsList({
             placeholder="이름 또는 연락처 검색..."
             value={filters.search}
             onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-            className="h-10 w-full rounded-xl border border-black/[0.08] bg-white pl-9 pr-4 text-sm text-slate-700
-                       placeholder:text-slate-400 outline-none transition-all
-                       focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+            className="h-11 w-full rounded-[0.9rem] border border-black/[0.05] bg-white pl-10 pr-4 text-sm text-slate-700
+                       placeholder:text-slate-300 outline-none transition-all duration-300
+                       focus:border-rose-300 focus:ring-4 focus:ring-rose-50"
           />
         </div>
 
@@ -121,8 +121,8 @@ export default function LeadsList({
           <select
             value={filters.status}
             onChange={(e) => onFiltersChange({ ...filters, status: e.target.value as LeadFilters['status'] })}
-            className="h-10 rounded-xl border border-black/[0.08] bg-white px-3 text-sm text-slate-700
-                       outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+            className="h-11 rounded-[0.9rem] border border-black/[0.05] bg-white px-4 text-sm font-medium text-slate-600
+                       outline-none transition-all hover:bg-slate-50 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-50"
           >
             {STATUS_OPTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
@@ -130,8 +130,8 @@ export default function LeadsList({
           <select
             value={filters.category}
             onChange={(e) => onFiltersChange({ ...filters, category: e.target.value as LeadFilters['category'] })}
-            className="h-10 rounded-xl border border-black/[0.08] bg-white px-3 text-sm text-slate-700
-                       outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+            className="h-11 rounded-[0.9rem] border border-black/[0.05] bg-white px-4 text-sm font-medium text-slate-600
+                       outline-none transition-all hover:bg-slate-50 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-50"
           >
             {CATEGORY_OPTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
@@ -140,11 +140,11 @@ export default function LeadsList({
         {/* 새로고침 */}
         <button
           onClick={fetchLeads}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-black/[0.08]
-                     bg-white text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.9rem] border border-black/[0.05]
+                     bg-white text-slate-400 shadow-sm transition-all hover:bg-slate-50 hover:text-indigo-600 active:scale-95"
           aria-label="새로고침"
         >
-          <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
+          <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
         </button>
       </div>
 
@@ -245,11 +245,10 @@ function Pagination({
             <button
               key={p}
               onClick={() => onPageChange(Number(p))}
-              className={`min-w-[36px] rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
-                page === Number(p)
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-500 hover:bg-slate-100'
-              }`}
+              className={`min-w-[40px] rounded-2xl px-4 py-2.5 text-sm font-bold transition-all duration-300 ${page === Number(p)
+                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200 scale-105'
+                  : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
+                }`}
             >
               {p}
             </button>
@@ -287,7 +286,7 @@ function NavBtn({
 function getPageNumbers(current: number, total: number): (number | '...')[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   const pages: (number | '...')[] = [1];
-  if (current > 3)       pages.push('...');
+  if (current > 3) pages.push('...');
   for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) pages.push(i);
   if (current < total - 2) pages.push('...');
   pages.push(total);

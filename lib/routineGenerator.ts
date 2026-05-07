@@ -1,4 +1,5 @@
 import { BodyInfo, RoutineOutput, FitnessGoal, ActivityLevel } from '@/types/healthcare';
+import { HEALTHCARE_COMPANIES } from './healthcareData';
 
 // ───────────────────────────────
 // 상수 정의
@@ -6,27 +7,21 @@ import { BodyInfo, RoutineOutput, FitnessGoal, ActivityLevel } from '@/types/hea
 const DISCLAIMER =
   '이 내용은 일반적인 건강 관리 안내입니다. 개인의 건강 상태에 따라 다를 수 있으며, 의료 조언을 대체하지 않습니다.';
 
-// ───────────────────────────────
 // 운동 횟수 결정 (goal + activity)
-// ───────────────────────────────
 const WORKOUT_DAYS: Record<FitnessGoal, Record<ActivityLevel, number>> = {
   diet: { low: 3, medium: 4, high: 5 },
   tone: { low: 3, medium: 4, high: 5 },
   maintain: { low: 2, medium: 3, high: 4 },
 };
 
-// ───────────────────────────────
 // 운동 포커스 결정
-// ───────────────────────────────
 const WORKOUT_FOCUS: Record<FitnessGoal, string[]> = {
   diet: ['유산소 운동 중심 (걷기, 자전거, 수영 등)', '전신 순환 운동', '근력 보조 운동'],
   tone: ['근력 운동 중심', '부위별 탄력 운동', '코어 강화 운동'],
   maintain: ['균형 잡힌 유산소 + 근력', '스트레칭 및 유연성 운동'],
 };
 
-// ───────────────────────────────
 // 식단 가이드 결정
-// ───────────────────────────────
 const DIET_GUIDELINES: Record<FitnessGoal, string[]> = {
   diet: [
     '하루 세 끼 규칙적으로 식사하세요',
@@ -48,8 +43,10 @@ const DIET_GUIDELINES: Record<FitnessGoal, string[]> = {
 };
 
 // ───────────────────────────────
-// D-Day 기반 안내 메시지
+// 헬퍼 함수
 // ───────────────────────────────
+
+// D-Day 기반 안내 메시지
 function getDdayNote(dday: number): string {
   if (dday > 90) return '충분한 시간이 있습니다. 꾸준히 루틴을 유지하는 것이 중요합니다.';
   if (dday > 60) return '목표를 향해 루틴을 이어가세요. 이 시기의 꾸준함이 중요합니다.';
@@ -57,37 +54,62 @@ function getDdayNote(dday: number): string {
   return '컨디션 관리에 집중하세요. 급격한 변화는 오히려 역효과일 수 있습니다.';
 }
 
-// ───────────────────────────────
-// BMI 계산 (표시용만 사용)
-// ───────────────────────────────
+// BMI 계산
 function calcBmi(height: number, weight: number): number {
   const heightM = height / 100;
   return Math.round((weight / (heightM * heightM)) * 10) / 10;
+}
+
+// BMI 상태에 따른 구체적 조언
+function getBmiAdvice(bmi: number, goal: FitnessGoal): string {
+  if (bmi < 18.5) {
+    return '현재 저체중 상태로 보입니다. 웨딩 당일 최상의 컨디션을 위해 무리한 감량보다는 양질의 식단과 함께 근력을 키우는 탄력 운동(필라테스, 요가)을 추천드려요.';
+  }
+  if (bmi < 23) {
+    return '아주 이상적인 BMI 수치를 유지하고 계시네요! 지금의 건강함을 유지하면서, 드레스 라인을 돋보이게 해줄 부위별 쉐이핑 운동에 집중해 보세요.';
+  }
+  if (bmi < 25) {
+    return '살짝 과체중 범위에 해당합니다. 유산소 운동 비중을 40% 이상으로 설정하여 체지방을 가볍게 덜어내면 훨씬 생기 있는 웨딩 룩을 완성할 수 있습니다.';
+  }
+  return '건강을 위해 체계적인 관리가 필요한 시점입니다. 관절에 부담이 적은 수영이나 가벼운 걷기부터 시작하여 천천히 기초 체력을 쌓는 것이 중요합니다.';
 }
 
 // ───────────────────────────────
 // 메인 생성 함수
 // ───────────────────────────────
 export function generateRoutine(info: BodyInfo): RoutineOutput {
-  const { goal, activityLevel, height, weight, weddingDday } = info;
+  const { goal, activityLevel, height, weight, weddingDday, region } = info;
 
   const bmi = calcBmi(height, weight);
   const ddayNote = getDdayNote(weddingDday);
+  const bmiAdvice = getBmiAdvice(bmi, goal);
 
+  // 지역 기반 업체 추천
+  const recommendedCompanies = HEALTHCARE_COMPANIES.filter(
+    (c) => c.region === region || region === '전체'
+  ).slice(0, 3); // 최대 3개 추천
+
+  // 목표별 기본 포커스에 BMI 조언 결합
   const workoutFocus = [
     ...WORKOUT_FOCUS[goal],
+    bmiAdvice,
     ddayNote,
   ];
 
-  const dietGuidelines = [
-    ...DIET_GUIDELINES[goal],
-  ];
+  // 식단 가이드도 목표와 현재 상태에 맞춰 미세 조정
+  const dietGuidelines = [...DIET_GUIDELINES[goal]];
+  if (bmi >= 23 && goal === 'diet') {
+    dietGuidelines.push('식단 일기를 작성하여 불필요한 간식 섭취를 체크해 보세요.');
+  } else if (bmi < 18.5) {
+    dietGuidelines.push('양질의 단백질과 탄수화물을 골고루 섭취하여 에너지를 보충하세요.');
+  }
 
   return {
     bmi,
     workoutDaysPerWeek: WORKOUT_DAYS[goal][activityLevel],
-    workoutFocus,
-    dietGuidelines,
+    workoutFocus: Array.from(new Set(workoutFocus)),
+    dietGuidelines: Array.from(new Set(dietGuidelines)),
+    recommendedCompanies,
     disclaimer: DISCLAIMER,
   };
 }

@@ -10,8 +10,8 @@ const NAV_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-stone-100 bg-stone-50">
-      <div className="mx-auto max-w-5xl px-4 py-10">
+    <footer className="relative border-t border-stone-100 bg-stone-50 overflow-hidden">
+      <div className="mx-auto max-w-5xl px-4 py-10 relative z-10">
         <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:justify-between">
           {/* 브랜드 */}
           <div className="max-w-xs">

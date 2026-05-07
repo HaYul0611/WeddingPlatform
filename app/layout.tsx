@@ -22,7 +22,9 @@ export default function RootLayout({
         <Header />
 
         {/* 페이지 콘텐츠 */}
-        <div className="pb-4">{children}</div>
+        <div className="pb-4">
+          {children}
+        </div>
 
         {/* 푸터 */}
         <Footer />

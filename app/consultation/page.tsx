@@ -1,7 +1,9 @@
+import type { Metadata } from 'next';
 import ConsultationPageForm from '@/components/consultation/ConsultationPageForm';
 import Link from 'next/link';
+import { Zap, Lock, MessageSquare } from 'lucide-react';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: '무료 상담 신청 — WeddingCare',
   description: '웨딩, 건강 관리, 뷰티 전문가에게 무료 상담을 신청하세요.',
 };
@@ -32,18 +34,22 @@ export default function ConsultationPage() {
 
       {/* 신뢰 배지 */}
       <div className="mb-8 grid grid-cols-3 gap-3">
-        {TRUST_BADGES.map((badge) => (
-          <div key={badge.label} className="rounded-2xl bg-stone-50 px-3 py-4 text-center">
-            <p className="mb-1 text-xl">{badge.icon}</p>
-            <p className="text-xs font-semibold text-stone-600">{badge.label}</p>
-            <p className="mt-0.5 text-xs text-stone-400">{badge.sub}</p>
-          </div>
-        ))}
+        {TRUST_BADGES.map((badge) => {
+          const Icon = badge.icon;
+          return (
+            <div key={badge.label} className="rounded-2xl bg-stone-50 px-3 py-4 text-center">
+              <div className="mb-2 flex justify-center">
+                <Icon size={20} className={badge.color} />
+              </div>
+              <p className="text-xs font-semibold text-stone-600">{badge.label}</p>
+              <p className="mt-0.5 text-xs text-stone-400">{badge.sub}</p>
+            </div>
+          );
+        })}
       </div>
 
       {/* 폼 */}
       <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-stone-100">
-        {/* [Inference] Server Component이므로 sourcePage를 'consultation-page'로 고정 */}
         <ConsultationPageForm />
       </div>
 
@@ -56,9 +62,9 @@ export default function ConsultationPage() {
 }
 
 const TRUST_BADGES = [
-  { icon: '⚡', label: '빠른 응답',  sub: '48시간 이내' },
-  { icon: '🔒', label: '정보 보호',  sub: '안전하게 관리' },
-  { icon: '💬', label: '무료 상담',  sub: '비용 없음' },
+  { icon: Zap, label: '빠른 응답', sub: '48시간 이내', color: 'text-rose-500' },
+  { icon: Lock, label: '정보 보호', sub: '안전하게 관리', color: 'text-amber-500' },
+  { icon: MessageSquare, label: '무료 상담', sub: '비용 없음', color: 'text-indigo-500' },
 ];
 
 

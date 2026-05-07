@@ -41,7 +41,7 @@ export default function HealthcarePage() {
         {/* 루틴 결과 — 생성 후 상단에 표시 */}
         {routine && (
           <>
-            <RoutineDisplay routine={routine} />
+            <RoutineDisplay routine={routine} openModal={openModal} />
 
             {/* 루틴 생성 완료 후 CTA 노출 */}
             <CTABanner

@@ -19,11 +19,18 @@ const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
   { value: 'high', label: '높음 (주 4회 이상)' },
 ];
 
+const REGION_OPTIONS = [
+  '전체', '서울', '경기', '인천', '세종', '강원',
+  '충북', '충남', '대전', '경북', '경남', '대구',
+  '울산', '부산', '전북', '전남', '광주', '제주'
+];
+
 const EMPTY: Omit<BodyInfo, 'weddingDday' | 'height' | 'weight'> & { height: string; weight: string } = {
   height: '',
   weight: '',
   goal: 'diet',
   activityLevel: 'medium',
+  region: '서울',
 };
 
 export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
@@ -53,6 +60,7 @@ export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
       weight: Number(values.weight),
       goal: values.goal,
       activityLevel: values.activityLevel,
+      region: values.region,
       weddingDday,
     });
   }
@@ -82,6 +90,20 @@ export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
           />
         </div>
 
+        {/* 지역 선택 */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-stone-700">활동 지역</label>
+          <select
+            value={values.region}
+            onChange={(e) => setValues((p) => ({ ...p, region: e.target.value }))}
+            className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
+          >
+            {REGION_OPTIONS.map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        </div>
+
         {/* 목표 */}
         <div>
           <p className="mb-2 text-sm font-medium text-stone-700">목표</p>
@@ -92,8 +114,8 @@ export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
                 type="button"
                 onClick={() => setValues((p) => ({ ...p, goal: opt.value }))}
                 className={`w-full rounded-xl border px-4 py-3 text-left transition-all ${values.goal === opt.value
-                    ? 'border-rose-400 bg-rose-50'
-                    : 'border-stone-200 bg-white hover:border-rose-200'
+                  ? 'border-rose-400 bg-rose-50'
+                  : 'border-stone-200 bg-white hover:border-rose-200'
                   }`}
               >
                 <p className={`text-sm font-semibold ${values.goal === opt.value ? 'text-rose-600' : 'text-stone-700'}`}>
@@ -115,8 +137,8 @@ export default function BodyInfoForm({ onSubmit }: BodyInfoFormProps) {
                 type="button"
                 onClick={() => setValues((p) => ({ ...p, activityLevel: opt.value }))}
                 className={`rounded-xl border py-2.5 text-center text-xs font-semibold transition-all ${values.activityLevel === opt.value
-                    ? 'border-rose-400 bg-rose-50 text-rose-600'
-                    : 'border-stone-200 bg-white text-stone-500 hover:border-rose-200'
+                  ? 'border-rose-400 bg-rose-50 text-rose-600'
+                  : 'border-stone-200 bg-white text-stone-500 hover:border-rose-200'
                   }`}
               >
                 {opt.label}

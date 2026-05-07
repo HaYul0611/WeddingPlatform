@@ -10,6 +10,7 @@ export interface BodyInfo {
   goal: FitnessGoal;
   activityLevel: ActivityLevel;
   weddingDday: number;          // 결혼까지 남은 일수
+  region: string;               // 활동 지역 (서울, 경기 등)
 }
 
 export interface RoutineOutput {
@@ -17,7 +18,18 @@ export interface RoutineOutput {
   workoutDaysPerWeek: number;
   workoutFocus: string[];
   dietGuidelines: string[];
+  recommendedCompanies: HealthcareCompany[];
   disclaimer: string;           // 항상 포함
+}
+
+export interface HealthcareCompany {
+  id: string;
+  name: string;
+  type: 'pt' | 'pilates' | 'yoga';
+  region: string;
+  description: string;
+  tags: string[];
+  image?: string;
 }
 
 // ───────────────────────────────

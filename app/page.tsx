@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useConsultation } from '@/hooks/useConsultation';
 import ConsultationModal from '@/components/consultation/ConsultationModal';
 
+import FallingPetals from '@/components/decoration/FallingPetals';
+import FloatingBubbles from '@/components/decoration/FloatingBubbles';
+
 // ───────────────────────────────
 // 데이터
 // ───────────────────────────────
@@ -100,6 +103,12 @@ export default function LandingPage() {
             {/* 화사한 레이어드 오버레이 */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-[#FAF8F5]" />
             <div className="absolute inset-0 bg-white/20 backdrop-blur-[0.5px]" />
+
+            {/* 흩날리는 꽃잎 애니메이션 */}
+            <FallingPetals />
+
+            {/* 떠오르는 비눗방울 애니메이션 */}
+            <FloatingBubbles />
           </div>
 
           <div className="relative z-10 mx-auto max-w-4xl px-4 py-24 text-center sm:py-32">
@@ -143,14 +152,16 @@ export default function LandingPage() {
         </section>
 
         {/* ── 소셜 프루프 ─────────────────── */}
-        <section className="border-y border-stone-100 bg-white px-4 py-8">
-          <div className="mx-auto flex max-w-2xl justify-around">
+        <section className="border-y border-stone-100 bg-white px-4 py-10">
+          <div className="mx-auto flex max-w-2xl justify-around gap-4">
             {SOCIAL_PROOF.map((item) => (
               <div key={item.label} className="text-center">
-                <p className="font-display text-2xl font-semibold text-stone-800 sm:text-3xl">
+                <p className="text-3xl font-bold tracking-tighter text-stone-900 sm:text-4xl">
                   {item.value}
                 </p>
-                <p className="mt-0.5 text-xs text-stone-400">{item.label}</p>
+                <p className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-stone-400">
+                  {item.label}
+                </p>
               </div>
             ))}
           </div>
@@ -222,30 +233,33 @@ export default function LandingPage() {
         {/* ── 하단 강조 CTA ─────────────────── */}
         <section className="px-4 pb-16">
           <div className="mx-auto max-w-2xl">
-            <div className="relative overflow-hidden rounded-3xl bg-stone-900 px-8 py-12 text-center">
+            <div className="relative overflow-hidden rounded-3xl bg-white px-8 py-14 text-center ring-1 ring-stone-100 shadow-xl shadow-stone-200/40">
               {/* 배경 장식 */}
-              <div aria-hidden="true" className="pointer-events-none absolute -left-10 -top-10 h-48 w-48 rounded-full bg-rose-500/20 blur-2xl" />
-              <div aria-hidden="true" className="pointer-events-none absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-rose-500/15 blur-2xl" />
+              <div aria-hidden="true" className="pointer-events-none absolute -left-10 -top-10 h-48 w-48 rounded-full bg-rose-50 blur-3xl" />
+              <div aria-hidden="true" className="pointer-events-none absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-rose-50 blur-3xl" />
 
-              <div className="relative">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-rose-400">
+              {/* 비눗방울 애니메이션 */}
+              <FloatingBubbles />
+
+              <div className="relative z-10">
+                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-rose-500">
                   무료 상담
                 </p>
-                <h2 className="font-display mb-3 text-3xl font-semibold text-white sm:text-4xl">
+                <h2 className="font-display mb-4 text-3xl font-semibold text-stone-800 sm:text-4xl">
                   지금 시작해보세요
                 </h2>
-                <p className="mx-auto mb-8 max-w-sm text-sm leading-relaxed text-stone-400">
+                <p className="mx-auto mb-10 max-w-sm text-sm leading-relaxed text-stone-500">
                   간단한 정보만 남겨주시면 48시간 이내에 전문 담당자가 직접 연락드립니다.
                 </p>
 
                 <button
                   onClick={() => openModal('landing-bottom', 'wedding')}
-                  className="rounded-full bg-rose-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-rose-900/40 transition-all hover:bg-rose-400 active:scale-[0.98]"
+                  className="rounded-full bg-rose-500 px-10 py-4.5 text-base font-bold text-white shadow-xl shadow-rose-200 transition-all hover:bg-rose-600 hover:scale-105 active:scale-95"
                 >
                   무료 상담 신청하기 →
                 </button>
 
-                <p className="mt-4 text-xs text-stone-500">
+                <p className="mt-6 text-xs font-medium text-stone-400">
                   비용 없음 · 부담 없음 · 48시간 이내 응답
                 </p>
               </div>

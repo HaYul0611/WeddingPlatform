@@ -9,16 +9,16 @@ import LeadDetailModal from './LeadDetailModal';
 import type { Lead, LeadFilters, LeadStatus } from '@/types/crm';
 
 const DEFAULT_FILTERS: LeadFilters = {
-  status:   'all',
+  status: 'all',
   category: 'all',
-  search:   '',
+  search: '',
 };
 
 export default function AdminClient() {
-  const [isDemoMode, setIsDemoMode]   = useState(false);
-  const [filters, setFilters]         = useState<LeadFilters>(DEFAULT_FILTERS);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [filters, setFilters] = useState<LeadFilters>(DEFAULT_FILTERS);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [refreshKey, setRefreshKey]   = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // 상태 변경 → 모달 낙관적 업데이트 + 목록 갱신
   const handleStatusChange = useCallback(async (id: string, status: LeadStatus) => {
@@ -39,7 +39,7 @@ export default function AdminClient() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-[#FDFCFB] font-sans">
       {/* Demo 배너 */}
       {isDemoMode && <DemoModeBanner onDisable={() => setIsDemoMode(false)} />}
 
@@ -48,12 +48,12 @@ export default function AdminClient() {
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 py-3.5">
           {/* 로고 */}
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 shadow-sm">
-              <BarChart2 size={16} className="text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 shadow-sm">
+              <BarChart2 size={20} className="text-white" />
             </div>
-            <div>
-              <p className="text-sm font-bold tracking-tight text-slate-800">WeddingCare</p>
-              <p className="text-[11px] text-slate-400 leading-none">CRM Dashboard</p>
+            <div className="flex flex-col">
+              <p className="text-lg font-bold tracking-tight text-slate-900 leading-none">WeddingCare</p>
+              <p className="mt-1 text-[11px] font-medium text-slate-400 tracking-wider">통합 관리 시스템</p>
             </div>
           </div>
 
@@ -62,14 +62,13 @@ export default function AdminClient() {
             {/* Demo 토글 */}
             <button
               onClick={() => setIsDemoMode((v) => !v)}
-              className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${
-                isDemoMode
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'border border-slate-200 bg-white text-slate-500 hover:border-indigo-200 hover:text-indigo-600'
-              }`}
+              className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200 ${isDemoMode
+                ? 'bg-slate-900 text-white shadow-lg shadow-slate-100 hover:bg-black'
+                : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                }`}
             >
-              {isDemoMode ? <Sparkles size={13} /> : <FlaskConical size={13} />}
-              {isDemoMode ? 'Demo 중' : 'Demo 보기'}
+              {isDemoMode ? <Sparkles size={14} /> : <FlaskConical size={14} />}
+              {isDemoMode ? '데모 활성' : '데모 체험'}
             </button>
 
             <button
