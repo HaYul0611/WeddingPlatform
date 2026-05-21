@@ -395,31 +395,31 @@ export default function AdminSettingsPage() {
                 <span className="text-stone-800 font-bold">{myInfo?.name || '관리자'}</span>님의 소중한 정보를 안전하게 보호하세요.
               </p>
             </div>
-            <div className="mx-auto max-w-xl rounded-[3rem] border border-white bg-white/70 p-8 shadow-[0_50px_100px_rgba(225,180,180,0.15)] backdrop-blur-xl sm:p-14 sm:rounded-[3.5rem]">
-              <form onSubmit={handlePasswordChange} className="space-y-12 text-center">
-                <div className="space-y-4">
+            <div className="mx-auto max-w-lg rounded-[2.5rem] border border-white bg-white/70 p-8 shadow-[0_30px_60px_rgba(225,180,180,0.15)] backdrop-blur-xl sm:p-10">
+              <form onSubmit={handlePasswordChange} className="space-y-8 text-center">
+                <div className="space-y-3">
                   <label className="block text-[11px] font-bold text-rose-400 uppercase tracking-[0.2em] ml-1">현재 비밀번호</label>
                   <div className="relative">
-                    <Lock className="absolute left-7 top-1/2 -translate-y-1/2 text-rose-200" size={18} />
-                    <input type={showCurrent ? "text" : "password"} required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="현재 비밀번호를 입력하세요" className="w-full rounded-[1.5rem] border border-rose-50 bg-white/50 px-16 py-6 text-base text-stone-700 outline-none focus:border-rose-200 focus:bg-white transition-all shadow-sm text-center" />
-                    <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-7 top-1/2 -translate-y-1/2 text-rose-200 hover:text-rose-400">{showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}</button>
+                    <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-rose-200" size={16} />
+                    <input type={showCurrent ? "text" : "password"} required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="현재 비밀번호를 입력하세요" className="w-full rounded-2xl border border-rose-50 bg-white/50 px-12 py-4 text-sm font-bold text-stone-700 outline-none focus:border-rose-200 focus:bg-white transition-all shadow-sm text-center" />
+                    <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-6 top-1/2 -translate-y-1/2 text-rose-200 hover:text-rose-400">{showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                   </div>
                 </div>
-                <div className="space-y-12">
-                  <div className="space-y-4">
+                <div className="space-y-8">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between px-1">
                       <label className="text-[11px] font-bold text-rose-400 uppercase tracking-[0.2em]">새 비밀번호</label>
                       <span className={`text-[10px] font-black px-2 py-0.5 rounded-md text-white ${strength.color}`}>{strength.label}</span>
                     </div>
-                    <div className="relative"><input type={showNew ? "text" : "password"} required minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="8자 이상의 조합" className="w-full rounded-[1.5rem] border border-rose-50 bg-white/50 px-8 py-6 text-base text-stone-700 outline-none focus:border-rose-200 focus:bg-white transition-all shadow-sm text-center" /><button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-8 top-1/2 -translate-y-1/2 text-rose-200 hover:text-rose-400">{showNew ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>
+                    <div className="relative"><input type={showNew ? "text" : "password"} required minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="8자 이상의 조합" className="w-full rounded-2xl border border-rose-50 bg-white/50 px-12 py-4 text-sm font-bold text-stone-700 outline-none focus:border-rose-200 focus:bg-white transition-all shadow-sm text-center" /><button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-6 top-1/2 -translate-y-1/2 text-rose-200 hover:text-rose-400">{showNew ? <EyeOff size={16} /> : <Eye size={16} />}</button></div>
                     <div className="flex gap-2 h-1 px-1">{[1, 2, 3].map(i => <div key={i} className={`flex-1 rounded-full transition-all duration-500 ${strength.score >= i ? strength.color : 'bg-stone-50'}`} />)}</div>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <label className="text-[11px] font-bold text-rose-400 uppercase tracking-[0.2em] ml-1">비밀번호 확인</label>
-                    <div className="relative"><input type={showConfirm ? "text" : "password"} required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="다시 한번 입력하세요" className={`w-full rounded-[1.5rem] border bg-white/50 px-8 py-6 text-base text-stone-700 outline-none transition-all shadow-sm text-center ${confirmPassword ? (newPassword === confirmPassword ? 'border-emerald-100' : 'border-rose-100') : 'border-rose-50'}`} /><button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-8 top-1/2 -translate-y-1/2 text-rose-200 hover:text-rose-400">{showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>
+                    <div className="relative"><input type={showConfirm ? "text" : "password"} required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="다시 한번 입력하세요" className={`w-full rounded-2xl border bg-white/50 px-12 py-4 text-sm font-bold text-stone-700 outline-none transition-all shadow-sm text-center ${confirmPassword ? (newPassword === confirmPassword ? 'border-emerald-100' : 'border-rose-100') : 'border-rose-50'}`} /><button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-6 top-1/2 -translate-y-1/2 text-rose-200 hover:text-rose-400">{showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}</button></div>
                   </div>
                 </div>
-                <button type="submit" disabled={isLoading} className="w-full rounded-[1.5rem] bg-gradient-to-r from-rose-400 to-rose-300 py-6 text-base font-black text-white shadow-2xl shadow-rose-100 transition-all tracking-[0.2em]">설정 저장하기</button>
+                <button type="submit" disabled={isLoading} className="w-full rounded-2xl bg-gradient-to-r from-rose-400 to-rose-300 py-5 text-sm font-black text-white shadow-xl shadow-rose-100 transition-all tracking-[0.2em] hover:-translate-y-0.5 active:translate-y-0">설정 저장하기</button>
                 {message.text && (
                   <p className={`mt-4 text-sm font-bold ${message.type === 'success' ? 'text-emerald-500' : 'text-rose-500'}`}>
                     {message.text}

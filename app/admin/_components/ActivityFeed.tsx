@@ -44,20 +44,29 @@ export default function ActivityFeed({ isDemoMode }: { isDemoMode: boolean }) {
 
   return (
     <div className="rounded-[2.5rem] border border-white bg-white/70 p-8 shadow-sm backdrop-blur-md animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100/50 text-stone-600 ring-1 ring-stone-200/50">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100/50 text-stone-600 ring-1 ring-stone-200/50 relative">
             <Bell size={22} />
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500 border-2 border-white"></span>
+            </span>
           </div>
           <div>
-            <h3 className="text-lg font-bold text-stone-900 tracking-tight">최근 활동 피드</h3>
-            <p className="text-xs font-semibold text-stone-400 mt-0.5">시스템 및 고객 활동 내역</p>
+            <h3 className="text-lg font-bold text-stone-900 tracking-tight flex items-center gap-2">
+              실시간 활동 피드
+            </h3>
+            <p className="text-xs font-semibold text-stone-400 mt-0.5">시스템 및 고객 최신 동기화 내역</p>
           </div>
         </div>
-        <button className="text-[11px] font-bold text-stone-400 hover:text-stone-900 transition-colors uppercase tracking-widest bg-white border border-stone-200/50 px-3 py-1.5 rounded-full shadow-sm hover:shadow-md">View All</button>
+        <button className="text-[11px] font-bold text-stone-400 hover:text-stone-900 transition-colors uppercase tracking-widest bg-white border border-stone-200/50 px-4 py-2 rounded-full shadow-sm hover:shadow-md flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Live View
+        </button>
       </div>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {isLoading ? (
           <div className="flex flex-col gap-6">
             {[1, 2, 3].map((n) => (
@@ -71,32 +80,29 @@ export default function ActivityFeed({ isDemoMode }: { isDemoMode: boolean }) {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="py-10 text-center">
+          <div className="col-span-full py-10 text-center">
             <p className="text-xs text-stone-400 font-medium italic">최근 활동 내역이 없습니다.</p>
           </div>
         ) : (
           items.map((item, i) => (
-            <div key={item.id} className="group relative flex items-start gap-4">
-              {/* 타임라인 라인 */}
-              {i < items.length - 1 && (
-                <div className="absolute left-[19px] top-10 h-8 w-px bg-stone-100" />
-              )}
-
-              <div className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110 ${item.type === 'new_lead' ? 'bg-stone-800 text-stone-100 shadow-md' :
-                item.type === 'message' ? 'bg-[#FEE500] text-[#191919] shadow-md' :
-                  'bg-emerald-50 text-emerald-500 shadow-sm border border-emerald-100/50'
-                }`}>
-                {item.type === 'new_lead' ? <UserPlus size={16} /> :
-                  item.type === 'message' ? <MessageSquare size={16} /> :
-                    <CheckCircle2 size={16} />}
+            <div key={item.id} className="group relative flex flex-col gap-3 rounded-2xl border border-white/50 bg-white/40 p-4 shadow-sm hover:bg-white hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110 ${item.type === 'new_lead' ? 'bg-stone-800 text-stone-100 shadow-md' :
+                  item.type === 'message' ? 'bg-[#FEE500] text-[#191919] shadow-md' :
+                    'bg-emerald-50 text-emerald-500 shadow-sm border border-emerald-100/50'
+                  }`}>
+                  {item.type === 'new_lead' ? <UserPlus size={16} /> :
+                    item.type === 'message' ? <MessageSquare size={16} /> :
+                      <CheckCircle2 size={16} />}
+                </div>
+                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest bg-white/80 px-2 py-1 rounded-lg shadow-sm border border-stone-100">{item.time}</p>
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col mt-1">
                 <p className="text-sm font-bold text-stone-800">
                   <span className="text-stone-900">{item.user}</span> 고객님
                 </p>
-                <p className="mt-0.5 text-[13px] text-stone-500 leading-relaxed font-medium">{item.action}</p>
-                <p className="mt-1 text-[10px] font-bold text-stone-300 uppercase tracking-widest">{item.time}</p>
+                <p className="mt-1 text-[13px] text-stone-500 leading-relaxed font-medium">{item.action}</p>
               </div>
             </div>
           ))

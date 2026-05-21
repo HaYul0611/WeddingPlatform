@@ -50,7 +50,7 @@ export default function DashboardAnalytics({ stats }: DashboardAnalyticsProps) {
           {funnelSteps.map((step, i) => {
             const height = stats.total > 0 ? (step.value / stats.total) * 100 : 0;
             return (
-              <div key={step.label} className="group relative flex flex-1 flex-col items-center">
+              <div key={step.label} className="group relative flex h-full flex-1 flex-col justify-end items-center">
                 {/* 바 그래프 */}
                 <div
                   className={`relative w-full rounded-2xl transition-all duration-1000 ease-out ${step.color} shadow-sm group-hover:brightness-110`}
@@ -63,7 +63,7 @@ export default function DashboardAnalytics({ stats }: DashboardAnalyticsProps) {
                     <div className="mx-auto h-2 w-2 translate-y-[-4px] rotate-45 bg-stone-900" />
                   </div>
                 </div>
-                <p className="mt-4 text-xs font-bold text-stone-500 tracking-tight">{step.label}</p>
+                <p className="mt-4 shrink-0 text-xs font-bold text-stone-500 tracking-tight">{step.label}</p>
                 {i < funnelSteps.length - 1 && (
                   <div className="absolute right-[-20%] top-1/2 -translate-y-1/2 text-stone-300">
                     <TrendingUp size={18} />

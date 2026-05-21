@@ -185,14 +185,14 @@ export default function AdminClient() {
         {/* KPI 섹션 */}
         <StatsSection isDemoMode={isDemoMode} refreshKey={refreshKey} />
 
-        {/* 분석 및 활동 피드 섹션 (4번 작업 핵심) */}
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
-          <div className="xl:col-span-3">
-            {stats && <DashboardAnalytics stats={stats} />}
-          </div>
-          <div className="xl:col-span-1">
-            <ActivityFeed isDemoMode={isDemoMode} />
-          </div>
+        {/* 분석 섹션 */}
+        <div className="w-full">
+          {stats && <DashboardAnalytics stats={stats} />}
+        </div>
+
+        {/* 실시간 활동 피드 섹션 */}
+        <div className="w-full">
+          <ActivityFeed isDemoMode={isDemoMode} />
         </div>
 
         {/* 구분선 */}
