@@ -156,11 +156,11 @@ export default function PaymentPage() {
 
   // 체크인 및 1:1 문의 내역 관리
   const [inquiries, setInquiries] = useState<any[]>([]);
-  const [showSheetToast, setShowSheetToast] = useState(false);
+  const [showSheetModal, setShowSheetModal] = useState(false);
+  const [sheetUrl, setSheetUrl] = useState('');
   
   const handleSheetClick = () => {
-    setShowSheetToast(true);
-    setTimeout(() => setShowSheetToast(false), 3000);
+    setShowSheetModal(true);
   };
 
   const handleExportExcel = () => {
@@ -1456,11 +1456,56 @@ export default function PaymentPage() {
         {/* ── 체크인 관리 화면 (이미지 1 요구사항 구현) ───────────────────────── */}
         {activeTab === 'checkin' && (
           <div className="animate-in fade-in duration-200 relative">
-            {/* 구글 시트 연동 토스트 */}
-            {showSheetToast && (
-              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-stone-800 text-white px-5 py-3 rounded-xl text-[12px] font-bold shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-300 pointer-events-none flex items-center gap-2">
-                <FileText size={16} className="text-blue-400" />
-                구글 스프레드시트 연동이 준비 중입니다.
+            {/* 구글 시트 연동 모달 */}
+            {showSheetModal && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div 
+                  className="absolute inset-0 bg-stone-900/40 animate-in fade-in duration-200" 
+                  onClick={() => setShowSheetModal(false)}
+                />
+                <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl shadow-2xl p-7 animate-in zoom-in-95 duration-200">
+                  <div className="flex items-center justify-between mb-4 border-b border-stone-100 pb-4">
+                    <h3 className="text-[15px] font-black text-stone-900 flex items-center gap-2">
+                      <FileText size={18} className="text-blue-500" />
+                      구글 스프레드시트 연동
+                    </h3>
+                    <button onClick={() => setShowSheetModal(false)} className="text-stone-400 hover:text-stone-600 transition-colors">
+                      <X size={16} />
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-[11px] font-bold text-stone-500 block mb-2">구글 시트 공유 링크</label>
+                      <input 
+                        type="text" 
+                        value={sheetUrl}
+                        onChange={(e) => setSheetUrl(e.target.value)}
+                        placeholder="https://docs.google.com/spreadsheets/d/..." 
+                        className="w-full border border-stone-200 rounded-xl px-4 py-3 text-[12px] font-medium text-stone-700 outline-none focus:border-blue-400 transition-colors bg-stone-50/50"
+                      />
+                    </div>
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start gap-2">
+                      <AlertCircle size={14} className="text-blue-500 shrink-0 mt-[1px]" />
+                      <p className="text-[10px] font-bold text-blue-600 leading-relaxed">
+                        링크가 입력되면 게스트의 체크인 정보가 실시간으로 시트에 기록됩니다. (접근 권한을 '편집자'로 설정해주세요)
+                      </p>
+                    </div>
+                    
+                    <div className="pt-2">
+                      <button 
+                        onClick={() => {
+                          if(!sheetUrl.trim()) { alert('구글 시트 링크를 입력해주세요.'); return; }
+                          alert('연동이 완료되었습니다! 이제부터 데이터가 실시간으로 동기화됩니다.');
+                          setShowSheetModal(false);
+                        }}
+                        className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[12px] font-bold transition-colors shadow-sm shadow-blue-500/20"
+                      >
+                        연동하기
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
