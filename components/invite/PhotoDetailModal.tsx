@@ -103,7 +103,7 @@ export default function PhotoDetailModal({ image, isOpen, onClose, invitationId 
   const handleLike = async () => {
     const prevLiked = isLiked;
     setIsLiked(!prevLiked);
-    setLikesCount(prev => prev + (prevLiked ? -1 : 1));
+    setLikesCount((prev: number) => prev + (prevLiked ? -1 : 1));
 
     if (image?.id && !image.id.toString().startsWith('local_')) {
       try {
@@ -114,7 +114,7 @@ export default function PhotoDetailModal({ image, isOpen, onClose, invitationId 
         });
       } catch (err) {
         setIsLiked(prevLiked);
-        setLikesCount(prev => prev + (prevLiked ? 1 : -1));
+        setLikesCount((prev: number) => prev + (prevLiked ? 1 : -1));
       }
     }
   };
@@ -391,7 +391,7 @@ export default function PhotoDetailModal({ image, isOpen, onClose, invitationId 
                   onChange={e => setPromptPassword(e.target.value.replace(/[^0-9]/g, ''))}
                   className="flex-1 bg-white px-3 py-1.5 rounded-lg border border-stone-200 text-[13px] tracking-widest text-center outline-none focus:border-stone-300" 
                 />
-                <button onClick={() => handleAction(passwordPrompt.type, passwordPrompt.commentId, promptPassword)} className="px-3 py-1.5 bg-stone-800 text-white text-[12px] rounded-lg font-bold">확인</button>
+                <button onClick={() => passwordPrompt && handleAction(passwordPrompt.type, passwordPrompt.commentId, promptPassword)} className="px-3 py-1.5 bg-stone-800 text-white text-[12px] rounded-lg font-bold">확인</button>
                 <button onClick={() => setPasswordPrompt(null)} className="px-3 py-1.5 bg-stone-200 text-stone-600 text-[12px] rounded-lg font-bold">취소</button>
               </div>
             </div>
