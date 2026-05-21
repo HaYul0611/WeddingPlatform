@@ -13,6 +13,7 @@ export default function AdminLoginPage() {
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [isForgotSent, setIsForgotSent] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   // 로그인 처리
   async function handleSubmit(e: React.FormEvent) {
@@ -70,10 +71,10 @@ export default function AdminLoginPage() {
           setForgotEmail('');
         }, 5000);
       } else {
-        alert(json.error ?? '계정 정보를 찾을 수 없습니다.');
+        setAlertMessage(json.error ?? '계정 정보를 찾을 수 없습니다.');
       }
     } catch {
-      alert('서버와의 통신 중 오류가 발생했습니다.');
+      setAlertMessage('서버와의 통신 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -187,6 +188,26 @@ export default function AdminLoginPage() {
                 <p className="mt-6 text-[10px] text-stone-300">잠시 후 모달이 자동으로 닫힙니다.</p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 커스텀 얼럿 모달 (세번째 이미지 디자인 반영하여 화면 중앙 정렬) */}
+      {alertMessage && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setAlertMessage('')} />
+          <div className="relative w-full max-w-sm rounded-[1.5rem] bg-[#1a1a1a] p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-[14px] font-medium text-white mb-8 leading-relaxed break-keep">
+              {alertMessage}
+            </h3>
+            <div className="flex justify-end">
+              <button 
+                onClick={() => setAlertMessage('')}
+                className="px-6 py-2.5 rounded-full bg-[#A3C87A] hover:bg-[#92b56d] text-black text-[13px] font-bold transition-all"
+              >
+                확인
+              </button>
+            </div>
           </div>
         </div>
       )}
