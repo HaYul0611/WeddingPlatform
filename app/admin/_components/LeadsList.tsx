@@ -118,32 +118,34 @@ export default function LeadsList({
   const hasActiveFilter = filters.status !== 'all' || filters.category !== 'all' || filters.search !== '';
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500 fill-mode-both">
       {/* 필터 및 액션 바 */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" />
           <input
             type="text" placeholder="이름 또는 연락처 검색..."
             value={filters.search}
             onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-            className="h-11 w-full rounded-[0.9rem] border border-black/[0.05] bg-white pl-10 pr-4 text-sm text-slate-700 outline-none transition-all focus:border-rose-300 focus:ring-4 focus:ring-rose-50"
+            className="h-12 w-full rounded-2xl border border-white bg-white/70 backdrop-blur-md pl-10 pr-4 text-sm text-stone-700 shadow-sm outline-none transition-all focus:border-rose-300 focus:ring-4 focus:ring-rose-50"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <Filter size={14} className="shrink-0 text-slate-400" />
+          <div className="flex items-center justify-center h-12 w-12 rounded-2xl bg-white/70 border border-white shadow-sm backdrop-blur-md">
+             <Filter size={16} className="text-stone-400" />
+          </div>
           <select
             value={filters.status}
             onChange={(e) => onFiltersChange({ ...filters, status: e.target.value as any })}
-            className="h-11 rounded-[0.9rem] border border-black/[0.05] bg-white px-4 text-sm font-medium text-slate-600 outline-none"
+            className="h-12 rounded-2xl border border-white bg-white/70 backdrop-blur-md px-4 text-sm font-bold text-stone-600 shadow-sm outline-none cursor-pointer hover:bg-white transition-colors"
           >
             {STATUS_OPTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
           <select
             value={filters.category}
             onChange={(e) => onFiltersChange({ ...filters, category: e.target.value as any })}
-            className="h-11 rounded-[0.9rem] border border-black/[0.05] bg-white px-4 text-sm font-medium text-slate-600 outline-none"
+            className="h-12 rounded-2xl border border-white bg-white/70 backdrop-blur-md px-4 text-sm font-bold text-stone-600 shadow-sm outline-none cursor-pointer hover:bg-white transition-colors"
           >
             {CATEGORY_OPTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
@@ -153,14 +155,14 @@ export default function LeadsList({
           <button
             onClick={handleExcelDownload}
             disabled={pageState.data.length === 0}
-            className="flex h-11 items-center gap-2 rounded-[0.9rem] border border-emerald-100 bg-emerald-50 px-4 text-sm font-bold text-emerald-600 transition-all hover:bg-emerald-100 active:scale-95 disabled:opacity-30"
+            className="flex h-12 items-center gap-2 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 text-sm font-bold text-emerald-600 transition-all hover:bg-emerald-100 active:scale-95 disabled:opacity-30 shadow-sm"
           >
             <FileSpreadsheet size={16} />
             <span className="hidden sm:inline">엑셀 다운로드</span>
           </button>
           <button
             onClick={fetchLeads}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.9rem] border border-black/[0.05] bg-white text-slate-400 hover:bg-slate-50 hover:text-indigo-600 active:scale-95 transition-all"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white bg-white/70 backdrop-blur-md text-stone-400 hover:bg-white hover:text-stone-900 active:scale-95 transition-all shadow-sm"
           >
             <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
           </button>
@@ -169,12 +171,12 @@ export default function LeadsList({
 
       {/* 요약 및 리스트 영역 */}
       {!isLoading && (
-        <div className="flex items-center justify-between px-1">
-          <p className="text-sm text-slate-500">
-            검색 결과 <span className="font-bold text-slate-900">{pageState.total}</span>건
-            {hasActiveFilter && <button onClick={() => onFiltersChange({ status: 'all', category: 'all', search: '' })} className="ml-2 text-indigo-500 hover:underline">필터 초기화</button>}
+        <div className="flex items-center justify-between px-2 pt-2">
+          <p className="text-sm font-bold text-stone-500">
+            검색 결과 <span className="font-black text-stone-900">{pageState.total}</span>건
+            {hasActiveFilter && <button onClick={() => onFiltersChange({ status: 'all', category: 'all', search: '' })} className="ml-2 text-rose-500 hover:underline">필터 초기화</button>}
           </p>
-          {pageState.totalPages > 1 && <p className="text-xs text-slate-400">{page} / {pageState.totalPages} 페이지</p>}
+          {pageState.totalPages > 1 && <p className="text-xs font-bold text-stone-400">{page} / {pageState.totalPages} 페이지</p>}
         </div>
       )}
 
@@ -198,10 +200,10 @@ export default function LeadsList({
 
 function EmptyState({ hasFilter, onReset }: { hasFilter: boolean; onReset: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-[2rem] border border-dashed border-slate-200 py-24 bg-white/50">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"><Inbox size={28} /></div>
-      <p className="mb-1 text-base font-bold text-slate-700">{hasFilter ? '검색 결과가 없습니다' : '아직 접수된 상담이 없습니다'}</p>
-      {hasFilter && <button onClick={onReset} className="mt-6 rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white hover:bg-black transition-all">필터 초기화</button>}
+    <div className="flex flex-col items-center justify-center rounded-[2.5rem] border border-dashed border-stone-200 py-24 bg-white/40 backdrop-blur-sm">
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100 text-stone-400"><Inbox size={32} /></div>
+      <p className="mb-1 text-lg font-bold text-stone-700 tracking-tight">{hasFilter ? '검색 결과가 없습니다' : '아직 접수된 상담이 없습니다'}</p>
+      {hasFilter && <button onClick={onReset} className="mt-6 rounded-xl bg-stone-900 px-6 py-2.5 text-sm font-bold text-white hover:bg-black transition-all">필터 초기화</button>}
     </div>
   );
 }
@@ -209,12 +211,12 @@ function EmptyState({ hasFilter, onReset }: { hasFilter: boolean; onReset: () =>
 function Pagination({ page, totalPages, onPageChange }: { page: number; totalPages: number; onPageChange: (p: number) => void }) {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
-    <div className="flex items-center justify-center gap-1.5 pt-6">
-      <button onClick={() => onPageChange(page - 1)} disabled={page === 1} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl disabled:opacity-20"><ChevronLeft size={20} /></button>
+    <div className="flex items-center justify-center gap-2 pt-8">
+      <button onClick={() => onPageChange(page - 1)} disabled={page === 1} className="p-2 text-stone-400 hover:bg-white hover:shadow-sm rounded-xl disabled:opacity-20 transition-all"><ChevronLeft size={20} /></button>
       {pages.map(p => (
-        <button key={p} onClick={() => onPageChange(p)} className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${page === p ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}>{p}</button>
+        <button key={p} onClick={() => onPageChange(p)} className={`w-11 h-11 rounded-xl text-sm font-black transition-all ${page === p ? 'bg-stone-900 text-white shadow-lg shadow-stone-200' : 'text-stone-500 hover:bg-white hover:shadow-sm'}`}>{p}</button>
       ))}
-      <button onClick={() => onPageChange(page + 1)} disabled={page === totalPages} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl disabled:opacity-20"><ChevronRight size={20} /></button>
+      <button onClick={() => onPageChange(page + 1)} disabled={page === totalPages} className="p-2 text-stone-400 hover:bg-white hover:shadow-sm rounded-xl disabled:opacity-20 transition-all"><ChevronRight size={20} /></button>
     </div>
   );
 }

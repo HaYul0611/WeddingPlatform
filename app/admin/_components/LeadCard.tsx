@@ -61,16 +61,16 @@ function getInitial(name: string): string {
 // ── 컴포넌트 ─────────────────────────────
 export default function LeadCard({ lead, onClick }: LeadCardProps) {
   const status = STATUS_CONFIG[lead.status ?? 'new'];
-  const category = CATEGORY_CONFIG[lead.category] ?? { label: lead.category, bg: 'bg-slate-50', text: 'text-slate-600' };
+  const category = CATEGORY_CONFIG[lead.category] ?? { label: lead.category, bg: 'bg-stone-50', text: 'text-stone-600' };
 
   return (
     <button
       onClick={() => onClick(lead)}
-      className="group relative w-full overflow-hidden rounded-[1.75rem] border border-black/[0.04] bg-white p-6 text-left shadow-[0_4px_20px_rgb(0,0,0,0.03)]
-                 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-100 hover:shadow-[0_15px_35px_rgb(0,0,0,0.07)]
-                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      className="group relative w-full overflow-hidden rounded-[2rem] border border-white bg-white/70 backdrop-blur-md p-6 text-left shadow-sm
+                 transition-all duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl
+                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500"
     >
-      <div className="absolute right-0 top-0 h-1 w-full bg-gradient-to-r from-transparent via-indigo-50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+      <div className="absolute right-0 top-0 h-1.5 w-full bg-gradient-to-r from-transparent via-stone-100 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
       {/* 헤더 행 */}
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -82,9 +82,9 @@ export default function LeadCard({ lead, onClick }: LeadCardProps) {
             {getInitial(lead.name)}
           </div>
           <div>
-            <p className="text-base font-bold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">{lead.name}</p>
-            <div className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-400">
-              <Phone size={11} className="text-slate-300" />
+            <p className="text-[17px] font-black tracking-tight text-stone-900 group-hover:text-stone-600 transition-colors">{lead.name}</p>
+            <div className="mt-1 flex items-center gap-1.5 text-xs font-bold text-stone-400">
+              <Phone size={11} className="text-stone-300" />
               <span>{lead.phone}</span>
             </div>
           </div>
@@ -100,11 +100,11 @@ export default function LeadCard({ lead, onClick }: LeadCardProps) {
 
       {/* 태그 행 */}
       <div className="mb-3 flex flex-wrap gap-1.5">
-        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${category.bg} ${category.text}`}>
+        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-black ${category.bg} ${category.text}`}>
           <Tag size={10} />
           {category.label}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-500">
+        <span className="inline-flex items-center gap-1 rounded-full bg-stone-100/50 px-2.5 py-0.5 text-[11px] font-bold text-stone-500">
           <DollarSign size={10} />
           {BUDGET_LABEL[lead.budget] ?? lead.budget}
         </span>
@@ -112,20 +112,20 @@ export default function LeadCard({ lead, onClick }: LeadCardProps) {
 
       {/* 메시지 미리보기 */}
       {lead.message && (
-        <p className="mb-4 line-clamp-2 text-xs leading-relaxed text-slate-500/80">
+        <p className="mb-4 line-clamp-2 text-xs leading-relaxed text-stone-500 font-medium">
           {lead.message}
         </p>
       )}
 
       {/* 푸터 */}
-      <div className="flex items-center justify-between border-t border-slate-50 pt-3">
-        <div className="flex items-center gap-1 text-xs text-slate-400">
+      <div className="flex items-center justify-between border-t border-stone-100/50 pt-3">
+        <div className="flex items-center gap-1 text-[11px] font-bold text-stone-400">
           <Calendar size={11} />
-          <span>{timeAgo(lead.created_at)}</span>
+          <span className="uppercase tracking-widest">{timeAgo(lead.created_at)}</span>
         </div>
         <ChevronRight
           size={14}
-          className="text-slate-300 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-slate-500"
+          className="text-stone-300 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-stone-500"
         />
       </div>
     </button>

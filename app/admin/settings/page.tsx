@@ -420,6 +420,11 @@ export default function AdminSettingsPage() {
                   </div>
                 </div>
                 <button type="submit" disabled={isLoading} className="w-full rounded-[1.5rem] bg-gradient-to-r from-rose-400 to-rose-300 py-6 text-base font-black text-white shadow-2xl shadow-rose-100 transition-all tracking-[0.2em]">설정 저장하기</button>
+                {message.text && (
+                  <p className={`mt-4 text-sm font-bold ${message.type === 'success' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                    {message.text}
+                  </p>
+                )}
               </form>
             </div>
           </div>

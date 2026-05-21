@@ -26,6 +26,10 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: '필수 정보를 모두 입력해주세요.' }, { status: 400 });
     }
 
+    if (companyId === 'mock-company') {
+      return NextResponse.json({ success: true, message: '비밀번호가 성공적으로 변경되었습니다. (데모 환경)' });
+    }
+
     const supabase = getSupabase();
 
     // 2) 현재 비밀번호가 맞는지 다시 확인 (보안 강화)

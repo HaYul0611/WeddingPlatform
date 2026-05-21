@@ -43,15 +43,18 @@ export default function ActivityFeed({ isDemoMode }: { isDemoMode: boolean }) {
   }, [isDemoMode]);
 
   return (
-    <div className="rounded-[2.5rem] border border-black/[0.03] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+    <div className="rounded-[2.5rem] border border-white bg-white/70 p-8 shadow-sm backdrop-blur-md animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both">
       <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-            <Bell size={20} />
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100/50 text-stone-600 ring-1 ring-stone-200/50">
+            <Bell size={22} />
           </div>
-          <h3 className="text-lg font-bold text-slate-900">최근 활동 피드</h3>
+          <div>
+            <h3 className="text-lg font-bold text-stone-900 tracking-tight">최근 활동 피드</h3>
+            <p className="text-xs font-semibold text-stone-400 mt-0.5">시스템 및 고객 활동 내역</p>
+          </div>
         </div>
-        <button className="text-[11px] font-bold text-indigo-500 hover:underline">전체보기</button>
+        <button className="text-[11px] font-bold text-stone-400 hover:text-stone-900 transition-colors uppercase tracking-widest bg-white border border-stone-200/50 px-3 py-1.5 rounded-full shadow-sm hover:shadow-md">View All</button>
       </div>
 
       <div className="space-y-6">
@@ -59,29 +62,29 @@ export default function ActivityFeed({ isDemoMode }: { isDemoMode: boolean }) {
           <div className="flex flex-col gap-6">
             {[1, 2, 3].map((n) => (
               <div key={n} className="flex animate-pulse gap-4">
-                <div className="h-10 w-10 rounded-xl bg-slate-100" />
+                <div className="h-10 w-10 rounded-xl bg-stone-100" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 w-24 rounded bg-slate-100" />
-                  <div className="h-3 w-full rounded bg-slate-100" />
+                  <div className="h-4 w-24 rounded bg-stone-100" />
+                  <div className="h-3 w-full rounded bg-stone-100" />
                 </div>
               </div>
             ))}
           </div>
         ) : items.length === 0 ? (
           <div className="py-10 text-center">
-            <p className="text-xs text-slate-400 font-medium italic">최근 활동 내역이 없습니다.</p>
+            <p className="text-xs text-stone-400 font-medium italic">최근 활동 내역이 없습니다.</p>
           </div>
         ) : (
           items.map((item, i) => (
             <div key={item.id} className="group relative flex items-start gap-4">
               {/* 타임라인 라인 */}
               {i < items.length - 1 && (
-                <div className="absolute left-[19px] top-10 h-8 w-px bg-slate-100" />
+                <div className="absolute left-[19px] top-10 h-8 w-px bg-stone-100" />
               )}
 
-              <div className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110 ${item.type === 'new_lead' ? 'bg-blue-50 text-blue-500' :
-                item.type === 'message' ? 'bg-[#FEE500]/10 text-[#191919]' :
-                  'bg-emerald-50 text-emerald-500'
+              <div className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110 ${item.type === 'new_lead' ? 'bg-stone-800 text-stone-100 shadow-md' :
+                item.type === 'message' ? 'bg-[#FEE500] text-[#191919] shadow-md' :
+                  'bg-emerald-50 text-emerald-500 shadow-sm border border-emerald-100/50'
                 }`}>
                 {item.type === 'new_lead' ? <UserPlus size={16} /> :
                   item.type === 'message' ? <MessageSquare size={16} /> :
@@ -89,11 +92,11 @@ export default function ActivityFeed({ isDemoMode }: { isDemoMode: boolean }) {
               </div>
 
               <div className="flex flex-col">
-                <p className="text-sm font-bold text-slate-800">
-                  <span className="text-indigo-600">{item.user}</span> 고객님
+                <p className="text-sm font-bold text-stone-800">
+                  <span className="text-stone-900">{item.user}</span> 고객님
                 </p>
-                <p className="mt-0.5 text-xs text-slate-500 leading-relaxed">{item.action}</p>
-                <p className="mt-1 text-[10px] font-medium text-slate-300 uppercase">{item.time}</p>
+                <p className="mt-0.5 text-[13px] text-stone-500 leading-relaxed font-medium">{item.action}</p>
+                <p className="mt-1 text-[10px] font-bold text-stone-300 uppercase tracking-widest">{item.time}</p>
               </div>
             </div>
           ))
