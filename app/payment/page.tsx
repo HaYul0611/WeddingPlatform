@@ -37,7 +37,10 @@ import {
   Download,
   ShieldAlert,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  ChevronLeft,
+  FileText,
+  Calendar
 } from 'lucide-react';
 
 // ── 타입 정의 ──────────────────────────────────────────────────────────────
@@ -417,6 +420,258 @@ export default function PaymentPage() {
     </div>
   );
 
+  const TermsOfServiceModal = ({ onClose }: { onClose: () => void }) => {
+    const [activeId, setActiveId] = useState('article-1');
+  
+    const articles = [
+      {
+        id: 'article-1',
+        title: '제1조 (목적)',
+        content: '본 약관은 이미지웨이브(IMG WAVE, 서비스명: WeddingPlatform, 이하 "회사")가 제공하는 온라인 초대장 제작 및 공유 서비스(이하 "서비스")의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.'
+      },
+      {
+        id: 'article-2',
+        title: '제2조 (용어의 정의)',
+        content: '1. "서비스"란 회사가 제공하는 온라인 초대장 제작, 편집, 공유 및 관련 부가 서비스를 의미합니다.\n2. "회원"이란 본 약관에 동의하고 회사와 이용계약을 체결한 자를 말합니다.\n3. "초대장"이란 회원이 서비스를 통해 제작한 온라인 초대장 콘텐츠를 의미합니다.\n4. "계정"이란 회원의 식별과 서비스 이용을 위해 회원이 설정한 이메일 주소 및 비밀번호의 조합을 말합니다.'
+      },
+      {
+        id: 'article-3',
+        title: '제3조 (약관의 효력 및 변경)',
+        content: '1. 본 약관은 서비스를 이용하고자 하는 모든 회원에게 그 효력이 발생합니다.\n2. 회사는 필요한 경우 관련 법령을 위배하지 않는 범위에서 본 약관을 변경할 수 있습니다.\n3. 약관이 변경되는 경우, 회사는 변경사항을 시행일로부터 최소 7일 전에 서비스 내 공지사항을 통해 공지합니다.\n4. 회원이 변경된 약관에 동의하지 않는 경우, 서비스 이용을 중단하고 탈퇴할 수 있습니다.'
+      },
+      {
+        id: 'article-4',
+        title: '제4조 (회원가입)',
+        content: '1. 회원가입은 이용자가 본 약관에 동의하고 회사가 정한 가입 양식에 따라 회원정보를 기입한 후 가입신청을 하고, 회사가 이를 승낙함으로써 체결됩니다.\n2. 회사는 다음 각 호에 해당하는 경우 회원가입을 승낙하지 않을 수 있습니다.\n- 실명이 아니거나 타인의 명의를 이용한 경우\n- 허위 정보를 기재하거나 회사가 요구하는 내용을 기재하지 않은 경우\n- 부정한 용도로 서비스를 이용하고자 하는 경우\n- 관련 법령을 위반하는 경우\n3. 회원은 가입신청 시 기재한 사항에 변경이 있는 경우, 즉시 수정해야 합니다.'
+      },
+      {
+        id: 'article-5',
+        title: '제5조 (서비스의 제공)',
+        content: '1. 회사는 다음과 같은 서비스를 제공합니다.\n- 온라인 초대장 제작 및 편집 도구\n- 초대장 템플릿 제공\n- 초대장 공유 및 관리 기능\n- 방명록, RSVP 등 부가 기능\n- 기타 회사가 추가 개발하거나 제휴계약 등을 통해 제공하는 서비스\n2. 서비스는 연중무휴 1일 24시간 제공함을 원칙으로 합니다.\n3. 회사는 시스템 정기점검, 증설 및 교체를 위해 서비스를 일시 중단할 수 있으며, 이 경우 사전에 공지합니다.'
+      },
+      {
+        id: 'article-6',
+        title: '제6조 (콘텐츠 및 저작권)',
+        content: '1. 회원이 서비스를 통해 제작한 초대장의 저작권은 해당 회원에게 귀속됩니다.\n2. 회원은 회사가 제공하는 템플릿, 이미지 등의 콘텐츠를 서비스 이용 목적으로만 사용할 수 있으며, 무단 복제, 배포, 판매할 수 없습니다.\n3. 회원은 자신이 제작한 초대장을 공개할 경우, 회사가 홍보 및 마케팅 목적으로 활용하는 것에 동의한 것으로 간주됩니다.\n4. 회원은 타인의 저작권, 상표권 등 지적재산권을 침해하는 콘텐츠를 게시해서는 안 됩니다.'
+      },
+      {
+        id: 'article-7',
+        title: '제7조 (회원의 의무)',
+        content: '1. 회원은 다음 행위를 해서는 안 됩니다.\n- 타인의 정보 도용\n- 회사가 게시한 정보의 변경\n- 회사의 승인 없는 광고, 홍보물 게재\n- 타인의 명예를 손상시키거나 불이익을 주는 행위\n- 음란, 폭력적 메시지나 이미지 게재\n- 해킹, 바이러스 유포 등 기술적 침해 행위\n- 서비스의 안정적 운영을 방해하는 행위\n2. 회원은 관계 법령, 본 약관, 이용안내 및 서비스와 관련하여 공지한 주의사항을 준수해야 합니다.\n3. 초대장 서비스와 무관한 콘텐츠(이미지 호스팅·광고·음란·폭력 등) 업로드는 약관 위반이며 사전 통보 없이 계정이 정지될 수 있습니다.'
+      },
+      {
+        id: 'article-8',
+        title: '제8조 (개인정보 보호)',
+        content: '1. 회사는 관련 법령이 정하는 바에 따라 회원의 개인정보를 보호하기 위해 노력합니다.\n2. 개인정보의 수집, 이용, 보관, 파기 등에 관한 사항은 별도의 개인정보처리방침에 따릅니다.\n3. 회사는 회원의 동의 없이 회원의 개인정보를 제3자에게 제공하지 않습니다. 단, 법령에 의하거나 수사목적으로 법령에 정해진 절차와 방법에 따라 요구가 있는 경우는 예외로 합니다.'
+      },
+      {
+        id: 'article-9',
+        title: '제9조 (유료 서비스 및 결제)',
+        content: '1. 회사는 기본 서비스 외에 광고 제거 등 유료 서비스를 제공합니다.\n\n2. 서비스 요금 및 결제 수단\n- 광고 제거 서비스: 14,000원(KRW) / $10(USD)\n- 결제 수단: 신용카드, 카카오페이, 나이스페이, 레몬스퀴지\n- 서비스 기간: 결제일로부터 90일\n\n3. 청약철회 및 환불 (전자상거래법 준수)\n- 청약철회 기간: 결제일로부터 7일 이내 (전자상거래법 제17조)\n- 디지털 콘텐츠 제공 개시 시 제한 (전자상거래법 제17조 제2항 제5호)\n- 환불 처리: 승인 후 3-5 영업일\n\n4. 디지털 콘텐츠 제공 개시 기준\n다음 중 하나에 해당하는 경우 디지털 콘텐츠 제공이 개시된 것으로 봅니다:\n- 초대장 URL 공유 후 조회수 1회 이상\n- RSVP 응답 1건 이상 수집\n- 방명록 작성 1건 이상\n\n5. 환불 제한 사유\n- 7일 청약철회 기간 경과\n- 디지털 콘텐츠 제공 개시 (서비스 사용 개시)\n- 회원의 귀책사유로 인한 이벤트 취소 또는 연기\n- 단순 변심 (서비스 사용 개시 후)\n\n6. 상세 환불 정책은 별도의 환불 정책 페이지를 참조하시기 바랍니다.\n\n7. 분쟁 해결\n- 본 약관과 관련된 분쟁은 전자상거래 분쟁조정위원회(1372)의 조정에 따를 수 있습니다.\n- 관할법원은 민사소송법상의 관할법원으로 합니다.'
+      },
+      {
+        id: 'article-10',
+        title: '제10조 (계약 해지 및 이용 제한)',
+        content: '1. 회원은 언제든지 서비스 내 설정 메뉴를 통하여 이용계약 해지(회원탈퇴)를 신청할 수 있으며, 회사는 관련 법령이 정하는 바에 따라 이를 즉시 처리해야 합니다.\n2. 회원이 본 약관의 의무를 위반하거나 서비스의 정상적인 운영을 방해한 경우, 회사는 사전 통지 없이 이용계약을 해지하거나 서비스 이용을 제한할 수 있습니다.'
+      },
+      {
+        id: 'article-11',
+        title: '제11조 (면책사항)',
+        content: '1. 회사는 천재지변, 전쟁, 기간통신사업자의 서비스 중지 등 불가항력으로 인하여 서비스를 제공할 수 없는 경우에는 서비스 제공에 관한 책임이 면제됩니다.\n2. 회사는 회원의 귀책사유로 인한 서비스 이용의 장애에 대하여 책임을 지지 않습니다.\n3. 회사는 회원이 서비스를 이용하여 기대하는 수익을 상실한 것에 대하여 책임을 지지 않으며, 서비스를 통하여 얻은 자료로 인한 손해에 관하여 책임을 지지 않습니다.'
+      },
+      {
+        id: 'article-12',
+        title: '제12조 (분쟁 해결)',
+        content: '1. 회사는 이용자가 제기하는 정당한 의견이나 불만을 반영하고 그 피해를 보상처리하기 위하여 고객센터를 설치, 운영합니다.\n2. 회사와 이용자 간에 발생한 전자상거래 분쟁과 관련하여 이용자의 피해구제 신청이 있는 경우에는 공정거래위원회 또는 시·도지사가 의뢰하는 분쟁조정기관의 조정에 따를 수 있습니다.\n3. 회사와 이용자 간에 발생한 분쟁에 관한 소송은 민사소송법상의 관할법원에 제기합니다.'
+      },
+      {
+        id: 'article-13',
+        title: '제13조 (고객센터)',
+        content: '서비스 이용 및 환불 등에 관한 문의사항은 아래 고객센터로 연락 주시기 바랍니다.\n- 상호명: WeddingPlatform\n- 이메일: cs@weddingplatform.local\n- 전화번호: 0507-0000-0000\n- 운영시간: 평일 10:00 ~ 17:00 (주말 및 공휴일 휴무)'
+      }
+    ];
+  
+    return (
+      <div className="fixed inset-0 z-[200] bg-[#FAF9F6] flex flex-col w-full h-full animate-in fade-in duration-200 overflow-hidden">
+        {/* Top Header */}
+        <div className="w-full bg-white h-[60px] border-b border-stone-200 flex items-center px-6 sticky top-0 z-10 shrink-0">
+          <button onClick={onClose} className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-[13px] font-bold">
+            <ChevronLeft size={16} />
+            홈으로 돌아가기
+          </button>
+        </div>
+        
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto w-full custom-scrollbar">
+          <div className="max-w-4xl mx-auto w-full pt-16 pb-24 px-6 flex flex-col items-center">
+            
+            <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mb-6">
+              <FileText size={28} className="text-stone-700" strokeWidth={1.5}/>
+            </div>
+            <h1 className="text-3xl font-black text-stone-900 mb-3 tracking-tight">이용약관</h1>
+            <div className="flex items-center gap-1.5 text-stone-400 text-[13px] font-medium mb-16">
+              <Calendar size={14} />
+              <span>최종 수정일: 2026년 3월 12일</span>
+            </div>
+  
+            <div className="w-full flex flex-col md:flex-row items-start gap-8 relative">
+              {/* Sidebar */}
+              <div className="w-full md:w-[240px] shrink-0 sticky top-[20px] z-10 hidden md:block">
+                <div className="bg-white border border-stone-200/60 rounded-2xl p-6 shadow-[0_4px_25px_rgba(0,0,0,0.015)] max-h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
+                  <h3 className="text-[15px] font-bold text-stone-900 mb-4 tracking-tight">목차</h3>
+                  <ul className="flex flex-col space-y-1">
+                    {articles.map((article) => (
+                      <li key={article.id}>
+                        <a 
+                          href={`#${article.id}`} 
+                          className={`block text-[13px] py-1.5 transition-colors ${activeId === article.id ? 'text-stone-900 font-bold' : 'text-stone-500 hover:text-stone-800'}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setActiveId(article.id);
+                            document.getElementById(article.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }}
+                        >
+                          {article.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+  
+              {/* Main Content */}
+              <div className="flex-1 flex flex-col gap-6 w-full">
+                {articles.map((article) => (
+                  <div key={article.id} id={article.id} className="bg-white border border-stone-200/60 rounded-2xl p-8 shadow-[0_4px_25px_rgba(0,0,0,0.015)] scroll-mt-[80px]">
+                    <h2 className="text-xl font-bold text-stone-900 mb-6 tracking-tight">{article.title}</h2>
+                    <div className="text-[14px] leading-[1.8] text-stone-600 whitespace-pre-wrap break-keep">
+                      {article.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const PrivacyPolicyModal = ({ onClose }: { onClose: () => void }) => {
+    const [activeId, setActiveId] = useState('article-1');
+  
+    const articles = [
+      {
+        id: 'article-1',
+        title: '1. 개인정보 처리 방침 개요',
+        content: '이미지웨이브(IMG WAVE, 서비스명: WeddingPlatform, 이하 "회사")는 이용자의 개인정보를 중요시하며, 「개인정보 보호법」, 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」 등 관련 법령을 준수하고 있습니다.\n\n회사는 개인정보처리방침을 통하여 이용자가 제공하는 개인정보가 어떠한 용도와 방식으로 이용되고 있으며, 개인정보보호를 위해 어떠한 조치가 취해지고 있는지 알려드립니다.'
+      },
+      {
+        id: 'article-2',
+        title: '2. 수집하는 개인정보의 항목 및 수집방법',
+        content: '회사는 서비스 제공을 위해 다음과 같은 개인정보를 수집합니다:\n\n[필수 항목]\n- 회원가입 시: 이메일 주소, 비밀번호, 이름\n- 소셜 로그인 시: 소셜 계정 정보 (이메일, 프로필 사진)\n- 결제 시: 결제 정보 (결제 수단, 결제 금액)\n\n[선택 항목]\n- 회원가입 시: 휴대폰 번호 (카카오 알림톡 서비스 수신 목적, 미입력 가능)\n- 네이버 로그인 시: 휴대폰 번호 (동의 시에만 수집)\n- 초대장 생성 시: 행사 정보, 날짜, 위치, 갤러리 이미지\n\n[자동 수집 정보]\n- 서비스 이용 과정에서 IP 주소, 쿠키, 접속 로그, 기기 정보가 자동으로 수집될 수 있습니다.'
+      },
+      {
+        id: 'article-3',
+        title: '3. 개인정보의 수집 및 이용목적',
+        content: '회사는 수집한 개인정보를 다음의 목적을 위해 활용합니다:\n\n[서비스 제공]\n- 회원 관리: 회원제 서비스 이용, 본인 확인, 중복가입 방지\n- 서비스 제공: 초대장 생성, 편집, 공유, 관리 기능 제공\n- 결제 처리: 유료 서비스 이용에 따른 결제 및 환불 처리\n- 알림 발송: 결제 완료, 청첩장 발행 등 서비스 주요 알림 카카오 알림톡 발송 (휴대폰 번호 제공 시)\n\n[서비스 개선]\n- 서비스 이용 통계 분석\n- 신규 서비스 개발 및 맞춤형 서비스 제공\n\n[마케팅 및 광고]\n- 이벤트 및 프로모션 정보 제공 (동의 시)'
+      },
+      {
+        id: 'article-4',
+        title: '4. 개인정보의 보유 및 이용기간',
+        content: '회사는 원칙적으로 개인정보 수집 및 이용목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다.\n\n[회원 정보]\n- 회원 탈퇴 시까지 보유\n- 탈퇴 후 즉시 파기 (단, 관계 법령에 의한 보존 의무가 있는 경우 예외)\n\n[결제 정보]\n- 전자상거래법에 따라 5년간 보관\n- 계약 또는 청약철회 등에 관한 기록: 5년\n- 대금결제 및 재화 등의 공급에 관한 기록: 5년\n- 소비자의 불만 또는 분쟁처리에 관한 기록: 3년'
+      },
+      {
+        id: 'article-5',
+        title: '5. 개인정보의 파기절차 및 방법',
+        content: '회사는 원칙적으로 개인정보 수집 및 이용목적이 달성된 후에는 해당 정보를 지체없이 파기합니다.\n\n[파기절차]\n- 이용자가 회원가입 등을 위해 입력한 정보는 목적이 달성된 후 별도의 DB로 옮겨져 내부 방침 및 기타 관련 법령에 의한 정보보호 사유에 따라 일정 기간 저장된 후 파기됩니다.\n\n[파기방법]\n- 전자적 파일 형태: 복구 및 재생이 불가능한 기술적 방법을 사용하여 삭제\n- 종이 문서: 분쇄기로 분쇄하거나 소각'
+      },
+      {
+        id: 'article-6',
+        title: '6. 이용자의 권리와 행사방법',
+        content: '이용자는 언제든지 다음과 같은 권리를 행사할 수 있습니다:\n\n- 개인정보 열람 요구\n- 개인정보 정정 요구\n- 개인정보 삭제 요구\n- 개인정보 처리정지 요구\n\n권리 행사는 회사에 대해 서면, 전화, 이메일 등을 통하여 하실 수 있으며, 회사는 이에 대해 지체없이 조치하겠습니다.'
+      },
+      {
+        id: 'article-7',
+        title: '7. 개인정보 보호책임자',
+        content: '회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 이용자의 불만처리 및 피해구제를 위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.\n\n[개인정보 보호책임자]\n- 이름: 김철수\n- 직책: 보안담당자\n- 이메일: privacy@weddingplatform.local\n- 전화: 02-0000-0000\n\n개인정보 침해에 대한 신고나 상담이 필요하신 경우에는 아래 기관에 문의하실 수 있습니다.\n- 개인정보침해신고센터 (privacy.kisa.or.kr / 국번없이 118)\n- 개인정보분쟁조정위원회 (www.kopico.go.kr / 1833-6972)\n- 대검찰청 사이버수사과 (www.spo.go.kr / 국번없이 1301)\n- 경찰청 사이버안전국 (cyberbureau.police.go.kr / 국번없이 182)'
+      },
+      {
+        id: 'article-8',
+        title: '8. 개인정보처리방침의 변경',
+        content: '본 개인정보처리방침은 법령, 정책 또는 보안기술의 변경에 따라 내용의 추가, 삭제 및 수정이 있을 시에는 변경사항의 시행 7일 전부터 홈페이지의 공지사항을 통하여 고지할 것입니다.\n\n단, 이용자의 권리에 중요한 변경이 있을 경우에는 최소 30일 전에 미리 알려드리겠습니다.'
+      }
+    ];
+  
+    return (
+      <div className="fixed inset-0 z-[200] bg-[#FAF9F6] flex flex-col w-full h-full animate-in fade-in duration-200 overflow-hidden">
+        {/* Top Header */}
+        <div className="w-full bg-white h-[60px] border-b border-stone-200 flex items-center px-6 sticky top-0 z-10 shrink-0">
+          <button onClick={onClose} className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-[13px] font-bold">
+            <ChevronLeft size={16} />
+            홈으로 돌아가기
+          </button>
+        </div>
+        
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto w-full custom-scrollbar">
+          <div className="max-w-4xl mx-auto w-full pt-16 pb-24 px-6 flex flex-col items-center">
+            
+            <h1 className="text-3xl font-black text-stone-900 mb-3 tracking-tight">개인정보처리방침</h1>
+            <div className="flex items-center gap-1.5 text-stone-400 text-[13px] font-medium mb-16">
+              <Calendar size={14} />
+              <span>최종 수정일: 2024년 1월 1일</span>
+            </div>
+  
+            <div className="w-full flex flex-col md:flex-row items-start gap-8 relative">
+              {/* Sidebar */}
+              <div className="w-full md:w-[240px] shrink-0 sticky top-[20px] z-10 hidden md:block">
+                <div className="bg-white border border-stone-200/60 rounded-2xl p-6 shadow-[0_4px_25px_rgba(0,0,0,0.015)] max-h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
+                  <h3 className="text-[15px] font-bold text-stone-900 mb-4 tracking-tight">목차</h3>
+                  <ul className="flex flex-col space-y-1">
+                    {articles.map((article) => (
+                      <li key={article.id}>
+                        <a 
+                          href={`#privacy-${article.id}`} 
+                          className={`block text-[13px] py-1.5 transition-colors ${activeId === article.id ? 'text-stone-900 font-bold' : 'text-stone-500 hover:text-stone-800'}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setActiveId(article.id);
+                            document.getElementById(`privacy-${article.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }}
+                        >
+                          {article.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+  
+              {/* Main Content */}
+              <div className="flex-1 flex flex-col gap-6 w-full">
+                {articles.map((article) => (
+                  <div key={article.id} id={`privacy-${article.id}`} className="bg-white border border-stone-200/60 rounded-2xl p-8 shadow-[0_4px_25px_rgba(0,0,0,0.015)] scroll-mt-[80px]">
+                    <h2 className="text-xl font-bold text-stone-900 mb-6 tracking-tight">{article.title}</h2>
+                    <div className="text-[14px] leading-[1.8] text-stone-600 whitespace-pre-wrap break-keep">
+                      {article.content}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="bg-white/50 border border-stone-200/40 rounded-2xl p-8 mt-4 text-center">
+                  <p className="text-[16px] font-black text-stone-800 mb-2">WeddingPlatform</p>
+                  <p className="text-[12px] text-stone-500 mb-4">본 방침은 2024년 1월 1일부터 시행됩니다.</p>
+                  <p className="text-[10px] text-stone-400">IP Geolocation by DB-IP • Includes GeoLite2 data by MaxMind</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const RefundPolicyModal = ({ onClose, onAgree }: { onClose: () => void, onAgree: () => void }) => {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -526,8 +781,8 @@ export default function PaymentPage() {
   return (
     <main className="min-h-screen bg-[#FAF9F6] text-stone-800 font-sans flex relative overflow-hidden">
       {/* ── 약관 세부 팝업 바인딩 ────────────────────────────────────── */}
-      {openModal === 'terms' && <ModalPopup type="terms" title="이용약관 동의" content={TERMS_CONTENT} />}
-      {openModal === 'privacy' && <ModalPopup type="privacy" title="개인정보 처리 동의" content={PRIVACY_CONTENT} />}
+      {openModal === 'terms' && <TermsOfServiceModal onClose={() => { setAgreeTerms(true); setOpenModal(null); }} />}
+      {openModal === 'privacy' && <PrivacyPolicyModal onClose={() => { setAgreePrivacy(true); setOpenModal(null); }} />}
       {openModal === 'refund' && <RefundPolicyModal onClose={() => setOpenModal(null)} onAgree={() => { setAgreeRefund(true); setOpenModal(null); }} />}
 
       {/* ── 결제 승인 중 & 완료 오버레이 ──────────────────────────────── */}
