@@ -98,6 +98,9 @@ export default function PaymentPage() {
   // 필터 탭 상태
   const [filterTab, setFilterTab] = useState<'all' | 'published' | 'draft' | 'premium'>('all');
 
+  // 통계 탭 상태
+  const [statsTab, setStatsTab] = useState<'rsvp' | 'guestbook' | 'gifts'>('rsvp');
+
   // 로그인한 사용자 데이터 상태 (하드코딩 제거 및 실시간 API 연동)
   const [myInfo, setMyInfo] = useState({
     name: '홍길동',
@@ -1471,7 +1474,7 @@ export default function PaymentPage() {
                 <ImageIcon size={20} className="text-stone-400" />
               </div>
               <div>
-                <h3 className="text-[14px] font-bold text-stone-900">Minjun & Seoyeon</h3>
+                <h3 className="text-[14px] font-bold text-stone-900">제목없음</h3>
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-stone-400 mt-1">
                   <FileText size={12} />
                   <span>RSVP 0</span>
@@ -1481,13 +1484,19 @@ export default function PaymentPage() {
 
             {/* 세그먼트 컨트롤 */}
             <div className="flex items-center bg-stone-100/50 rounded-xl p-1 mb-8">
-              <button className="flex-1 py-2 text-[12px] font-black bg-white text-stone-900 shadow-sm rounded-lg transition-colors">
+              <button 
+                onClick={() => setStatsTab('rsvp')}
+                className={`flex-1 py-2 text-[12px] transition-colors rounded-lg ${statsTab === 'rsvp' ? 'font-black bg-white text-stone-900 shadow-sm' : 'font-bold text-stone-500 hover:text-stone-700'}`}>
                 RSVP (0)
               </button>
-              <button className="flex-1 py-2 text-[12px] font-bold text-stone-500 hover:text-stone-700 transition-colors">
+              <button 
+                onClick={() => setStatsTab('guestbook')}
+                className={`flex-1 py-2 text-[12px] transition-colors rounded-lg ${statsTab === 'guestbook' ? 'font-black bg-white text-stone-900 shadow-sm' : 'font-bold text-stone-500 hover:text-stone-700'}`}>
                 방명록 (0)
               </button>
-              <button className="flex-1 py-2 text-[12px] font-bold text-stone-500 hover:text-stone-700 transition-colors">
+              <button 
+                onClick={() => setStatsTab('gifts')}
+                className={`flex-1 py-2 text-[12px] transition-colors rounded-lg ${statsTab === 'gifts' ? 'font-black bg-white text-stone-900 shadow-sm' : 'font-bold text-stone-500 hover:text-stone-700'}`}>
                 선물 현황 (0)
               </button>
             </div>
@@ -1547,16 +1556,24 @@ export default function PaymentPage() {
               <Lock size={32} className="text-stone-300 mb-4" strokeWidth={1.5} />
               <h3 className="text-[15px] font-black text-stone-900 mb-2">방문자 로그는 프리미엄 기능입니다</h3>
               <p className="text-[11px] font-bold text-stone-500 mb-6">초대장 방문자의 방문 시기, 브라우저, OS, 유입 경로를 확인할 수 있습니다.</p>
-              <button className="h-10 px-6 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-[11px] font-black transition-colors shadow-sm">
+              <button 
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="h-10 px-6 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-[11px] font-black transition-colors shadow-sm">
                 프리미엄 시작하기
               </button>
             </div>
 
             {/* 하단 빈 리스트 */}
             <div className="bg-white border border-stone-100 rounded-[1.5rem] p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col min-h-[300px]">
-              <h3 className="text-[13px] font-black text-stone-900 mb-2">RSVP 응답 데이터</h3>
+              <h3 className="text-[13px] font-black text-stone-900 mb-2">
+                {statsTab === 'rsvp' && 'RSVP 응답 데이터'}
+                {statsTab === 'guestbook' && '방명록 데이터'}
+                {statsTab === 'gifts' && '선물 현황 데이터'}
+              </h3>
               <div className="flex-1 flex items-center justify-center text-[11px] font-bold text-stone-500">
-                아직 RSVP 응답이 없습니다
+                {statsTab === 'rsvp' && '아직 RSVP 응답이 없습니다'}
+                {statsTab === 'guestbook' && '아직 작성된 방명록이 없습니다'}
+                {statsTab === 'gifts' && '아직 들어온 선물이 없습니다'}
               </div>
             </div>
           </div>
@@ -1820,7 +1837,7 @@ export default function PaymentPage() {
       {isPaymentModalOpen && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-stone-900/60 backdrop-blur-md animate-in fade-in duration-300"
+            className="absolute inset-0 bg-stone-900/60 animate-in fade-in duration-300"
             onClick={() => setIsPaymentModalOpen(false)}
           />
 
