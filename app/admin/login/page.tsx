@@ -14,6 +14,7 @@ export default function AdminLoginPage() {
   const [forgotEmail, setForgotEmail] = useState('');
   const [isForgotSent, setIsForgotSent] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [fallbackPassword, setFallbackPassword] = useState('');
 
   // 로그인 처리
   async function handleSubmit(e: React.FormEvent) {
@@ -64,12 +65,16 @@ export default function AdminLoginPage() {
 
       if (json.success) {
         setIsForgotSent(true);
-        // 5초 후 모달 닫기 및 상태 초기화
-        setTimeout(() => {
-          setIsForgotModalOpen(false);
-          setIsForgotSent(false);
-          setForgotEmail('');
-        }, 5000);
+        if (json.fallbackPassword) {
+          setFallbackPassword(json.fallbackPassword);
+        } else {
+          // 5초 후 모달 닫기 및 상태 초기화
+          setTimeout(() => {
+            setIsForgotModalOpen(false);
+            setIsForgotSent(false);
+            setForgotEmail('');
+          }, 5000);
+        }
       } else {
         setAlertMessage(json.error ?? '계정 정보를 찾을 수 없습니다.');
       }
@@ -147,7 +152,7 @@ export default function AdminLoginPage() {
       {/* 계정 찾기 모달 */}
       {isForgotModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={() => setIsForgotModalOpen(false)} />
+          <div className="absolute inset-0 bg-stone-900/40" onClick={() => setIsForgotModalOpen(false)} />
           <div className="relative w-full max-w-sm rounded-[2rem] bg-white p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
             {!isForgotSent ? (
               <>
@@ -180,12 +185,25 @@ export default function AdminLoginPage() {
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
                   <CheckCircle2 size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-stone-800">발송 완료</h3>
-                <p className="mt-2 text-xs text-stone-500 leading-relaxed">
-                  {forgotEmail} 주소로<br />
-                  계정 복구 안내 메일이 발송되었습니다.
-                </p>
-                <p className="mt-6 text-[10px] text-stone-300">잠시 후 모달이 자동으로 닫힙니다.</p>
+                <h3 className="text-lg font-bold text-stone-800">
+                  {fallbackPassword ? '임시 비밀번호 발급 완료' : '발송 완료'}
+                </h3>
+                {fallbackPassword ? (
+                  <div className="mt-4">
+                    <p className="text-xs text-stone-500 mb-2">메일 서버 미설정 환경으로 임시 비밀번호를 표기합니다.</p>
+                    <div className="bg-stone-50 p-4 rounded-xl border border-stone-100 font-mono text-lg tracking-widest font-black text-rose-500 select-all">
+                      {fallbackPassword}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="mt-2 text-xs text-stone-500 leading-relaxed">
+                      {forgotEmail} 주소로<br />
+                      계정 복구 안내 메일이 발송되었습니다.
+                    </p>
+                    <p className="mt-6 text-[10px] text-stone-300">잠시 후 모달이 자동으로 닫힙니다.</p>
+                  </>
+                )}
               </div>
             )}
           </div>
