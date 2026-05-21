@@ -23,7 +23,7 @@ export default function FallingPetals() {
   }, []);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none">
+    <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden select-none">
       {petals.map((p) => (
         <div
           key={p.id}

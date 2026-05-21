@@ -96,13 +96,12 @@ export default function LandingPage() {
           {/* 배경 이미지 레이어 */}
           <div className="absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
             <img
-              src="/wedding_bouquet_bg_1778054754766.png"
+              src="/웨딩(메인).jpg"
               alt="Wedding Background"
-              className="h-full w-full object-cover opacity-60 transition-transform duration-[10s] hover:scale-105"
+              className="h-full w-full object-cover opacity-40 transition-transform duration-[10s] hover:scale-105"
             />
-            {/* 화사한 레이어드 오버레이 */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/80 to-[#FAF8F5]" />
-            <div className="absolute inset-0 bg-white/20 backdrop-blur-[0.5px]" />
+            {/* 화사하고 선명한 투명 오버레이 */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/10 to-white/20" />
 
             {/* 흩날리는 꽃잎 애니메이션 */}
             <FallingPetals />

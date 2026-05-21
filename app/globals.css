@@ -1,132 +1,424 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Nunito:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Gothic:wght@400;700&family=Nanum+Brush+Script&family=Nanum+Pen+Script&family=Gamja+Flower&family=Hi+Melody&family=Song+Myung&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg-base: #FAF8F5;
+  --bg-sidebar: #F9FAFB;
   --bg-card: #FFFFFF;
-  --text-primary: #1C1917;
-  --text-muted: #78716C;
-  --rose: #E2626E;
-  --rose-light: #FDF2F2;
-  --rose-border: #F4C4C7;
-  --sage: #6B8F71;
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+  --primary-green: #00df5a;
+  --primary-blue: #3B82F6;
 }
 
 @layer base {
   html {
-    background-color: var(--bg-base);
-    color: var(--text-primary);
-    font-family: var(--font-body);
+    font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-
-  h1,
-  h2,
-  h3 {
-    font-family: var(--font-display);
-    letter-spacing: -0.01em;
-  }
 }
 
-@layer utilities {
-  .font-display {
-    font-family: var(--font-display);
-  }
-
-  .font-body {
-    font-family: var(--font-body);
-  }
-
-  .font-round {
-    font-family: 'Nunito', sans-serif;
-  }
-
-  /* 페이지 진입 애니메이션 */
-  .fade-up {
-    animation: fadeUp 0.5s ease both;
-  }
-
-  .fade-up-delay-1 {
-    animation-delay: 0.1s;
-  }
-
-  .fade-up-delay-2 {
-    animation-delay: 0.2s;
-  }
-
-  .fade-up-delay-3 {
-    animation-delay: 0.3s;
-  }
-
-  @keyframes fadeUp {
-    from {
-      opacity: 0;
-      transform: translateY(16px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+input[type="range"].range-slider {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 100% !important;
+  height: 16px !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  margin: 8px 0 !important;
+  display: block !important;
+  outline: none !important;
+  padding: 0 !important;
 }
 
-/* ── 애니메이션: 흩날리는 꽃잎 & 비눗방울 ────────────────── */
-@keyframes fall-and-sway {
+input[type="range"].range-slider::-webkit-slider-runnable-track {
+  width: 100% !important;
+  height: 6px !important;
+  cursor: pointer !important;
+  background: #f3f4f6 !important;
+  border-radius: 3px !important;
+  background-image: linear-gradient(to right, #3B82F6 var(--slider-percent, 50%), transparent var(--slider-percent, 50%)) !important;
+}
+
+input[type="range"].range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: #ffffff !important;
+  border: 1px solid #111827 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  margin-top: -5px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
+/* 폰트 목록 커스텀 스크롤바 */
+.font-list-scrollbar::-webkit-scrollbar {
+  width: 14px;
+}
+
+.font-list-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.font-list-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 20px;
+  border: 4px solid transparent;
+  background-clip: content-box;
+}
+
+.font-list-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes fall {
   0% {
-    top: -10%;
-    transform: translateX(0) rotate(0deg);
+    transform: translateY(-100px);
     opacity: 0;
   }
 
-  10% {
-    opacity: 0.8;
+  15% {
+    opacity: 1;
   }
 
-  90% {
-    opacity: 0.8;
+  85% {
+    opacity: 1;
   }
 
   100% {
-    top: 110%;
-    transform: translateX(100px) rotate(720deg);
+    transform: translateY(100vh);
     opacity: 0;
   }
 }
 
-@keyframes float-up {
+@keyframes fall-rotate {
   0% {
-    transform: translateY(0) translateX(0) scale(1);
+    transform: translateY(-100px) rotate(0deg);
     opacity: 0;
   }
 
-  10% {
-    opacity: 0.6;
+  15% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-100vh) translateX(30px);
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+
+  0%,
+  100% {
+    transform: translateX(0);
   }
 
   50% {
-    transform: translateY(-50vh) translateX(40px) scale(1.1);
+    transform: translateX(20px);
+  }
+}
+
+@keyframes glimmer {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
   }
 
-  90% {
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+
+  50% {
     opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
+.animate-fall {
+  animation: fall linear infinite;
+}
+
+.animate-fall-rotate {
+  animation: fall-rotate linear infinite;
+}
+
+.animate-float {
+  animation: float ease-in-out infinite;
+}
+
+.animate-sway {
+  animation: sway ease-in-out infinite;
+}
+
+.animate-glimmer {
+  animation: glimmer ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+.animate-once {
+  animation-iteration-count: 1 !important;
+  animation-fill-mode: forwards;
+}
+
+.animate-loop {
+  animation-iteration-count: infinite !important;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar {
+  height: 3px;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.custom-scrollbar-preview::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes heart-fill {
+  0% {
+    clip-path: inset(100% 0 0 0);
+  }
+
+  50% {
+    clip-path: inset(0 0 0 0);
   }
 
   100% {
-    transform: translateY(-110vh) translateX(-30px) scale(0.8);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.animate-heart-fill {
+  animation: heart-fill 3s ease-in-out infinite;
+}
+
+/* 벚꽃잎 흩날림 물리 가속 애니메이션 */
+@keyframes fall-petal {
+  0% {
+    transform: translateY(-20px) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.9;
+  }
+
+  90% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(105vh) rotate(720deg) translateX(100px);
     opacity: 0;
   }
 }
 
 .animate-fall-petal {
-  animation: fall-and-sway linear infinite;
+  animation: fall-petal linear infinite;
+  will-change: transform, opacity;
 }
 
-.animate-float-bubble {
-  animation: float-up ease-in-out infinite;
+/* 기계식 3D 플립 카드 접힘 애니메이션 */
+@keyframes flip-fold {
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  100% {
+    transform: rotateX(-360deg);
+  }
+}
+
+.animate-flip-fold {
+  display: inline-block;
+  transform-style: preserve-3d;
+  animation: flip-fold 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  backface-visibility: hidden;
+}
+
+/* ==========================================================================
+   다크 테마 배경 패턴 콘트라스트 자동 반전 및 글래스모피즘 카드 전환 시스템
+   ========================================================================== */
+
+/* 1. 다크 테마 패턴 하위에 있는 기본 흰색 카드를 고급스러운 반투명 다크 카드로 은은하게 전환 */
+#preview-phone-screen.is-dark-pattern .bg-white,
+.is-dark-pattern .bg-white {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* 2. 다크 테마 패턴 내부의 모든 텍스트 클래스 및 타이포그래피 요소들의 가독성 강제 백색/은색 반전 (압도적 우선순위 확보) */
+.is-dark-pattern .text-stone-900,
+.is-dark-pattern .text-stone-850,
+.is-dark-pattern .text-stone-800,
+.is-dark-pattern .text-stone-700,
+.is-dark-pattern .text-stone-600,
+.is-dark-pattern .text-gray-900,
+.is-dark-pattern .text-gray-850,
+.is-dark-pattern .text-gray-800,
+.is-dark-pattern .text-gray-700,
+.is-dark-pattern .text-gray-600,
+.is-dark-pattern .text-slate-900,
+.is-dark-pattern .text-slate-800,
+.is-dark-pattern .text-slate-700,
+.is-dark-pattern .text-\[\#333333\],
+.is-dark-pattern .text-\[\#444444\],
+.is-dark-pattern h1,
+.is-dark-pattern h2,
+.is-dark-pattern h3,
+.is-dark-pattern h4,
+.is-dark-pattern p,
+.is-dark-pattern span,
+.is-dark-pattern div:not([id]) {
+  color: rgba(255, 255, 255, 0.94) !important;
+}
+
+/* 보조/중간 톤 텍스트들을 연한 실버 그레이로 조율 */
+.is-dark-pattern .text-stone-500,
+.is-dark-pattern .text-stone-400,
+.is-dark-pattern .text-gray-500,
+.is-dark-pattern .text-gray-400,
+.is-dark-pattern .text-slate-500,
+.is-dark-pattern .text-slate-400 {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 테두리선, 분할 선 등 디테일 보정 */
+.is-dark-pattern .border-stone-100,
+.is-dark-pattern .border-stone-200,
+.is-dark-pattern .border-gray-100,
+.is-dark-pattern .border-gray-200,
+.is-dark-pattern .border-slate-100,
+.is-dark-pattern .border-slate-200 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 방명록 입력 폼 다크 스킨 최적화 */
+.is-dark-pattern input,
+.is-dark-pattern textarea {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.is-dark-pattern input::placeholder,
+.is-dark-pattern textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ==========================================================================
+   설레는 심장박동 두근두근 하트 애니메이션 (Heartbeat 쿵-쾅 시뮬레이터)
+   ========================================================================== */
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+
+  14% {
+    transform: scale(1.3);
+  }
+
+  28% {
+    transform: scale(1);
+  }
+
+  42% {
+    transform: scale(1.3);
+  }
+
+  70% {
+    transform: scale(1);
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.3s infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+  will-change: transform;
 }

@@ -4,11 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "clean": "node -e \"try { const stdout = require('child_process').execSync('netstat -ano | findstr :3000').toString(); const lines = stdout.split('\\n'); for (const line of lines) { const parts = line.trim().split(/\\s+/); const pid = parts[parts.length - 1]; if (pid && parseInt(pid) > 0) { require('child_process').execSync('taskkill /F /PID ' + pid); } } } catch(e){} const fs = require('fs'); if (fs.existsSync('.next')) fs.rmSync('.next', { recursive: true, force: true });\"",
+    "clean:dev": "npm run clean && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@supabase/supabase-js": "^2.105.3",
     "lucide-react": "^0.400.0",
     "next": "^14.2.5",

@@ -6,11 +6,11 @@ import { BudgetRange } from '@/types/consultation';
 // Budget Range → 숫자 변환
 // ───────────────────────────────
 const BUDGET_MAP: Record<BudgetRange, { min: number; max: number }> = {
-  under_500:   { min: 0,       max: 500000 },
-  '500_1000':  { min: 500000,  max: 1000000 },
+  under_500: { min: 0, max: 500000 },
+  '500_1000': { min: 500000, max: 1000000 },
   '1000_3000': { min: 1000000, max: 3000000 },
-  over_3000:   { min: 3000000, max: Infinity },
-  undecided:   { min: 0,       max: Infinity },
+  over_3000: { min: 3000000, max: Infinity },
+  undecided: { min: 0, max: Infinity },
 };
 
 // ───────────────────────────────
