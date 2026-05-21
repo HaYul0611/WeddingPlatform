@@ -171,13 +171,13 @@ export default function AdminClient() {
             </p>
           </div>
           <div className="text-right hidden sm:block">
-            <p className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">System Status</p>
+            <p className="text-[11px] font-bold text-stone-400 tracking-widest">시스템 상태</p>
             <div className="mt-2 flex items-center justify-end gap-2 rounded-full bg-emerald-50 px-3 py-1.5">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="text-xs font-bold text-emerald-600">All Systems Operational</span>
+              <span className="text-[11px] font-bold text-emerald-600">모든 시스템 정상 작동</span>
             </div>
           </div>
         </div>

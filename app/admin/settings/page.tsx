@@ -442,80 +442,100 @@ export default function AdminSettingsPage() {
 
         {/* 전체 계정 관리 */}
         {activeTab === 'accounts' && is2FAVerified && (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-10">
+          <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
+            {/* 헤더 */}
             <div className="text-center">
-              <Users size={24} className="text-rose-200 mx-auto mb-5" />
-              <h2 className="text-3xl font-bold text-stone-800 tracking-tight sm:text-4xl">마스터 통합 관리</h2>
-              <p className="mt-3 text-sm text-stone-400 sm:text-base leading-relaxed">전체 관리자 계정을 실시간으로 제어합니다.</p>
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-stone-900 text-white shadow-xl">
+                <Users size={24} />
+              </div>
+              <h2 className="text-3xl font-black text-stone-900 tracking-tight">마스터 통합 관리</h2>
+              <p className="mt-2 text-sm text-stone-400 font-medium">전체 관리자 계정을 실시간으로 제어합니다.</p>
             </div>
 
-            <div className="rounded-[3.5rem] border border-white bg-white/70 p-10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] backdrop-blur-2xl sm:p-14 text-center max-w-6xl mx-auto w-full">
-              <h3 className="mb-12 flex items-center justify-center gap-3 text-xl font-bold text-stone-800 tracking-tight">
-                <UserPlus size={24} className="text-rose-400" /> 신규 관리자 등록
-              </h3>
-              <form onSubmit={createAdmin} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 items-stretch">
-                {/* 첫 번째 줄 */}
-                <div className="lg:col-span-2">
-                  <input type="text" placeholder="업체명" required value={newAdmin.name} onChange={e => setNewAdmin({ ...newAdmin, name: e.target.value })} className="w-full h-full rounded-[1.5rem] border border-rose-50 bg-white px-8 py-6 text-sm outline-none focus:border-rose-200 focus:ring-4 focus:ring-rose-50/50 transition-all text-center font-medium shadow-sm" />
+            {/* 신규 등록 카드 */}
+            <div className="rounded-3xl bg-white border border-stone-100 p-8 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.08)] max-w-5xl mx-auto w-full">
+              <div className="flex items-center gap-3 mb-6 pb-6 border-b border-stone-100">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-stone-100 text-stone-600">
+                  <UserPlus size={18} />
                 </div>
-                <div className="lg:col-span-4">
-                  <input type="email" placeholder="이메일 주소 (company@wedding.care)" required value={newAdmin.email} onChange={e => setNewAdmin({ ...newAdmin, email: e.target.value })} className="w-full h-full rounded-[1.5rem] border border-rose-50 bg-white px-8 py-6 text-sm outline-none focus:border-rose-200 focus:ring-4 focus:ring-rose-50/50 transition-all text-center font-medium shadow-sm" />
+                <div>
+                  <h3 className="text-base font-black text-stone-900">신규 관리자 등록</h3>
+                  <p className="text-xs text-stone-400 font-medium mt-0.5">모든 필드는 필수 입력 항목입니다</p>
                 </div>
-
-                {/* 두 번째 줄 */}
-                <div className="lg:col-span-2">
-                  <input type="password" placeholder="비밀번호" required value={newAdmin.password} onChange={e => setNewAdmin({ ...newAdmin, password: e.target.value })} className="w-full h-full rounded-[1.5rem] border border-rose-50 bg-white px-8 py-6 text-sm outline-none focus:border-rose-200 focus:ring-4 focus:ring-rose-50/50 transition-all text-center font-medium shadow-sm" />
+              </div>
+              <form onSubmit={createAdmin} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <input type="text" placeholder="담당자명" required value={newAdmin.name} onChange={e => setNewAdmin({ ...newAdmin, name: e.target.value })} className="rounded-2xl border border-stone-200 bg-stone-50/50 px-5 py-3.5 text-sm outline-none focus:border-stone-400 focus:bg-white transition-all font-medium placeholder:text-stone-300" />
+                  <input type="email" placeholder="이메일 주소" required value={newAdmin.email} onChange={e => setNewAdmin({ ...newAdmin, email: e.target.value })} className="rounded-2xl border border-stone-200 bg-stone-50/50 px-5 py-3.5 text-sm outline-none focus:border-stone-400 focus:bg-white transition-all font-medium placeholder:text-stone-300" />
+                  <input type="password" placeholder="비밀번호" required value={newAdmin.password} onChange={e => setNewAdmin({ ...newAdmin, password: e.target.value })} className="rounded-2xl border border-stone-200 bg-stone-50/50 px-5 py-3.5 text-sm outline-none focus:border-stone-400 focus:bg-white transition-all font-medium placeholder:text-stone-300" />
                 </div>
-                <div className="lg:col-span-2 relative group">
-                  <select value={newAdmin.targetCompanyId} onChange={e => setNewAdmin({ ...newAdmin, targetCompanyId: e.target.value })} className="w-full h-full rounded-[1.5rem] border border-rose-50 bg-white pl-17 pr-14 py-6 text-sm outline-none focus:border-rose-200 focus:ring-4 focus:ring-rose-50/50 transition-all appearance-none cursor-pointer text-center font-bold text-rose-400 shadow-sm" style={{ textAlignLast: 'center' }}>
-                    <option value="main" className="text-center font-bold">본사 마스터</option>
-                    {companyList.map(c => <option key={c.id} value={c.id} className="text-center">{c.name}</option>)}
-                  </select>
-                  <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-rose-200 group-hover:text-rose-400 transition-colors">
-                    <CheckCircle2 size={18} />
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <select value={newAdmin.targetCompanyId} onChange={e => setNewAdmin({ ...newAdmin, targetCompanyId: e.target.value })} className="w-full rounded-2xl border border-stone-200 bg-stone-50/50 px-5 py-3.5 text-sm outline-none focus:border-stone-400 focus:bg-white transition-all appearance-none cursor-pointer font-semibold text-stone-700">
+                      <option value="main">본사 마스터</option>
+                      {companyList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">
+                      <CheckCircle2 size={16} />
+                    </div>
                   </div>
-                </div>
-                <div className="lg:col-span-2">
-                  <button type="submit" disabled={isLoading} className="w-full h-full rounded-[1.5rem] bg-stone-900 text-white text-sm font-black py-6 hover:bg-black transition-all shadow-xl shadow-stone-200 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                  <button type="submit" disabled={isLoading} className="rounded-2xl bg-stone-900 text-white text-sm font-black px-10 py-3.5 hover:bg-black transition-all shadow-lg hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50">
                     {isLoading ? '등록 중...' : '계정 등록하기'}
                   </button>
                 </div>
               </form>
-              <p className="mt-8 text-[11px] font-bold text-stone-300 uppercase tracking-[0.2em]">모든 필드는 필수 입력 항목입니다</p>
             </div>
 
-            <div className="overflow-hidden rounded-[2.5rem] border border-white bg-white/70 shadow-2xl backdrop-blur-xl">
+            {/* 계정 목록 테이블 */}
+            <div className="rounded-3xl bg-white border border-stone-100 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.08)] max-w-5xl mx-auto w-full overflow-hidden">
+              <div className="flex items-center justify-between px-8 py-5 border-b border-stone-100">
+                <h3 className="text-sm font-black text-stone-900">전체 계정 목록</h3>
+                <span className="text-xs font-bold text-stone-400 bg-stone-100 rounded-full px-3 py-1">{adminList.length}개 계정</span>
+              </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm min-w-[800px]">
-                  <thead className="bg-rose-50/40 text-[11px] font-bold uppercase tracking-[0.2em] text-rose-400 border-b border-rose-50/50">
+                <table className="w-full text-sm min-w-[700px]">
+                  <thead className="bg-stone-50 text-[11px] font-bold uppercase tracking-wider text-stone-500 border-b border-stone-100">
                     <tr>
-                      <th className="px-8 py-8 text-center font-black">업체명</th>
-                      <th className="px-8 py-8 text-center font-black">이메일 주소</th>
-                      <th className="px-8 py-8 text-center font-black">상태 제어</th>
-                      <th className="px-8 py-8 text-center font-black">권한 유형</th>
-                      <th className="px-8 py-8 text-center font-black">제어</th>
+                      <th className="px-6 py-4 text-left font-black">담당자명</th>
+                      <th className="px-6 py-4 text-left font-black">이메일 주소</th>
+                      <th className="px-6 py-4 text-center font-black">소속</th>
+                      <th className="px-6 py-4 text-center font-black">권한</th>
+                      <th className="px-6 py-4 text-center font-black">관리</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-rose-50/20">
+                  <tbody className="divide-y divide-stone-100">
                     {adminList.map((admin) => (
-                      <tr key={admin.id} className="group hover:bg-rose-50/10 transition-colors">
-                        <td className="px-8 py-8 font-bold text-stone-800 text-center">{admin.name}</td>
-                        <td className="px-8 py-8 text-stone-500 font-medium text-center">{admin.email}</td>
-                        <td className="px-8 py-8">
-                          <div className="flex justify-center">
-                            <span className={`rounded-full px-5 py-1.5 text-[10px] font-black tracking-widest shadow-sm ${admin.company_id === 'main' ? 'bg-stone-900 text-white' : 'bg-rose-100 text-rose-500'}`}>
-                              {admin.company_id === 'main' ? '본사' : (companyList.find(c => c.id === admin.company_id)?.name || '업체')}
-                            </span>
+                      <tr key={admin.id} className="group hover:bg-stone-50/50 transition-colors">
+                        <td className="px-6 py-4 font-bold text-stone-800">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-stone-100 text-stone-500 text-xs font-black">
+                              {admin.name?.charAt(0) || '?'}
+                            </div>
+                            {admin.name}
                           </div>
                         </td>
-                        <td className="px-8 py-8">
-                          <div className="flex justify-center gap-3">
-                            <button onClick={() => setEditingAdmin(admin)} className="text-stone-300 hover:text-stone-600 transition-colors p-2"><Edit2 size={18} /></button>
-                            {admin.email !== myInfo?.email && <button onClick={() => deleteAdmin(admin.id)} className="text-rose-200 hover:text-rose-500 transition-colors p-2"><Trash2 size={18} /></button>}
+                        <td className="px-6 py-4 text-stone-500 font-medium text-sm">{admin.email}</td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black tracking-wider ${admin.company_id === 'main' ? 'bg-stone-900 text-white' : 'bg-stone-100 text-stone-600'}`}>
+                            {admin.company_id === 'main' ? '본사' : (companyList.find(c => c.id === admin.company_id)?.name || '업체')}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black tracking-wider ${admin.company_id === 'main' ? 'bg-rose-50 text-rose-500' : 'bg-stone-50 text-stone-500'}`}>
+                            {admin.company_id === 'main' ? '마스터' : '일반'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <button onClick={() => setEditingAdmin(admin)} className="rounded-xl bg-stone-100 text-stone-400 hover:bg-stone-200 hover:text-stone-700 transition-colors p-2"><Edit2 size={14} /></button>
+                            {admin.email !== myInfo?.email && <button onClick={() => deleteAdmin(admin.id)} className="rounded-xl bg-rose-50 text-rose-300 hover:bg-rose-100 hover:text-rose-600 transition-colors p-2"><Trash2 size={14} /></button>}
                           </div>
                         </td>
                       </tr>
                     ))}
+                    {adminList.length === 0 && (
+                      <tr><td colSpan={5} className="px-6 py-16 text-center text-stone-300 font-bold italic">등록된 관리자 계정이 없습니다.</td></tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -532,33 +552,33 @@ export default function AdminSettingsPage() {
               <p className="mt-3 text-sm text-stone-400 sm:text-base leading-relaxed">관리자 계정 생성 시 선택할 수 있는 협력업체 목록을 관리합니다.</p>
             </div>
 
-            <div className="rounded-[2.5rem] border border-white bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-10 text-center">
-              <h3 className="mb-10 flex items-center justify-center gap-2 text-lg font-bold text-stone-800"><UserPlus size={22} className="text-rose-400" /> 신규 업체 등록</h3>
-              <form onSubmit={createCompany} className="flex flex-col gap-5 sm:flex-row sm:items-center max-w-2xl mx-auto">
-                <input type="text" placeholder="등록할 업체명을 입력하세요 (예: 루미너스)" required value={newCompanyName} onChange={e => setNewCompanyName(e.target.value)} className="flex-[3] rounded-2xl border border-rose-50 bg-white px-8 py-5 text-sm outline-none focus:border-rose-200 text-center shadow-inner" />
-                <button type="submit" disabled={isLoading} className="flex-[1] rounded-2xl bg-stone-900 text-white text-sm font-bold py-5 hover:bg-black transition-all shadow-lg">업체 추가하기</button>
+            <div className="rounded-[2.5rem] border border-white bg-white p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] sm:p-10 text-center">
+              <h3 className="mb-10 flex items-center justify-center gap-2 text-lg font-bold text-stone-800"><UserPlus size={22} className="text-stone-400" /> 신규 업체 등록</h3>
+              <form onSubmit={createCompany} className="flex flex-col gap-4 sm:flex-row sm:items-center max-w-2xl mx-auto">
+                <input type="text" placeholder="등록할 업체명을 입력하세요 (예: 루미너스)" required value={newCompanyName} onChange={e => setNewCompanyName(e.target.value)} className="flex-[3] rounded-2xl border border-stone-200 bg-stone-50/50 px-8 py-5 text-sm outline-none focus:border-stone-400 focus:bg-white transition-all text-center placeholder:text-stone-400" />
+                <button type="submit" disabled={isLoading} className="flex-[1] rounded-2xl bg-stone-900 text-white text-sm font-bold py-5 hover:bg-black transition-all shadow-lg hover:shadow-xl disabled:opacity-50">업체 추가하기</button>
               </form>
             </div>
 
-            <div className="overflow-hidden rounded-[2.5rem] border border-white bg-white/70 shadow-2xl backdrop-blur-xl max-w-2xl mx-auto">
+            <div className="overflow-hidden rounded-[2.5rem] border border-stone-100 bg-white shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] max-w-2xl mx-auto">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-rose-50/40 text-[11px] font-bold uppercase tracking-[0.2em] text-rose-400 border-b border-rose-50/50">
+                  <thead className="bg-stone-50 text-[11px] font-bold uppercase tracking-[0.2em] text-stone-500 border-b border-stone-100">
                     <tr>
-                      <th className="px-8 py-8 text-center font-black">업체명</th>
-                      <th className="px-8 py-8 text-center font-black">등록일</th>
-                      <th className="px-8 py-8 text-center font-black">제어</th>
+                      <th className="px-8 py-6 text-center font-black">업체명</th>
+                      <th className="px-8 py-6 text-center font-black">등록일</th>
+                      <th className="px-8 py-6 text-center font-black">제어</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-rose-50/20 text-center">
+                  <tbody className="divide-y divide-stone-100/80 text-center">
                     {companyList.map((company) => (
-                      <tr key={company.id} className="group hover:bg-rose-50/10 transition-colors">
-                        <td className="px-8 py-8 font-bold text-stone-800">{company.name}</td>
-                        <td className="px-8 py-8 text-stone-500 font-medium">{new Date(company.created_at).toLocaleDateString()}</td>
-                        <td className="px-8 py-8">
-                          <div className="flex justify-center gap-3">
-                            <button onClick={() => setEditingCompany(company)} className="text-stone-300 hover:text-stone-600 transition-colors p-2"><Edit2 size={18} /></button>
-                            <button onClick={() => deleteCompany(company.id)} className="text-rose-200 hover:text-rose-500 transition-colors p-2"><Trash2 size={18} /></button>
+                      <tr key={company.id} className="group hover:bg-stone-50/50 transition-colors">
+                        <td className="px-8 py-6 font-bold text-stone-800">{company.name}</td>
+                        <td className="px-8 py-6 text-stone-400 font-medium">{new Date(company.created_at).toLocaleDateString()}</td>
+                        <td className="px-8 py-6">
+                          <div className="flex justify-center gap-2">
+                            <button onClick={() => setEditingCompany(company)} className="rounded-xl bg-stone-100 text-stone-400 hover:bg-stone-200 hover:text-stone-700 transition-colors p-2.5"><Edit2 size={16} /></button>
+                            <button onClick={() => deleteCompany(company.id)} className="rounded-xl bg-rose-50 text-rose-300 hover:bg-rose-100 hover:text-rose-600 transition-colors p-2.5"><Trash2 size={16} /></button>
                           </div>
                         </td>
                       </tr>

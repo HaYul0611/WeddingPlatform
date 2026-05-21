@@ -53,7 +53,7 @@ export default function DashboardAnalytics({ stats }: DashboardAnalyticsProps) {
               <div key={step.label} className="group relative flex h-full flex-1 flex-col justify-end items-center">
                 {/* 바 그래프 */}
                 <div
-                  className={`relative w-full rounded-t-[1.5rem] rounded-b-xl transition-all duration-1000 ease-out ${step.color} group-hover:brightness-110 flex flex-col justify-start items-center pt-3`}
+                  className={`relative w-full rounded-t-[1.5rem] rounded-b-xl transition-all duration-500 ease-out ${step.color} group-hover:brightness-110 group-hover:-translate-y-2 group-hover:scale-[1.02] flex flex-col justify-start items-center pt-3`}
                   style={{ height: `${Math.max(height, 8)}%` }}
                 >
                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100 pointer-events-none z-10">
@@ -114,10 +114,10 @@ export default function DashboardAnalytics({ stats }: DashboardAnalyticsProps) {
 
           <div className="grid w-full grid-cols-2 gap-y-4 gap-x-2">
             {categories.map((cat) => (
-              <div key={cat.label} className="flex items-center gap-2 rounded-xl p-2 hover:bg-stone-50 transition-colors cursor-default">
-                <div className="h-2.5 w-2.5 rounded-full shadow-sm" style={{ backgroundColor: cat.color }} />
-                <p className="text-[11px] font-bold text-stone-600">{cat.label}</p>
-                <p className="ml-auto text-[11px] font-black text-stone-400">{cat.value}%</p>
+              <div key={cat.label} className="group flex items-center gap-2 rounded-xl p-2 hover:bg-stone-50/80 transition-all duration-300 cursor-default hover:scale-105">
+                <div className="h-2.5 w-2.5 rounded-full shadow-sm group-hover:scale-125 transition-transform" style={{ backgroundColor: cat.color }} />
+                <p className="text-[11px] font-bold text-stone-600 group-hover:text-stone-900 transition-colors">{cat.label}</p>
+                <p className="ml-auto text-[11px] font-black text-stone-400 group-hover:text-stone-700 transition-colors">{cat.value}%</p>
               </div>
             ))}
           </div>

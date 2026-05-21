@@ -1833,310 +1833,169 @@ export default function PaymentPage() {
         </div>
       )}
 
-      {/* ── 10. 고품격 결제 다이얼로그 모달 ───────────────────────────────── */}
+      {/* ── 10. 결제 모달 (쇼핑몰 스타일 PG 플로우) ─────────────────────── */}
       {isPaymentModalOpen && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-stone-900/60 animate-in fade-in duration-300"
-            onClick={() => setIsPaymentModalOpen(false)}
-          />
+          <div className="absolute inset-0 bg-stone-900/50 animate-in fade-in duration-300" onClick={() => setIsPaymentModalOpen(false)} />
 
-          <div className="relative z-10 w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl flex flex-col lg:flex-row max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-255">
-            {/* 모달 닫기 버튼 */}
-            <button
-              onClick={() => setIsPaymentModalOpen(false)}
-              className="absolute top-6 right-6 w-9 h-9 flex items-center justify-center rounded-full bg-stone-100/50 hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors z-20"
-            >
-              <X size={16} />
+          <div className="relative z-10 w-full max-w-[900px] bg-white rounded-[2rem] shadow-2xl flex flex-col lg:flex-row max-h-[92vh] overflow-hidden animate-in zoom-in-95 duration-200">
+            <button onClick={() => setIsPaymentModalOpen(false)} className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors z-20">
+              <X size={15} />
             </button>
 
-            {/* 모달 왼쪽: 프리미엄 혜택 리스트 */}
-            <div className="w-full lg:w-[42%] bg-[#FAF9F6] p-7 md:p-9 border-r border-stone-100 flex flex-col justify-between overflow-y-auto custom-scrollbar">
-              <div className="space-y-6">
-                <div>
-                  <div className="inline-flex items-center gap-2 text-rose-500 mb-2">
-                    <Sparkles size={14} className="fill-rose-100/30" />
-                    <span className="text-[10px] font-black tracking-widest uppercase">Premium Upgrade</span>
-                  </div>
-                  <h3 className="text-xl font-black text-stone-900 tracking-tight leading-tight">
-                    단 한 번의 업그레이드,<br />완벽한 청첩장 완성
-                  </h3>
-                  <p className="text-[11px] text-stone-400 mt-2 leading-relaxed font-medium">
-                    결제 즉시 모든 프리미엄 템플릿과 갤러리 확장 용량이 활성화되며, 실시간 RSVP 정보는 구글 시트에 즉시 누적 동기화됩니다.
-                  </p>
+            {/* 왼쪽: 주문 상품 정보 */}
+            <div className="w-full lg:w-[45%] bg-[#F7F6F3] p-8 border-r border-stone-200/60 flex flex-col gap-6 overflow-y-auto">
+              <div>
+                <div className="inline-flex items-center gap-1.5 bg-rose-500 text-white rounded-full px-3 py-1 text-[10px] font-black tracking-widest mb-4">
+                  <Sparkles size={10} /> PREMIUM
                 </div>
+                <h3 className="text-[22px] font-black text-stone-900 tracking-tight leading-snug">프리미엄 플랜<br /><span className="text-rose-500">1년 이용권</span></h3>
+                <p className="text-xs text-stone-400 mt-2 leading-relaxed">결제 즉시 모든 기능이 활성화됩니다</p>
+              </div>
 
-                {/* 혜택들 콤팩트 스택 */}
-                <div className="flex flex-col gap-3">
-                  {BENEFITS.map((b) => {
-                    const Icon = b.icon;
-                    return (
-                      <div key={b.title} className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white border border-stone-200/30 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
-                        <div className={`w-8 h-8 rounded-lg ${b.bg} flex items-center justify-center shrink-0`}>
-                          <Icon size={14} className={b.color} />
-                        </div>
-                        <span className="text-[11px] font-extrabold text-stone-850">{b.title}</span>
-                        <Check size={13} className="text-emerald-500 ml-auto shrink-0" />
+              {/* 주문 항목 */}
+              <div className="bg-white rounded-2xl border border-stone-200/60 divide-y divide-stone-100">
+                {BENEFITS.map((b) => {
+                  const Icon = b.icon;
+                  return (
+                    <div key={b.title} className="flex items-center gap-3 px-4 py-3">
+                      <div className={`w-7 h-7 rounded-lg ${b.bg} flex items-center justify-center shrink-0`}>
+                        <Icon size={13} className={b.color} />
                       </div>
-                    );
-                  })}
+                      <span className="text-[12px] font-semibold text-stone-700 flex-1">{b.title}</span>
+                      <Check size={12} className="text-emerald-500 shrink-0" />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 금액 요약 */}
+              <div className="bg-white rounded-2xl border border-stone-200/60 p-5 space-y-3 text-[12px]">
+                <div className="flex justify-between text-stone-400">
+                  <span>정가</span>
+                  <span className="line-through">₩{originalPrice.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-rose-500 font-bold">
+                  <span className="flex items-center gap-1"><BadgePercent size={12} /> 런칭 특별 할인 (61%)</span>
+                  <span>-₩{launchDiscount.toLocaleString()}</span>
+                </div>
+                {couponApplied && (
+                  <div className="flex justify-between text-emerald-600 font-bold">
+                    <span>쿠폰 할인</span>
+                    <span>-₩{discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="border-t border-dashed border-stone-200 pt-3 flex justify-between items-center">
+                  <span className="font-black text-stone-900 text-[13px]">최종 결제금액</span>
+                  <span className="text-[22px] font-black text-rose-500">₩{finalPrice.toLocaleString()}</span>
                 </div>
               </div>
 
-              {/* 하단 신뢰 배지 */}
-              <div className="border-t border-stone-200/50 pt-5 mt-6 flex items-center justify-between text-[9px] text-stone-400 font-bold">
-                <span className="flex items-center gap-1"><ShieldCheck size={11} className="text-emerald-500" /> SSL 보안망 보안 작동</span>
+              {/* 쿠폰 */}
+              <div className="flex gap-2">
+                <input type="text" placeholder="쿠폰 코드 입력" value={couponCode} onChange={(e) => { setCouponCode(e.target.value); setCouponError(''); }} disabled={couponApplied} className="flex-1 h-10 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-medium outline-none focus:border-stone-400 disabled:opacity-50" />
+                <button onClick={handleCoupon} disabled={couponApplied || !couponCode.trim()} className="h-10 px-4 rounded-xl bg-stone-900 text-white text-xs font-bold disabled:opacity-40 transition-all shrink-0 hover:bg-black">{couponApplied ? '적용됨 ✓' : '적용'}</button>
+              </div>
+              {couponError && <p className="text-[11px] text-rose-500 flex items-center gap-1 -mt-2"><AlertCircle size={11} /> {couponError}</p>}
+
+              <div className="flex items-center justify-between text-[10px] text-stone-400 font-medium mt-auto pt-2 border-t border-stone-200/50">
+                <span className="flex items-center gap-1"><ShieldCheck size={11} className="text-emerald-500" /> SSL 암호화 보안</span>
                 <span>주식회사 Wedding Platform</span>
               </div>
             </div>
 
-            {/* 모달 오른쪽: 금액 산정 및 실결제 폼 */}
-            <div className="w-full lg:w-[58%] p-7 md:p-9 overflow-y-auto custom-scrollbar flex flex-col justify-between">
+            {/* 오른쪽: 결제 수단 선택 + 약관 동의 */}
+            <div className="w-full lg:w-[55%] p-8 overflow-y-auto flex flex-col gap-6">
               <div>
-                <h3 className="text-xs font-black text-stone-950 uppercase tracking-wider mb-6 flex items-center gap-1.5">
-                  <Lock size={12} className="text-rose-500" /> 안전 결제 프로세스
-                </h3>
-
-                {/* 가격 및 쿠폰 영역 */}
-                <div className="bg-[#FAF9F6] rounded-2xl p-5 border border-stone-200/20 mb-6 space-y-3.5 text-[11px] font-bold">
-                  <div className="flex justify-between text-stone-400 font-semibold">
-                    <span>정가 금액</span>
-                    <span className="line-through">₩{originalPrice.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-rose-500">
-                    <span className="flex items-center gap-1"><BadgePercent size={13} /> 런칭 특별 61% 절감</span>
-                    <span>-₩{launchDiscount.toLocaleString()}</span>
-                  </div>
-                  {couponApplied && (
-                    <div className="flex justify-between text-emerald-600">
-                      <span>쿠폰 특별 적용 할인</span>
-                      <span>-₩{discountAmount.toLocaleString()}</span>
-                    </div>
-                  )}
-                  <div className="border-t border-dashed border-stone-200 pt-3 flex justify-between items-end">
-                    <span className="font-extrabold text-[12px] text-stone-900">최종 결제 금액</span>
-                    <span className="text-2xl font-black text-rose-500">₩{finalPrice.toLocaleString()}</span>
-                  </div>
-
-                  {/* 쿠폰 입력란 */}
-                  <div className="flex gap-2 pt-2">
-                    <input
-                      type="text"
-                      placeholder="쿠폰 코드 (WEDDING2026)"
-                      value={couponCode}
-                      onChange={(e) => {
-                        setCouponCode(e.target.value);
-                        setCouponError('');
-                      }}
-                      disabled={couponApplied}
-                      className="flex-1 h-10 rounded-xl border border-stone-200 bg-white px-3 text-[11px] font-semibold outline-none focus:border-rose-300 disabled:opacity-50"
-                    />
-                    <button
-                      onClick={handleCoupon}
-                      disabled={couponApplied || !couponCode.trim()}
-                      className="h-10 px-4 rounded-xl bg-stone-950 hover:bg-stone-850 text-white text-[11px] font-bold disabled:opacity-40 transition-colors shrink-0"
-                    >
-                      {couponApplied ? '적용됨' : '적용'}
-                    </button>
-                  </div>
-                  {couponError && <p className="text-[10px] text-rose-500 flex items-center gap-1"><AlertCircle size={10} /> {couponError}</p>}
-                </div>
-
-                {/* 결제 수단 선택 버튼 - 다양한 PG 옵션 */}
-                <div className="space-y-3 mb-6">
-                  <h4 className="text-[10px] font-black text-stone-400 uppercase tracking-wider">결제 수단 선택</h4>
-
-                  {/* 신용카드 그룹 */}
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'card' as PayMethod, icon: CreditCard, label: '신용카드', color: 'bg-blue-50 border-blue-200 text-blue-700' },
-                      { id: 'samsung' as PayMethod, icon: CreditCard, label: '삼성페이', color: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
-                    ].map(({ id, icon: Icon, label, color }) => {
-                      const isSelected = payMethod === id;
-                      return (
-                        <button
-                          key={id}
-                          onClick={() => setPayMethod(id)}
-                          className={`h-12 rounded-xl border-2 flex items-center justify-center gap-2 text-[11px] font-extrabold transition-all ${isSelected
-                            ? 'border-rose-400 bg-rose-50 text-rose-700 shadow-md shadow-rose-100'
-                            : color
-                            }`}
-                        >
-                          <Icon size={14} />
-                          <span>{label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* 간편결제 그룹 */}
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { id: 'kakao' as PayMethod, icon: Wallet, label: '카카오페이', color: 'bg-yellow-50 border-yellow-300 text-yellow-800' },
-                      { id: 'naver' as PayMethod, icon: Wallet, label: '네이버페이', color: 'bg-green-50 border-green-200 text-green-700' },
-                      { id: 'toss' as PayMethod, icon: Wallet, label: '토스', color: 'bg-sky-50 border-sky-200 text-sky-700' },
-                    ].map(({ id, icon: Icon, label, color }) => {
-                      const isSelected = payMethod === id;
-                      return (
-                        <button
-                          key={id}
-                          onClick={() => setPayMethod(id)}
-                          className={`h-12 rounded-xl border-2 flex flex-col items-center justify-center gap-1 text-[10px] font-extrabold transition-all ${isSelected
-                            ? 'border-rose-400 bg-rose-50 text-rose-700 shadow-md shadow-rose-100'
-                            : color
-                            }`}
-                        >
-                          <Icon size={12} />
-                          <span>{label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* 기타 결제 수단 */}
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'apple' as PayMethod, icon: Apple, label: '애플페이', color: 'bg-gray-50 border-gray-200 text-gray-700' },
-                      { id: 'payco' as PayMethod, icon: Wallet, label: 'PAYCO', color: 'bg-red-50 border-red-200 text-red-700' },
-                    ].map(({ id, icon: Icon, label, color }) => {
-                      const isSelected = payMethod === id;
-                      return (
-                        <button
-                          key={id}
-                          onClick={() => setPayMethod(id)}
-                          className={`h-12 rounded-xl border-2 flex items-center justify-center gap-2 text-[11px] font-extrabold transition-all ${isSelected
-                            ? 'border-rose-400 bg-rose-50 text-rose-700 shadow-md shadow-rose-100'
-                            : color
-                            }`}
-                        >
-                          <Icon size={14} />
-                          <span>{label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 신용카드 상세 폼 */}
-                {payMethod === 'card' && (
-                  <form onSubmit={handlePay} className="space-y-3.5">
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-black text-stone-400 uppercase tracking-wider">카드 번호</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          required
-                          placeholder="XXXX - XXXX - XXXX - XXXX"
-                          value={cardNumber}
-                          onChange={handleCardNumber}
-                          maxLength={19}
-                          className="w-full h-11 rounded-xl border border-stone-200 bg-stone-50 pl-4 pr-10 text-[11px] font-semibold outline-none focus:border-rose-300 focus:bg-white transition-all"
-                        />
-                        <CreditCard size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-300" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black text-stone-400 uppercase tracking-wider">유효기간</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="MM / YY"
-                          value={expiry}
-                          onChange={handleExpiry}
-                          maxLength={5}
-                          className="w-full h-11 rounded-xl border border-stone-200 bg-stone-50 px-3 text-[11px] font-semibold text-center outline-none focus:border-rose-300 focus:bg-white transition-all"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black text-stone-400 uppercase tracking-wider">CVC</label>
-                        <input
-                          type="password"
-                          required
-                          placeholder="뒷 3자리"
-                          value={cvc}
-                          onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                          maxLength={3}
-                          className="w-full h-11 rounded-xl border border-stone-200 bg-stone-50 px-3 text-[11px] font-semibold text-center outline-none focus:border-rose-300 focus:bg-white transition-all"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-black text-stone-400 uppercase tracking-wider">카드 소유주 영문명</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="GILDONG HONG"
-                        value={cardName}
-                        onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                        className="w-full h-11 rounded-xl border border-stone-200 bg-stone-50 px-4 text-[11px] font-semibold outline-none focus:border-rose-300 focus:bg-white transition-all"
-                      />
-                    </div>
-
-                    <AgreementSection
-                      agreeAll={agreeAll}
-                      agreeTerms={agreeTerms}
-                      agreePrivacy={agreePrivacy}
-                      agreeRefund={agreeRefund}
-                      submitAttempted={submitAttempted}
-                      onAllChange={handleAgreeAll}
-                      onTermsChange={setAgreeTerms}
-                      onPrivacyChange={setAgreePrivacy}
-                      onRefundChange={setAgreeRefund}
-                      onOpenModal={setOpenModal}
-                    />
-
-                    <button
-                      type="submit"
-                      className="w-full h-13.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-black shadow-md shadow-rose-100 transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <Lock size={12} />
-                      <span>{finalPrice.toLocaleString()}원 안전 카드 결제</span>
-                    </button>
-                  </form>
-                )}
-
-                {/* 간편결제 폼 */}
-                {payMethod !== 'card' && (
-                  <div className="space-y-4">
-                    <div className={`rounded-2xl p-4.5 text-center border ${payMethod === 'kakao' ? 'bg-yellow-50/50 border-yellow-200' : 'bg-stone-50 border-stone-200'
-                      }`}>
-                      <p className="text-xs font-bold text-stone-700">
-                        {payMethod === 'kakao' && '카카오페이 안전결제'}
-                        {payMethod === 'naver' && '네이버페이 본인인증결제'}
-                        {payMethod === 'apple' && 'Apple Pay 생체간편결제'}
-                      </p>
-                      <p className="text-[10px] text-stone-400 mt-1">간편결제 서비스 기기 연동을 확인한 후 진행합니다</p>
-                    </div>
-
-                    <AgreementSection
-                      agreeAll={agreeAll}
-                      agreeTerms={agreeTerms}
-                      agreePrivacy={agreePrivacy}
-                      agreeRefund={agreeRefund}
-                      submitAttempted={submitAttempted}
-                      onAllChange={handleAgreeAll}
-                      onTermsChange={setAgreeTerms}
-                      onPrivacyChange={setAgreePrivacy}
-                      onRefundChange={setAgreeRefund}
-                      onOpenModal={setOpenModal}
-                    />
-
-                    <button
-                      onClick={handlePay}
-                      className={`w-full h-12 rounded-xl text-xs font-black shadow-md transition-colors flex items-center justify-center gap-1.5 ${payMethod === 'kakao'
-                        ? 'bg-[#FEE500] text-[#3C1E1E] shadow-yellow-100 hover:bg-[#FADA00]'
-                        : 'bg-stone-900 text-white shadow-stone-200 hover:bg-black'
-                        }`}
-                    >
-                      {payMethod === 'kakao' && <Wallet size={11} />}
-                      {payMethod === 'naver' && <Wallet size={11} />}
-                      {payMethod === 'apple' && <Apple size={11} />}
-                      <span>{finalPrice.toLocaleString()}원 간편 결제 요청</span>
-                    </button>
-                  </div>
-                )}
+                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">결제 방법</p>
+                <h4 className="text-base font-black text-stone-900">결제 수단을 선택하세요</h4>
               </div>
+
+              {/* PG사 결제 버튼 그룹 */}
+              <div className="grid grid-cols-2 gap-2.5">
+                {[
+                  { id: 'card' as PayMethod, label: '신용 · 체크카드', desc: '국내 모든 카드 가능', icon: CreditCard, style: 'border-stone-200 bg-white text-stone-800 hover:border-stone-400', selectedStyle: 'border-stone-900 bg-stone-900 text-white' },
+                  { id: 'kakao' as PayMethod, label: '카카오페이', desc: 'QR · 카카오톡 간편 인증', icon: Wallet, style: 'border-yellow-200 bg-yellow-50 text-yellow-800 hover:border-yellow-400', selectedStyle: 'border-yellow-400 bg-[#FEE500] text-[#3C1E1E]' },
+                  { id: 'naver' as PayMethod, label: '네이버페이', desc: '포인트 적립 가능', icon: Wallet, style: 'border-green-200 bg-green-50 text-green-800 hover:border-green-400', selectedStyle: 'border-green-600 bg-green-600 text-white' },
+                  { id: 'toss' as PayMethod, label: '토스페이', desc: '1초 결제', icon: Wallet, style: 'border-sky-200 bg-sky-50 text-sky-800 hover:border-sky-400', selectedStyle: 'border-sky-600 bg-sky-600 text-white' },
+                  { id: 'samsung' as PayMethod, label: '삼성페이', desc: '갤럭시 생체인증', icon: CreditCard, style: 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:border-indigo-400', selectedStyle: 'border-indigo-600 bg-indigo-600 text-white' },
+                  { id: 'apple' as PayMethod, label: 'Apple Pay', desc: 'Face / Touch ID', icon: Apple, style: 'border-stone-200 bg-stone-50 text-stone-800 hover:border-stone-400', selectedStyle: 'border-stone-900 bg-stone-900 text-white' },
+                ].map(({ id, label, desc, icon: Icon, style, selectedStyle }) => {
+                  const isSelected = payMethod === id;
+                  return (
+                    <button key={id} onClick={() => setPayMethod(id)}
+                      className={`group relative flex flex-col items-start gap-1 p-4 rounded-2xl border-2 text-left transition-all duration-200 ${
+                        isSelected ? selectedStyle + ' shadow-lg' : style
+                      }`}>
+                      <div className="flex items-center gap-2 w-full">
+                        <Icon size={15} className="shrink-0" />
+                        <span className="text-[12px] font-black">{label}</span>
+                        {isSelected && <Check size={13} className="ml-auto shrink-0" />}
+                      </div>
+                      <p className={`text-[10px] font-medium pl-[23px] ${isSelected ? 'opacity-70' : 'text-stone-400'}`}>{desc}</p>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 선택한 결제 수단 안내 배너 */}
+              <div className={`rounded-2xl p-4 text-center border text-xs font-semibold ${
+                payMethod === 'kakao' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+                payMethod === 'card' ? 'bg-stone-50 border-stone-200 text-stone-700' :
+                'bg-stone-50 border-stone-200 text-stone-700'
+              }`}>
+                {payMethod === 'card' && '결제 버튼 클릭 시 카드사 안전결제 창이 팝업으로 열립니다.'}
+                {payMethod === 'kakao' && '결제 버튼 클릭 시 카카오페이 QR 결제 화면으로 이동합니다.'}
+                {payMethod === 'naver' && '결제 버튼 클릭 시 네이버페이 본인인증 화면으로 이동합니다.'}
+                {payMethod === 'toss' && '결제 버튼 클릭 시 토스페이 인증 화면으로 이동합니다.'}
+                {payMethod === 'samsung' && '결제 버튼 클릭 시 삼성페이 생체인증 화면으로 이동합니다.'}
+                {payMethod === 'apple' && '결제 버튼 클릭 시 Apple Pay Face/Touch ID 인증이 실행됩니다.'}
+              </div>
+
+              {/* 약관 동의 섹션 (인라인, 블러 없음) */}
+              <div className="rounded-2xl border border-stone-200 bg-stone-50/50 p-5 space-y-3">
+                <p className="text-[11px] font-black text-stone-500 uppercase tracking-wider">결제 및 개인정보 제공 동의</p>
+                {submitAttempted && (!agreeTerms || !agreePrivacy || !agreeRefund) && (
+                  <p className="text-[11px] text-rose-500 font-bold flex items-center gap-1"><AlertCircle size={12} /> 필수 약관에 모두 동의해 주세요</p>
+                )}
+                {/* 전체 동의 */}
+                <label className="flex items-center gap-3 cursor-pointer py-2 border-b border-stone-200">
+                  <div onClick={() => handleAgreeAll(!agreeAll)} className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${agreeAll ? 'bg-stone-900 border-stone-900 text-white' : 'border-stone-300 bg-white'}`}>
+                    {agreeAll && <Check size={10} strokeWidth={3.5} />}
+                  </div>
+                  <span className="text-[12px] font-black text-stone-800">모든 동의사항 전체 수락</span>
+                </label>
+                {/* 개별 동의 */}
+                {[
+                  { key: 'terms', label: '이용약관 동의', value: agreeTerms, setter: setAgreeTerms, modal: 'terms' as const },
+                  { key: 'privacy', label: '개인정보 수집 및 이용 동의', value: agreePrivacy, setter: setAgreePrivacy, modal: 'privacy' as const },
+                  { key: 'refund', label: '환불 정책 및 디지털콘텐츠 동의', value: agreeRefund, setter: setAgreeRefund, modal: 'refund' as const },
+                ].map(({ key, label, value, setter, modal }) => (
+                  <div key={key} className="flex items-center justify-between">
+                    <label className="flex items-center gap-2.5 cursor-pointer">
+                      <div onClick={() => setter(!value)} className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all ${value ? 'bg-rose-500 border-rose-500 text-white' : 'border-stone-300 bg-white'}`}>
+                        {value && <Check size={9} strokeWidth={3.5} />}
+                      </div>
+                      <span className="text-[11px] text-stone-600 font-semibold"><span className="text-rose-500 font-black">[필수]</span> {label}</span>
+                    </label>
+                    <button type="button" onClick={() => setOpenModal(modal)} className="text-[10px] text-stone-400 hover:text-stone-700 font-bold underline underline-offset-2 shrink-0">보기</button>
+                  </div>
+                ))}
+              </div>
+
+              {/* 최종 결제 버튼 */}
+              <button
+                onClick={handlePay}
+                className={`w-full h-14 rounded-2xl text-sm font-black shadow-lg transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 ${
+                  payMethod === 'kakao' ? 'bg-[#FEE500] text-[#3C1E1E] shadow-yellow-200' :
+                  payMethod === 'naver' ? 'bg-green-600 text-white shadow-green-200' :
+                  payMethod === 'toss' ? 'bg-sky-600 text-white shadow-sky-200' :
+                  'bg-stone-900 text-white shadow-stone-200 hover:bg-black'
+                }`}
+              >
+                <Lock size={14} />
+                <span>{finalPrice.toLocaleString()}원 {payMethod === 'kakao' ? '카카오페이로 결제' : payMethod === 'naver' ? '네이버페이로 결제' : payMethod === 'toss' ? '토스페이로 결제' : '안전 결제하기'}</span>
+              </button>
             </div>
           </div>
         </div>

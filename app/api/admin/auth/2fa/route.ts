@@ -47,35 +47,36 @@ export async function POST(req: NextRequest) {
         to: email,
         subject: '[WeddingCare] 계정 관리 권한 확인을 위한 보안 인증번호',
         html: `
-          <div style="font-family: 'Apple SD Gothic Neo', sans-serif; max-width: 540px; margin: 0 auto; padding: 50px 40px; border: 1px solid #f9f0f0; border-radius: 40px; background-color: #ffffff; box-shadow: 0 20px 50px rgba(225,180,180,0.1);">
-            <div style="text-align: center; margin-bottom: 40px;">
-              <div style="display: inline-block; padding: 12px 24px; border-radius: 20px; background-color: #fff5f5; border: 1px solid #feb2b2;">
-                <span style="color: #e11d48; font-size: 11px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;">Security Authentication</span>
-              </div>
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 60px 40px; background-color: #ffffff; border: 1px solid #eaeaea; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04);">
+            <div style="text-align: center; margin-bottom: 50px;">
+              <h1 style="margin: 0; color: #111111; font-size: 22px; font-weight: 900; letter-spacing: -0.5px;">WEDDING CARE</h1>
+              <p style="margin: 6px 0 0; color: #888888; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;">Premium Admin</p>
             </div>
             
-            <h2 style="color: #1a1a1a; font-size: 26px; font-weight: bold; margin-bottom: 16px; text-align: center; tracking: -0.02em;">2차 보안 인증번호</h2>
-            <p style="color: #71717a; font-size: 15px; line-height: 1.8; text-align: center; margin-bottom: 40px;">
-              WeddingCare 마스터 계정 관리 권한 확인을 위해<br/>
-              요청하신 보안 인증번호를 안내해 드립니다.
-            </p>
-
-            <div style="background-color: #fafafa; padding: 45px 30px; border-radius: 30px; margin-bottom: 40px; text-align: center; border: 1px solid #f4f4f5;">
-              <span style="color: #e11d48; font-size: 42px; font-weight: 900; letter-spacing: 12px; margin-left: 12px;">${otpCode}</span>
-            </div>
-
-            <div style="text-align: center; margin-bottom: 45px;">
-              <p style="color: #a1a1aa; font-size: 13px; font-weight: 500;">
-                인증번호는 발송 후 <span style="color: #e11d48; font-weight: bold;">3분간</span> 유효합니다.<br/>
-                시간이 만료된 경우 다시 요청해 주세요.
+            <div style="text-align: center; margin-bottom: 40px;">
+              <h2 style="margin: 0 0 12px; color: #222222; font-size: 22px; font-weight: 700; letter-spacing: -0.5px;">마스터 계정 보안 인증</h2>
+              <p style="margin: 0; color: #666666; font-size: 15px; line-height: 1.6;">
+                보안을 위해 2차 인증을 진행합니다.<br/>
+                아래 6자리 코드를 화면에 입력해 주세요.
               </p>
             </div>
 
-            <div style="border-top: 1px solid #f4f4f5; padding-top: 30px; text-align: center;">
-              <p style="color: #27272a; font-size: 11px; font-weight: 800; letter-spacing: 2px; margin-bottom: 10px;">WEDDINGCARE PREMIUM ADMIN</p>
-              <p style="color: #d4d4d8; font-size: 10px; line-height: 1.6;">
-                본 메일은 WeddingCare 관리자 시스템에서 발송된 보안 전용 메일입니다.<br/>
-                본인이 요청하지 않은 경우 고객센터로 문의해 주세요.
+            <div style="background: linear-gradient(145deg, #f8f9fa, #f1f3f5); padding: 40px 0; border-radius: 16px; margin-bottom: 40px; text-align: center; border: 1px solid #e9ecef; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+              <span style="color: #111111; font-size: 42px; font-weight: 900; letter-spacing: 16px; margin-left: 16px; text-shadow: 0 2px 10px rgba(0,0,0,0.05);">${otpCode}</span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 50px;">
+              <p style="margin: 0; color: #888888; font-size: 14px;">
+                이 인증번호는 <strong style="color: #111111;">3분간</strong> 유효합니다.
+              </p>
+            </div>
+
+            <div style="border-top: 1px solid #eeeeee; padding-top: 30px; text-align: center;">
+              <p style="margin: 0 0 5px; color: #999999; font-size: 12px;">
+                본인이 요청하지 않은 경우, 즉시 비밀번호를 변경해 주세요.
+              </p>
+              <p style="margin: 0; color: #bbbbbb; font-size: 11px;">
+                &copy; 2026 WeddingCare Inc. All rights reserved.
               </p>
             </div>
           </div>

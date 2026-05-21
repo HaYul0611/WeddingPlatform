@@ -13,10 +13,10 @@ function getSupabase() {
 export async function GET(req: NextRequest) {
   try {
     const session = req.cookies.get('admin_session')?.value;
-    const { isValid, companyId } = getSessionData(session);
+    const { isValid, companyId, email } = getSessionData(session);
 
-    if (!isValid || companyId !== 'main') {
-      return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
+    if (!isValid || (companyId !== 'main' && email !== 'ohayul.me@gmail.com')) {
+      return NextResponse.json({ success: false, error: '권한이 없습니다.' }, { status: 403 });
     }
 
     const supabase = getSupabase();
@@ -36,10 +36,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = req.cookies.get('admin_session')?.value;
-    const { isValid, companyId } = getSessionData(session);
+    const { isValid, companyId, email: sessionEmail } = getSessionData(session);
 
-    if (!isValid || companyId !== 'main') {
-      return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
+    if (!isValid || (companyId !== 'main' && sessionEmail !== 'ohayul.me@gmail.com')) {
+      return NextResponse.json({ success: false, error: '권한이 없습니다.' }, { status: 403 });
     }
 
     const { email, password, name, targetCompanyId } = await req.json();
@@ -74,10 +74,10 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const session = req.cookies.get('admin_session')?.value;
-    const { isValid, companyId } = getSessionData(session);
+    const { isValid, companyId, email: sessionEmail } = getSessionData(session);
 
-    if (!isValid || companyId !== 'main') {
-      return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
+    if (!isValid || (companyId !== 'main' && sessionEmail !== 'ohayul.me@gmail.com')) {
+      return NextResponse.json({ success: false, error: '권한이 없습니다.' }, { status: 403 });
     }
 
     const { id, name, email, company_id, status } = await req.json();
@@ -110,12 +110,12 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const session = req.cookies.get('admin_session')?.value;
-    const { isValid, companyId } = getSessionData(session);
+    const { isValid, companyId, email } = getSessionData(session);
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
-    if (!isValid || companyId !== 'main') {
-      return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
+    if (!isValid || (companyId !== 'main' && email !== 'ohayul.me@gmail.com')) {
+      return NextResponse.json({ success: false, error: '권한이 없습니다.' }, { status: 403 });
     }
 
     const supabase = getSupabase();
