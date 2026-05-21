@@ -53,6 +53,13 @@ export default function AdminSettingsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [message, setMessage] = useState({ type: '', text: '' });
+  
+  // 커스텀 알림 팝업 상태
+  const [alertConfig, setAlertConfig] = useState<{ isOpen: boolean; message: string; type?: 'error' | 'success' | 'info' }>({ isOpen: false, message: '' });
+
+  const showAlert = (msg: string, type: 'error' | 'success' | 'info' = 'error') => {
+    setAlertConfig({ isOpen: true, message: msg, type });
+  };
 
   const fetchCompanies = async () => {
     try {
@@ -78,8 +85,9 @@ export default function AdminSettingsPage() {
     if (json.success) {
       setNewCompanyName('');
       fetchCompanies();
+      showAlert('업체가 성공적으로 등록되었습니다.', 'success');
     } else {
-      alert(json.error);
+      showAlert(json.error, 'error');
     }
   };
 
@@ -88,6 +96,7 @@ export default function AdminSettingsPage() {
     const res = await fetch(`/api/admin/companies?id=${id}`, { method: 'DELETE' });
     if ((await res.json()).success) {
       fetchCompanies();
+      showAlert('업체가 삭제되었습니다.', 'success');
     }
   };
 
@@ -105,8 +114,9 @@ export default function AdminSettingsPage() {
     if (json.success) {
       setEditingCompany(null);
       fetchCompanies();
+      showAlert('업체 정보가 수정되었습니다.', 'success');
     } else {
-      alert(json.error);
+      showAlert(json.error, 'error');
     }
   };
 
@@ -178,7 +188,7 @@ export default function AdminSettingsPage() {
   const handleTabChange = async (tab: 'security' | 'accounts' | 'companies') => {
     if (tab === 'accounts' || tab === 'companies') {
       if (isInitialLoading) {
-        alert('정보를 불러오는 중입니다. 잠시만 기다려 주세요.');
+        showAlert('정보를 불러오는 중입니다. 잠시만 기다려 주세요.', 'info');
         return;
       }
 
@@ -197,7 +207,7 @@ export default function AdminSettingsPage() {
       const isMainAdmin = myInfo?.company_id === 'main' || myInfo?.email === 'ohayul.me@gmail.com';
 
       if (!isMainAdmin) {
-        alert('본사 마스터 계정만 접근 가능한 메뉴입니다.');
+        showAlert('본사 마스터 계정만 접근 가능한 메뉴입니다.', 'error');
         return;
       }
 
@@ -225,10 +235,10 @@ export default function AdminSettingsPage() {
       if (json.success) {
         setTimer(180);
       } else {
-        alert('발송 실패: ' + json.error);
+        showAlert('발송 실패: ' + json.error, 'error');
       }
     } catch {
-      alert('발송 중 오류가 발생했습니다.');
+      showAlert('발송 중 오류가 발생했습니다.', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -259,10 +269,10 @@ export default function AdminSettingsPage() {
           setPendingTab(null);
         }
       } else {
-        alert(json.error);
+        showAlert(json.error, 'error');
       }
     } catch {
-      alert('인증 중 오류가 발생했습니다.');
+      showAlert('인증 중 오류가 발생했습니다.', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -285,11 +295,11 @@ export default function AdminSettingsPage() {
     const json = await res.json();
     setIsLoading(false);
     if (json.success) {
-      alert('계정이 성공적으로 등록되었습니다.');
+      showAlert('계정이 성공적으로 등록되었습니다.', 'success');
       setNewAdmin({ email: '', password: '', name: '', targetCompanyId: 'main' });
       fetchAdminList();
     } else {
-      alert(json.error);
+      showAlert(json.error, 'error');
     }
   };
 
@@ -310,11 +320,11 @@ export default function AdminSettingsPage() {
     const json = await res.json();
     setIsLoading(false);
     if (json.success) {
-      alert('정보가 성공적으로 수정되었습니다.');
+      showAlert('정보가 성공적으로 수정되었습니다.', 'success');
       setEditingAdmin(null);
       fetchAdminList();
     } else {
-      alert(json.error);
+      showAlert(json.error, 'error');
     }
   };
 
@@ -643,6 +653,32 @@ export default function AdminSettingsPage() {
           </div>
         )}
       </div>
+
+      {/* 커스텀 알림 모달 */}
+      {alertConfig.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => setAlertConfig({ ...alertConfig, isOpen: false })} />
+          <div className="relative w-full max-w-sm rounded-[2rem] bg-white p-8 text-center shadow-2xl animate-in zoom-in duration-300">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-stone-50 border border-stone-100">
+              {alertConfig.type === 'success' ? <CheckCircle2 size={32} className="text-emerald-500" /> : 
+               alertConfig.type === 'info' ? <AlertCircle size={32} className="text-blue-400" /> :
+               <ShieldAlert size={32} className="text-rose-500" />}
+            </div>
+            <h3 className="mb-2 text-xl font-black text-stone-800">
+              {alertConfig.type === 'success' ? '성공' : alertConfig.type === 'info' ? '안내' : '알림'}
+            </h3>
+            <p className="mb-8 text-sm font-medium text-stone-500 leading-relaxed whitespace-pre-wrap">
+              {alertConfig.message}
+            </p>
+            <button
+              onClick={() => setAlertConfig({ ...alertConfig, isOpen: false })}
+              className="w-full rounded-2xl bg-stone-900 py-4 text-sm font-bold text-white hover:bg-black transition-all shadow-xl"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -66,8 +66,9 @@ export default function ActivityFeed({ isDemoMode }: { isDemoMode: boolean }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {isLoading ? (
+      <div className="max-h-[200px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-stone-300/50 [&::-webkit-scrollbar-track]:bg-transparent hover:[&::-webkit-scrollbar-thumb]:bg-stone-400/50 transition-colors">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {isLoading ? (
           <div className="flex flex-col gap-6">
             {[1, 2, 3].map((n) => (
               <div key={n} className="flex animate-pulse gap-4">
@@ -107,6 +108,7 @@ export default function ActivityFeed({ isDemoMode }: { isDemoMode: boolean }) {
             </div>
           ))
         )}
+        </div>
       </div>
     </div>
   );

@@ -13,9 +13,9 @@ export default function DashboardAnalytics({ stats }: DashboardAnalyticsProps) {
   const funnelSteps = useMemo(() => {
     const { total, contacted, completed } = stats;
     return [
-      { label: '전체 접수', value: total, color: 'bg-stone-200/60' },
-      { label: '상담 진행', value: contacted, color: 'bg-stone-400' },
-      { label: '최종 완료', value: completed, color: 'bg-stone-800' },
+      { label: '전체 접수', value: total, color: 'bg-gradient-to-t from-stone-200 to-stone-50 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.05)] border border-white' },
+      { label: '상담 진행', value: contacted, color: 'bg-gradient-to-t from-stone-400 to-stone-300 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.1)] border border-stone-200/50' },
+      { label: '최종 완료', value: completed, color: 'bg-gradient-to-t from-stone-900 to-stone-700 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.3)] border border-stone-600' },
     ];
   }, [stats]);
 
@@ -53,15 +53,18 @@ export default function DashboardAnalytics({ stats }: DashboardAnalyticsProps) {
               <div key={step.label} className="group relative flex h-full flex-1 flex-col justify-end items-center">
                 {/* 바 그래프 */}
                 <div
-                  className={`relative w-full rounded-2xl transition-all duration-1000 ease-out ${step.color} shadow-sm group-hover:brightness-110`}
-                  style={{ height: `${Math.max(height, 5)}%` }}
+                  className={`relative w-full rounded-t-[1.5rem] rounded-b-xl transition-all duration-1000 ease-out ${step.color} group-hover:brightness-110 flex flex-col justify-start items-center pt-3`}
+                  style={{ height: `${Math.max(height, 8)}%` }}
                 >
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 scale-95 opacity-0 transition-all duration-300 group-hover:scale-100 group-hover:opacity-100">
-                    <div className="rounded-xl bg-stone-900 px-3 py-1.5 text-xs font-bold text-white shadow-xl">
+                  <div className="opacity-0 transition-all duration-300 group-hover:opacity-100 -translate-y-12">
+                    <div className="rounded-xl bg-white/90 backdrop-blur-sm px-3 py-1.5 text-[11px] font-black text-stone-700 shadow-xl border border-stone-100">
                       {step.value}건
                     </div>
-                    <div className="mx-auto h-2 w-2 translate-y-[-4px] rotate-45 bg-stone-900" />
+                    <div className="mx-auto h-2 w-2 translate-y-[-4px] rotate-45 bg-white border-r border-b border-stone-100" />
                   </div>
+                  
+                  {/* 광택 효과 (Glass reflection) */}
+                  <div className="absolute top-1 left-2 right-2 h-1/4 rounded-t-[1rem] bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
                 </div>
                 <p className="mt-4 shrink-0 text-xs font-bold text-stone-500 tracking-tight">{step.label}</p>
                 {i < funnelSteps.length - 1 && (

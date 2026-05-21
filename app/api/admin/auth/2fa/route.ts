@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const session = req.cookies.get('admin_session')?.value;
     const { isValid, companyId } = getSessionData(session);
 
-    if (!isValid || companyId !== 'main') {
+    if (!isValid || (companyId !== 'main' && email !== 'ohayul.me@gmail.com')) {
       return NextResponse.json({ success: false, error: '본사 관리자만 접근 가능합니다.' }, { status: 403 });
     }
 
