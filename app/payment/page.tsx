@@ -40,7 +40,10 @@ import {
   ChevronRight,
   ChevronLeft,
   FileText,
-  Calendar
+  Calendar,
+  UserPlus,
+  Users,
+  Utensils
 } from 'lucide-react';
 
 // ── 타입 정의 ──────────────────────────────────────────────────────────────
@@ -150,6 +153,28 @@ export default function PaymentPage() {
   const [photoDropImages, setPhotoDropImages] = useState<any[]>([]);
   const [photoDropFilter, setPhotoDropFilter] = useState<'최신순' | '인기순'>('최신순');
   const [isPhotoDropLoading, setIsPhotoDropLoading] = useState(false);
+
+  // 체크인 및 1:1 문의 내역 관리
+  const [inquiries, setInquiries] = useState<any[]>([]);
+  const [showSheetToast, setShowSheetToast] = useState(false);
+  
+  const handleSheetClick = () => {
+    setShowSheetToast(true);
+    setTimeout(() => setShowSheetToast(false), 3000);
+  };
+
+  const handleExportExcel = () => {
+    const csvContent = "\uFEFF" + "이름,연락처,동반인원,식사여부,체크인시간\n";
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "guest_list.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleKakaoClick = () => {
     setShowKakaoToast(true);
@@ -1209,7 +1234,9 @@ export default function PaymentPage() {
                             alert('제목과 내용을 모두 입력해주세요.');
                             return;
                           }
+                          setInquiries([...inquiries, { title: inquiryTitle, content: inquiryContent, date: new Date().toLocaleDateString(), status: '접수 대기' }]);
                           setInquirySubmitted(true);
+                          setShowInquiryForm(false);
                           setInquiryTitle('');
                           setInquiryContent('');
                         }}
@@ -1220,6 +1247,19 @@ export default function PaymentPage() {
                     </div>
                   </div>
                 )
+              ) : inquiries.length > 0 ? (
+                <div className="flex-1 flex flex-col p-8 space-y-4">
+                  {inquiries.map((inq, idx) => (
+                    <div key={idx} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold text-rose-500">{inq.status}</span>
+                        <span className="text-[10px] font-bold text-stone-400">{inq.date}</span>
+                      </div>
+                      <h4 className="text-[13px] font-black text-stone-900 mb-2">{inq.title}</h4>
+                      <p className="text-[11px] font-medium text-stone-500 whitespace-pre-wrap">{inq.content}</p>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="flex flex-col items-center justify-center flex-1 text-center py-20 animate-in fade-in duration-300">
                   <div className="text-stone-300 mb-6 flex items-center justify-center">
@@ -1402,13 +1442,112 @@ export default function PaymentPage() {
         )}
 
         {/* ── 기타 탭 처리 ────────────────────────────────────────── */}
-        {(activeTab === 'stats' || activeTab === 'checkin' || activeTab === 'reward') && (
+        {(activeTab === 'stats' || activeTab === 'reward') && (
           <div className="animate-in fade-in duration-200">
-            <h1 className="text-2xl font-black text-stone-950 tracking-tight capitalize">{activeTab}</h1>
+            <h1 className="text-2xl font-black text-stone-950 tracking-tight capitalize">{activeTab === 'stats' ? '통계' : '보상'}</h1>
             <p className="text-[11px] font-bold text-stone-400 mt-1">해당 기능이 준비 중입니다.</p>
             <div className="bg-white border border-stone-200/60 rounded-[2.5rem] p-16 flex flex-col items-center justify-center min-h-[300px] text-center mt-8 shadow-sm">
               <Star size={32} className="text-stone-300 mb-4 animate-spin-slow" />
               <p className="text-xs font-bold text-stone-400">서비스 준비 단계입니다. 곧 찾아뵙겠습니다!</p>
+            </div>
+          </div>
+        )}
+
+        {/* ── 체크인 관리 화면 (이미지 1 요구사항 구현) ───────────────────────── */}
+        {activeTab === 'checkin' && (
+          <div className="animate-in fade-in duration-200 relative">
+            {/* 구글 시트 연동 토스트 */}
+            {showSheetToast && (
+              <div className="absolute top-[3px] right-0 z-[50] bg-stone-800 text-white px-4 py-2 rounded-xl text-[10px] font-bold shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 pointer-events-none">
+                구글 스프레드시트 연동이 준비 중입니다.
+              </div>
+            )}
+
+            <div className="flex items-start justify-between mb-8 max-w-full">
+              <div>
+                <h1 className="text-2xl font-black text-stone-950 tracking-tight">체크인 관리</h1>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col gap-6">
+              
+              {/* 상단 초대장 표시 영역 */}
+              <div className="bg-white border border-stone-100 rounded-[1.5rem] p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center gap-4">
+                <div className="w-12 h-12 bg-stone-100 rounded-2xl flex items-center justify-center shrink-0">
+                  <FileText size={20} className="text-stone-400" />
+                </div>
+                <div>
+                  <h3 className="text-[14px] font-bold text-stone-900">Minjun & Seoyeon</h3>
+                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-stone-400 mt-1">
+                    <FileText size={12} />
+                    <span>RSVP ()</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 알림 메시지 */}
+              <div className="bg-[#FFF9EB] border border-[#FFE8B3] rounded-xl px-5 py-4 flex items-center gap-2">
+                <AlertCircle size={16} className="text-[#D97706]" strokeWidth={2.5}/>
+                <p className="text-[12px] font-bold text-[#D97706]">초대장을 먼저 발행해 주세요.</p>
+              </div>
+
+              {/* 통계 카드 6개 */}
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                {[
+                  { label: '참석 예정', value: '0', icon: <UserPlus size={14} className="text-stone-400"/>, textCol: 'text-stone-900' },
+                  { label: '체크인 완료', value: '0', icon: <UserCheck size={14} className="text-stone-400"/>, textCol: 'text-stone-900' },
+                  { label: '현장 등록', value: '0', icon: <UserPlus size={14} className="text-stone-400"/>, textCol: 'text-stone-900' },
+                  { label: '총 도착', value: '0', icon: <Users size={14} className="text-stone-400"/>, textCol: 'text-blue-600' },
+                  { label: '총 식사 인원', value: '0', icon: <Utensils size={14} className="text-stone-400"/>, textCol: 'text-orange-500' },
+                  { label: '총 축의금', value: '0', icon: <CreditCard size={14} className="text-stone-400"/>, textCol: 'text-emerald-500' }
+                ].map((stat, idx) => (
+                  <div key={idx} className="bg-white border border-stone-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between min-h-[100px]">
+                    <div className="flex items-center gap-1.5">
+                      {stat.icon}
+                      <span className="text-[12px] font-bold text-stone-500">{stat.label}</span>
+                    </div>
+                    <div className={`text-2xl font-black tracking-tight ${stat.textCol}`}>
+                      {stat.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 내보내기 버튼 영역 */}
+              <div className="flex items-center justify-end gap-2 mt-2">
+                <button 
+                  onClick={handleSheetClick}
+                  className="h-10 px-5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-[12px] font-bold flex items-center gap-2 transition-colors shadow-sm"
+                >
+                  <FileText size={16} className="text-blue-600" />
+                  구글 시트 연동
+                </button>
+                <button 
+                  onClick={handleExportExcel}
+                  className="h-10 px-5 rounded-xl bg-[#00A84D] hover:bg-[#009141] text-white text-[12px] font-bold flex items-center gap-2 transition-colors shadow-sm"
+                >
+                  <FileText size={16} />
+                  Excel 내보내기
+                </button>
+              </div>
+
+              {/* 게스트 리스트 영역 */}
+              <div className="space-y-6">
+                <div className="bg-white border border-stone-100 rounded-[1.5rem] p-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] min-h-[200px] flex flex-col">
+                  <h3 className="text-[15px] font-bold text-stone-900 mb-6">RSVP 게스트</h3>
+                  <div className="flex-1 flex items-center justify-center text-[12px] font-medium text-stone-400">
+                    아직 게스트 데이터가 없습니다.
+                  </div>
+                </div>
+
+                <div className="bg-white border border-stone-100 rounded-[1.5rem] p-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] min-h-[200px] flex flex-col">
+                  <h3 className="text-[15px] font-bold text-stone-900 mb-6">현장 등록 게스트</h3>
+                  <div className="flex-1 flex items-center justify-center text-[12px] font-medium text-stone-400">
+                    아직 게스트 데이터가 없습니다.
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         )}
