@@ -43,7 +43,10 @@ import {
   Calendar,
   UserPlus,
   Users,
-  Utensils
+  Utensils,
+  TrendingUp,
+  Clock,
+  Image as ImageIcon
 } from 'lucide-react';
 
 // ── 타입 정의 ──────────────────────────────────────────────────────────────
@@ -1442,13 +1445,119 @@ export default function PaymentPage() {
         )}
 
         {/* ── 기타 탭 처리 ────────────────────────────────────────── */}
-        {(activeTab === 'stats' || activeTab === 'reward') && (
+        {activeTab === 'reward' && (
           <div className="animate-in fade-in duration-200">
-            <h1 className="text-2xl font-black text-stone-950 tracking-tight capitalize">{activeTab === 'stats' ? '통계' : '보상'}</h1>
+            <h1 className="text-2xl font-black text-stone-950 tracking-tight">보상</h1>
             <p className="text-[11px] font-bold text-stone-400 mt-1">해당 기능이 준비 중입니다.</p>
             <div className="bg-white border border-stone-200/60 rounded-[2.5rem] p-16 flex flex-col items-center justify-center min-h-[300px] text-center mt-8 shadow-sm">
               <Star size={32} className="text-stone-300 mb-4 animate-spin-slow" />
               <p className="text-xs font-bold text-stone-400">서비스 준비 단계입니다. 곧 찾아뵙겠습니다!</p>
+            </div>
+          </div>
+        )}
+
+        {/* ── 통계 화면 ────────────────────────────────────────────── */}
+        {activeTab === 'stats' && (
+          <div className="animate-in fade-in duration-200 w-full max-w-full">
+            <div className="flex items-start justify-between mb-8">
+              <div>
+                <h1 className="text-2xl font-black text-stone-950 tracking-tight">통계</h1>
+                <p className="text-[11px] font-bold text-stone-400 mt-1">RSVP 응답 및 방명록 데이터를 확인하세요</p>
+              </div>
+            </div>
+
+            <div className="bg-stone-50/50 border border-stone-100 rounded-[1.5rem] p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 bg-stone-100 rounded-2xl flex items-center justify-center shrink-0">
+                <ImageIcon size={20} className="text-stone-400" />
+              </div>
+              <div>
+                <h3 className="text-[14px] font-bold text-stone-900">Minjun & Seoyeon</h3>
+                <div className="flex items-center gap-1.5 text-[11px] font-medium text-stone-400 mt-1">
+                  <FileText size={12} />
+                  <span>RSVP 0</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 세그먼트 컨트롤 */}
+            <div className="flex items-center bg-stone-100/50 rounded-xl p-1 mb-8">
+              <button className="flex-1 py-2 text-[12px] font-black bg-white text-stone-900 shadow-sm rounded-lg transition-colors">
+                RSVP (0)
+              </button>
+              <button className="flex-1 py-2 text-[12px] font-bold text-stone-500 hover:text-stone-700 transition-colors">
+                방명록 (0)
+              </button>
+              <button className="flex-1 py-2 text-[12px] font-bold text-stone-500 hover:text-stone-700 transition-colors">
+                선물 현황 (0)
+              </button>
+            </div>
+
+            {/* 통계 카드 4개 */}
+            <div className="grid grid-cols-4 gap-4 mb-8">
+              <div className="bg-white border border-stone-100 rounded-[1.5rem] p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[200px]">
+                <div className="flex items-start justify-between">
+                  <span className="text-[11px] font-bold text-stone-500">응답 현황</span>
+                  <TrendingUp size={14} className="text-stone-400" />
+                </div>
+                <div>
+                  <div className="text-2xl font-black text-stone-950 mb-1">0명</div>
+                  <div className="text-[10px] font-bold text-stone-400 mb-1">RSVP 응답</div>
+                  <div className="text-[11px] font-black text-stone-700">총 0명 응답</div>
+                </div>
+                <div className="text-[10px] font-bold text-stone-400 flex items-center gap-1 cursor-pointer hover:text-stone-600 transition-colors mt-4">
+                  초대 인원 설정 <Pencil size={10} />
+                </div>
+              </div>
+
+              <div className="bg-white border border-stone-100 rounded-[1.5rem] p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[200px]">
+                <div className="flex items-start justify-between">
+                  <span className="text-[11px] font-bold text-stone-500">식사 준비</span>
+                  <Utensils size={14} className="text-stone-400" />
+                </div>
+                <div className="mt-auto mb-10">
+                  <div className="text-2xl font-black text-stone-950 mb-1">0명</div>
+                  <div className="text-[10px] font-bold text-stone-400">참석 확정 인원</div>
+                </div>
+              </div>
+
+              <div className="bg-white border border-stone-100 rounded-[1.5rem] p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[200px]">
+                <div className="flex items-start justify-between">
+                  <span className="text-[11px] font-bold text-stone-500">최근 활동</span>
+                  <Clock size={14} className="text-stone-400" />
+                </div>
+                <div className="mt-auto mb-10 text-[11px] font-bold text-stone-400">
+                  아직 활동이 없습니다
+                </div>
+              </div>
+
+              <div className="bg-white border border-stone-100 rounded-[1.5rem] p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[200px]">
+                <div className="flex items-start justify-between">
+                  <span className="text-[11px] font-bold text-stone-500">평균 응답 시간</span>
+                  <Calendar size={14} className="text-stone-400" />
+                </div>
+                <div className="mt-auto mb-10">
+                  <div className="text-2xl font-black text-stone-950 mb-1">0일</div>
+                  <div className="text-[10px] font-bold text-stone-400">초대 후 응답까지</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 프리미엄 유도 배너 */}
+            <div className="bg-white border border-stone-100 rounded-[1.5rem] p-12 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center justify-center text-center mb-8">
+              <Lock size={32} className="text-stone-300 mb-4" strokeWidth={1.5} />
+              <h3 className="text-[15px] font-black text-stone-900 mb-2">방문자 로그는 프리미엄 기능입니다</h3>
+              <p className="text-[11px] font-bold text-stone-500 mb-6">초대장 방문자의 방문 시기, 브라우저, OS, 유입 경로를 확인할 수 있습니다.</p>
+              <button className="h-10 px-6 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-[11px] font-black transition-colors shadow-sm">
+                프리미엄 시작하기
+              </button>
+            </div>
+
+            {/* 하단 빈 리스트 */}
+            <div className="bg-white border border-stone-100 rounded-[1.5rem] p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col min-h-[300px]">
+              <h3 className="text-[13px] font-black text-stone-900 mb-2">RSVP 응답 데이터</h3>
+              <div className="flex-1 flex items-center justify-center text-[11px] font-bold text-stone-500">
+                아직 RSVP 응답이 없습니다
+              </div>
             </div>
           </div>
         )}
