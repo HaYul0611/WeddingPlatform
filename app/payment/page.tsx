@@ -1458,7 +1458,8 @@ export default function PaymentPage() {
           <div className="animate-in fade-in duration-200 relative">
             {/* 구글 시트 연동 토스트 */}
             {showSheetToast && (
-              <div className="absolute top-[3px] right-0 z-[50] bg-stone-800 text-white px-4 py-2 rounded-xl text-[10px] font-bold shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 pointer-events-none">
+              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-stone-800 text-white px-5 py-3 rounded-xl text-[12px] font-bold shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-300 pointer-events-none flex items-center gap-2">
+                <FileText size={16} className="text-blue-400" />
                 구글 스프레드시트 연동이 준비 중입니다.
               </div>
             )}
@@ -1477,7 +1478,7 @@ export default function PaymentPage() {
                   <FileText size={20} className="text-stone-400" />
                 </div>
                 <div>
-                  <h3 className="text-[14px] font-bold text-stone-900">Minjun & Seoyeon</h3>
+                  <h3 className="text-base font-extrabold text-stone-900 tracking-tight">제목없음</h3>
                   <div className="flex items-center gap-1.5 text-[11px] font-medium text-stone-400 mt-1">
                     <FileText size={12} />
                     <span>RSVP ()</span>
