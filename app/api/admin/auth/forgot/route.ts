@@ -82,25 +82,25 @@ export async function POST(req: NextRequest) {
       to: email,
       subject: '[WeddingCare] 관리자 계정 임시 비밀번호 안내',
       html: `
-        <div style="font-family: 'Apple SD Gothic Neo', sans-serif; max-width: 500px; margin: 0 auto; padding: 40px; border: 1px solid #f5f5f5; border-radius: 30px; background-color: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <div style="font-family: 'Apple SD Gothic Neo', sans-serif; max-width: 500px; margin: 0 auto; padding: 40px; border-radius: 20px; background-color: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
           <div style="text-align: center; margin-bottom: 30px;">
              <span style="font-size: 30px;">🔐</span>
           </div>
-          <h2 style="color: #1a1a1a; font-size: 22px; font-weight: bold; margin-bottom: 20px; text-align: center;">임시 비밀번호 안내</h2>
-          <p style="color: #666; font-size: 14px; line-height: 1.8; text-align: center;">
+          <h2 style="color: #ffffff; font-size: 22px; font-weight: bold; margin-bottom: 20px; text-align: center;">임시 비밀번호 발급 안내</h2>
+          <p style="color: #a8a29e; font-size: 14px; line-height: 1.8; text-align: center;">
             안녕하세요, 관리자님.<br/>
             요청하신 계정의 임시 비밀번호를 발송해 드립니다.
           </p>
-          <div style="background-color: #fff5f5; padding: 30px; border-radius: 20px; margin: 30px 0; text-align: center; border: 1px dashed #feb2b2;">
-            <span style="display: block; color: #e53e3e; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px;">Temporary Password</span>
-            <span style="color: #1a1a1a; font-size: 32px; font-weight: 900; letter-spacing: 5px;">${tempPassword}</span>
+          <div style="background-color: #292929; padding: 30px; border-radius: 16px; margin: 30px 0; text-align: center; border: 1px solid #3f3f46;">
+            <span style="display: block; color: #A3C87A; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px;">Temporary Password</span>
+            <span style="color: #ffffff; font-size: 32px; font-weight: 900; letter-spacing: 5px;">${tempPassword}</span>
           </div>
-          <p style="color: #999; font-size: 12px; line-height: 1.8; text-align: center;">
+          <p style="color: #78716c; font-size: 12px; line-height: 1.8; text-align: center;">
             로그인 후 보안을 위해 [설정] 메뉴에서 즉시 비밀번호를 변경해 주시기 바랍니다.<br/>
             본인이 요청하지 않은 경우 계정 보안을 즉시 확인하세요.
           </p>
-          <div style="margin-top: 40px; border-top: 1px solid #f5f5f5; padding-top: 25px; text-align: center;">
-            <p style="color: #ddd; font-size: 10px; font-weight: bold; letter-spacing: 3px;">WEDDINGCARE PREMIUM ADMIN</p>
+          <div style="margin-top: 40px; border-top: 1px solid #3f3f46; padding-top: 25px; text-align: center;">
+            <p style="color: #57534e; font-size: 10px; font-weight: bold; letter-spacing: 3px;">WEDDINGCARE PREMIUM ADMIN</p>
           </div>
         </div>
       `,
