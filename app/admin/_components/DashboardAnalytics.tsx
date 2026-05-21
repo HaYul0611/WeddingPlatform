@@ -56,7 +56,7 @@ export default function DashboardAnalytics({ stats }: DashboardAnalyticsProps) {
                   className={`relative w-full rounded-t-[1.5rem] rounded-b-xl transition-all duration-1000 ease-out ${step.color} group-hover:brightness-110 flex flex-col justify-start items-center pt-3`}
                   style={{ height: `${Math.max(height, 8)}%` }}
                 >
-                  <div className="opacity-0 transition-all duration-300 group-hover:opacity-100 -translate-y-12">
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100 pointer-events-none z-10">
                     <div className="rounded-xl bg-white/90 backdrop-blur-sm px-3 py-1.5 text-[11px] font-black text-stone-700 shadow-xl border border-stone-100">
                       {step.value}건
                     </div>

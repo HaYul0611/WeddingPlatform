@@ -574,7 +574,7 @@ export default function AdminSettingsPage() {
             {/* 업체 수정 모달 */}
             {editingCompany && (
               <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 text-center">
-                <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={() => setEditingCompany(null)} />
+                <div className="absolute inset-0 bg-stone-900/40" onClick={() => setEditingCompany(null)} />
                 <div className="relative w-full max-w-md rounded-[2.5rem] bg-white p-10 shadow-2xl animate-in fade-in zoom-in duration-300">
                   <div className="flex items-center justify-between mb-10">
                     <h3 className="text-xl font-bold text-stone-800">업체명 수정</h3>
@@ -596,7 +596,7 @@ export default function AdminSettingsPage() {
         {/* 2차 인증 모달 */}
         {is2FAModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 text-center">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-md" onClick={() => setIs2FAModalOpen(false)} />
+            <div className="absolute inset-0 bg-stone-900/60" onClick={() => setIs2FAModalOpen(false)} />
             <div className="relative w-full max-w-md rounded-[3rem] bg-white p-10 shadow-2xl animate-in zoom-in duration-300 sm:p-14">
               <div className="mb-10 text-center">
                 <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-[2rem] bg-rose-50 text-rose-400 border border-rose-100 shadow-sm"><ShieldAlert size={36} /></div>
@@ -625,7 +625,7 @@ export default function AdminSettingsPage() {
         {/* 계정 수정 모달 */}
         {editingAdmin && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 text-center">
-            <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={() => setEditingAdmin(null)} />
+            <div className="absolute inset-0 bg-stone-900/40" onClick={() => setEditingAdmin(null)} />
             <div className="relative w-full max-w-lg rounded-[2.5rem] bg-white p-10 shadow-2xl animate-in fade-in zoom-in duration-300">
               <div className="flex items-center justify-between mb-10">
                 <h3 className="text-xl font-bold text-stone-800">관리자 정보 수정</h3>
@@ -657,7 +657,7 @@ export default function AdminSettingsPage() {
       {/* 커스텀 알림 모달 */}
       {alertConfig.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => setAlertConfig({ ...alertConfig, isOpen: false })} />
+          <div className="absolute inset-0 bg-stone-900/60" onClick={() => setAlertConfig({ ...alertConfig, isOpen: false })} />
           <div className="relative w-full max-w-sm rounded-[2rem] bg-white p-8 text-center shadow-2xl animate-in zoom-in duration-300">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-stone-50 border border-stone-100">
               {alertConfig.type === 'success' ? <CheckCircle2 size={32} className="text-emerald-500" /> : 
