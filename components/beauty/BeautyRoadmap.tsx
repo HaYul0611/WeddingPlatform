@@ -178,8 +178,8 @@ export default function BeautyRoadmap({
                   key={value}
                   onClick={() => onDressStyleChange(value)}
                   className={`p-3 rounded-xl border text-left transition-all ${isSelected
-                      ? 'border-rose-400 bg-rose-500 text-white shadow-sm'
-                      : 'border-stone-200 bg-white text-stone-600 hover:border-rose-200 hover:bg-rose-50/30'
+                    ? 'border-rose-400 bg-rose-500 text-white shadow-sm'
+                    : 'border-stone-200 bg-white text-stone-600 hover:border-rose-200 hover:bg-rose-50/30'
                     }`}
                 >
                   <div className="flex items-center gap-1.5 mb-1">
@@ -238,8 +238,8 @@ export default function BeautyRoadmap({
                 key={tab.key}
                 onClick={() => onTimelineChange(tab.key)}
                 className={`rounded-lg py-1.5 text-[10px] font-bold transition-all ${activeTimeline === tab.key
-                    ? 'bg-white text-stone-800 shadow-sm'
-                    : 'text-stone-400 hover:text-stone-600'
+                  ? 'bg-white text-stone-800 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-600'
                   }`}
               >
                 {tab.label}
@@ -258,10 +258,10 @@ export default function BeautyRoadmap({
                 {/* 타임라인 마커 */}
                 <div
                   className={`absolute -left-[21px] top-0.5 h-3.5 w-3.5 rounded-full border-2 transition-all ${step.isCurrent
-                      ? 'border-rose-500 bg-rose-500 ring-4 ring-rose-100'
-                      : step.isPast
-                        ? 'border-stone-400 bg-stone-400'
-                        : 'border-stone-300 bg-white'
+                    ? 'border-rose-500 bg-rose-500 ring-4 ring-rose-100'
+                    : step.isPast
+                      ? 'border-stone-400 bg-stone-400'
+                      : 'border-stone-300 bg-white'
                     }`}
                 />
 
@@ -289,8 +289,8 @@ export default function BeautyRoadmap({
                       <span
                         key={i}
                         className={`text-[8.5px] px-1.5 py-0.5 rounded-md font-bold ${step.isCurrent
-                            ? 'bg-rose-50 text-rose-500 border border-rose-100'
-                            : 'bg-stone-100/50 text-stone-400'
+                          ? 'bg-rose-50 text-rose-500 border border-rose-100'
+                          : 'bg-stone-100/50 text-stone-400'
                           }`}
                       >
                         {b}

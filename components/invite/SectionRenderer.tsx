@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { InvitationSection, InvitationTheme } from '@/types/invitation';
-import { MapPin, Calendar, Users, Heart, MessageSquare, ClipboardCheck, Share2, Info, Camera, Bell, CheckCircle2, QrCode, User, ChevronDown, X, Image as ImageIcon, ChevronLeft, ChevronRight, Lock, Play, Pause, SkipBack, SkipForward } from 'lucide-react';
+import { MapPin, Calendar, Users, Heart, MessageSquare, ClipboardCheck, Share2, Info, Camera, Bell, CheckCircle2, QrCode, User, ChevronDown, X, Image as ImageIcon, ChevronLeft, ChevronRight, Lock, Play, Pause, SkipBack, SkipForward, Copy } from 'lucide-react';
+import PhotoDropWidget from './PhotoDropWidget';
 
 interface SectionRendererProps {
   section: InvitationSection;
@@ -11,61 +12,7 @@ interface SectionRendererProps {
   allSections?: InvitationSection[];
 }
 
-/* ──────────────────────────────────────────
-   프리미엄 럭셔리 공용 섹션 헤더 컴포넌트
- ────────────────────────────────────────── */
-function SectionHeader({
-  title,
-  englishLabel,
-  fontScale,
-  textColor,
-  align = 'center'
-}: {
-  title: string;
-  englishLabel: string;
-  fontScale: number;
-  textColor?: string;
-  align?: 'left' | 'center' | 'right';
-}) {
-  const alignClass = align === 'left' ? 'items-start text-left' : align === 'right' ? 'items-end text-right' : 'items-center text-center';
-  const justifyClass = align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center';
-
-  return (
-    <div className={`flex flex-col gap-2 mb-10 w-full select-none ${alignClass}`}>
-      {/* 1. 은은한 골드브라운 톤의 마이크로 영문 캡션 (럭셔리 웨딩 자간 0.25em 부여) */}
-      <span
-        className="text-[9.5px] font-black tracking-[0.25em] uppercase"
-        style={{
-          fontSize: `${9.5 * fontScale}px`,
-          color: '#B45309', // 기본 웨딩 골드브라운 앰버 칼라
-          opacity: 0.8
-        }}
-      >
-        {englishLabel}
-      </span>
-
-      {/* 2. 기품 있고 정갈한 명조 세리프 한글 대제목 (크기 22px 완벽 동일 표준 규격화) */}
-      <h3
-        className="font-serif break-keep leading-tight font-semibold"
-        style={{
-          fontSize: `${22 * fontScale}px`,
-          color: textColor || '#1C1917',
-          letterSpacing: '-0.02em',
-          marginTop: '2px'
-        }}
-      >
-        {title}
-      </h3>
-
-      {/* 3. 극도의 미니멀리즘을 표현하는 초슬림 데코 가로선과 센터 닷 */}
-      <div className={`flex items-center gap-2 mt-2.5 opacity-30 text-[#D97706] ${justifyClass}`}>
-        <div className="w-4 h-[0.5px] bg-current" />
-        <div className="w-1 h-1 rounded-full bg-current animate-pulse" />
-        <div className="w-4 h-[0.5px] bg-current" />
-      </div>
-    </div>
-  );
-}
+import SectionHeader from './SectionHeader';
 
 /* ──────────────────────────────────────────
    RSVP 섹션 독립 컴포넌트 (Hook 규칙 준수)
@@ -77,6 +24,43 @@ function SectionDividerComp() {
       <div className="w-1 h-1 rounded-full bg-current opacity-30" />
       <div className="flex-1 h-px bg-current opacity-20" />
     </div>
+  );
+}
+
+// ── 주소 복사 버튼 — 클릭 시 노란색 체크 피드백 1.5초 표시 후 원복 ──
+function CopyAddressButton({ address, theme, st }: { address: string; theme: any; st: any }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    if (!address.trim()) return;
+    navigator.clipboard.writeText(address.trim())
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); })
+      .catch(() => { setCopied(false); });
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className={`w-full mt-3 py-3.5 border rounded-2xl text-[13px] font-bold transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)] active:scale-[0.98] flex items-center justify-center gap-2 ${copied ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : ''
+        }`}
+      style={copied ? undefined : {
+        backgroundColor: theme.bgColor === '#ffffff' ? '#ffffff' : 'rgba(255,255,255,0.07)',
+        borderColor: theme.bgColor === '#ffffff' ? '#e7e5e4' : 'rgba(255,255,255,0.15)',
+        color: st.color || '#444444'
+      }}
+    >
+      {copied ? (
+        <>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+          복사되었습니다!
+        </>
+      ) : (
+        <>
+          <Copy className="w-4 h-4 shrink-0" />
+          주소 복사하기
+        </>
+      )}
+    </button>
   );
 }
 
@@ -95,7 +79,7 @@ const GuestbookCard = ({ msg, st, onOpenDelete }: { msg: any; st: any; onOpenDel
   if (msg.isPrivate) {
     return (
       <div
-        className="w-full aspect-[1.58/1] perspective-1000 cursor-pointer"
+        className="w-full aspect-[2.2/1] perspective-1000 cursor-pointer group"
         onClick={() => setIsFlipped(!isFlipped)}
       >
         <style jsx>{`
@@ -177,13 +161,13 @@ const GuestbookCard = ({ msg, st, onOpenDelete }: { msg: any; st: any; onOpenDel
               Wedding
             </span>
 
-            {/* 우측 상단 삭제 버튼 */}
+            {/* 우측 상단 삭제 버튼 — hover 시에만 표시 */}
             <button
               onClick={(e) => {
                 e.stopPropagation(); // 카드 뒤집히는 이벤트 방지
                 onOpenDelete();
               }}
-              className="absolute right-4 top-4 text-stone-300 hover:text-stone-500 transition-colors p-0.5 bg-transparent border-0 cursor-pointer z-20"
+              className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 text-stone-300 hover:text-stone-500 transition-all p-0.5 bg-transparent border-0 cursor-pointer z-20"
             >
               <X size={13} />
             </button>
@@ -249,14 +233,14 @@ const GuestbookCard = ({ msg, st, onOpenDelete }: { msg: any; st: any; onOpenDel
 
   // 일반 카드
   return (
-    <div className="relative w-full aspect-[1.58/1] bg-gradient-to-br from-[#FAF9F5] to-[#F1EFEA] rounded-2xl border border-[#E5E3DC] shadow-md p-5 flex flex-col justify-between text-left overflow-hidden select-none">
+    <div className="relative w-full aspect-[2.2/1] bg-gradient-to-br from-[#FAF9F5] to-[#F1EFEA] rounded-2xl border border-[#E5E3DC] shadow-md p-4 flex flex-col justify-between text-left overflow-hidden select-none group">
       <div className="absolute -right-8 -bottom-8 w-28 h-28 rounded-full border border-stone-400/5 pointer-events-none" />
       <span className="absolute right-10 top-2 text-[8px] font-bold text-stone-400/45 tracking-[0.25em] uppercase pointer-events-none whitespace-nowrap">
         Wedding
       </span>
       <button
         onClick={onOpenDelete}
-        className="absolute right-4 top-4 text-stone-300 hover:text-stone-500 transition-colors p-0.5 bg-transparent border-0 cursor-pointer z-20"
+        className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 text-stone-300 hover:text-stone-500 transition-all p-0.5 bg-transparent border-0 cursor-pointer z-20"
       >
         <X size={13} />
       </button>
@@ -314,20 +298,51 @@ const GuestbookCard = ({ msg, st, onOpenDelete }: { msg: any; st: any; onOpenDel
 };
 
 function GuestbookWidget({ section, st }: { section: any; st: any }) {
-  const [messages, setMessages] = useState<Array<{ id: string; name: string; content: string; password?: string; date: string; isPrivate?: boolean }>>([
-    { id: '1', name: '축하객 1', content: '두 분의 결혼을 진심으로 축하드립니다!', password: '1111', date: '2026.05.18', isPrivate: false },
-    { id: '2', name: '축하객 2', content: '서로 아끼고 사랑하며 행복한 가정 이루시길 기원합니다.', password: '2222', date: '2026.05.18', isPrivate: true }
-  ]);
+  const [messages, setMessages] = useState<Array<{ id: string; name: string; content: string; password?: string; date: string; isPrivate?: boolean; clientId?: string }>>([]);
   const [isWriteOpen, setIsWriteOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [targetDeleteId, setTargetDeleteId] = useState<string | null>(null);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [invitationId, setInvitationId] = useState<string>('preview');
 
   // 포털 마운트 체커
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== 'undefined') {
+      const isPublished = window.location.pathname.includes('/lovecard/');
+      const currentId = isPublished ? window.location.pathname.split('/').pop() || 'preview' : 'preview';
+      setInvitationId(currentId);
+    }
     return () => setMounted(false);
   }, []);
+
+  useEffect(() => {
+    if (invitationId === 'preview') {
+      setMessages([
+        { id: '1', name: '축하객 1', content: '두 분의 결혼을 진심으로 축하드립니다!', password: '1111', date: '2026.05.18', isPrivate: false },
+        { id: '2', name: '축하객 2', content: '서로 아끼고 사랑하며 행복한 가정 이루시길 기원합니다.', password: '2222', date: '2026.05.18', isPrivate: true }
+      ]);
+      return;
+    }
+    fetch(`/api/guestbook?invitationId=${invitationId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.messages) setMessages(data.messages);
+        if (data.isBlocked) setIsBlocked(true);
+      })
+      .catch(err => console.error('Error fetching guestbook:', err));
+  }, [invitationId]);
+
+  const getClientId = () => {
+    if (typeof window === 'undefined') return 'unknown';
+    let id = localStorage.getItem('wedding_guestbook_clientId');
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem('wedding_guestbook_clientId', id);
+    }
+    return id;
+  };
 
   // 작성 폼 상태
   const [newName, setNewName] = useState('');
@@ -342,7 +357,7 @@ function GuestbookWidget({ section, st }: { section: any; st: any }) {
   const uiStyle = section.uiStyle || 'card';
   const alignClass = align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!newName.trim()) {
       alert('이름을 입력해주세요.');
       return;
@@ -356,40 +371,146 @@ function GuestbookWidget({ section, st }: { section: any; st: any }) {
       return;
     }
 
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const todayStr = `${yyyy}.${mm}.${dd}`;
+    if (invitationId === 'preview') {
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+      const newMsg = {
+        id: crypto.randomUUID(),
+        name: newName,
+        content: newContent,
+        password: newPassword,
+        date: todayStr,
+        isPrivate: isNewPrivate,
+        clientId: getClientId()
+      };
+      setMessages([newMsg, ...messages]);
+      setIsWriteOpen(false);
+      setNewName(''); setNewContent(''); setNewPassword(''); setIsNewPrivate(false);
+      return;
+    }
 
-    const newMsg = {
-      id: crypto.randomUUID(),
-      name: newName,
-      content: newContent,
-      password: newPassword,
-      date: todayStr,
-      isPrivate: isNewPrivate
-    };
+    try {
+      const res = await fetch('/api/guestbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          invitationId,
+          name: newName,
+          content: newContent,
+          password: newPassword,
+          isPrivate: isNewPrivate,
+          clientId: getClientId()
+        })
+      });
+      const data = await res.json();
 
-    setMessages([newMsg, ...messages]);
-    setIsWriteOpen(false);
-    setNewName('');
-    setNewContent('');
-    setNewPassword('');
-    setIsNewPrivate(false);
+      if (!res.ok) {
+        alert(data.error || '방명록 등록에 실패했습니다.');
+        return;
+      }
+
+      setMessages([data.message, ...messages]);
+      setIsWriteOpen(false);
+      setNewName(''); setNewContent(''); setNewPassword(''); setIsNewPrivate(false);
+    } catch (e) {
+      alert('네트워크 오류가 발생했습니다.');
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const targetMsg = messages.find(m => m.id === targetDeleteId);
     if (!targetMsg) return;
-    if (targetMsg.password === deletePassword) {
+
+    const clientId = getClientId();
+
+    if (invitationId === 'preview') {
+      if (targetMsg.clientId === clientId || targetMsg.password === deletePassword) {
+        setMessages(messages.filter(m => m.id !== targetDeleteId));
+        setIsDeleteOpen(false); setDeletePassword(''); setTargetDeleteId(null);
+        alert('방명록이 성공적으로 삭제되었습니다.');
+      } else {
+        alert('권한이 없습니다. (비밀번호 불일치)');
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/guestbook/${targetDeleteId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: deletePassword, clientId })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || '삭제에 실패했습니다.');
+        return;
+      }
+
       setMessages(messages.filter(m => m.id !== targetDeleteId));
-      setIsDeleteOpen(false);
-      setDeletePassword('');
-      setTargetDeleteId(null);
+      setIsDeleteOpen(false); setDeletePassword(''); setTargetDeleteId(null);
       alert('방명록이 성공적으로 삭제되었습니다.');
+    } catch (e) {
+      alert('네트워크 오류가 발생했습니다.');
+    }
+  };
+
+  const handleOpenDelete = (msg: any) => {
+    const clientId = getClientId();
+    if (msg.clientId === clientId && msg.clientId !== 'unknown') {
+      if (window.confirm('방명록을 삭제하시겠습니까?')) {
+        setTargetDeleteId(msg.id);
+        setDeletePassword(''); // 본인 기기면 백엔드 검증 시 password 없어도 clientId로 패스되게 해야하지만, 모달 패스용으로 바로 삭제 처리
+        // 직접 handleDelete를 호출하도록 구성하는 편이 좋으나, 모달을 띄우지 않으려면 임시로 deletePassword 세팅 후 handleDelete 호출
+        handleDeleteDirect(msg.id, clientId, '');
+      }
     } else {
-      alert('비밀번호가 일치하지 않습니다.');
+      setTargetDeleteId(msg.id);
+      setIsDeleteOpen(true);
+    }
+  };
+
+  const handleDeleteDirect = async (id: string, clientId: string, password: string) => {
+    if (invitationId === 'preview') {
+      setMessages(messages.filter(m => m.id !== id));
+      alert('방명록이 성공적으로 삭제되었습니다.');
+      return;
+    }
+    try {
+      const res = await fetch(`/api/guestbook/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, clientId })
+      });
+      if (res.ok) {
+        setMessages(messages.filter(m => m.id !== id));
+        alert('방명록이 성공적으로 삭제되었습니다.');
+      } else {
+        const data = await res.json();
+        alert(data.error || '삭제에 실패했습니다.');
+      }
+    } catch (e) {}
+  };
+
+  const handleReport = async (msg: any) => {
+    if (window.confirm('이 글을 신고하시겠습니까? 누적 시 게시글이 차단될 수 있습니다.')) {
+      if (invitationId === 'preview') {
+        alert('미리보기에서는 신고할 수 없습니다.');
+        return;
+      }
+      try {
+        const res = await fetch(`/api/guestbook/${msg.id}/report`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          alert('신고가 접수되었습니다.');
+          if (data.isHidden) {
+            setMessages(messages.filter(m => m.id !== msg.id));
+            setIsBlocked(true); // 차단 임계치 도달 시
+          }
+        } else {
+          alert('신고 처리에 실패했습니다.');
+        }
+      } catch (e) {}
     }
   };
 
@@ -416,7 +537,7 @@ function GuestbookWidget({ section, st }: { section: any; st: any }) {
                     >{msg.name}</span>
                     <span className="text-[9px] text-stone-300">{msg.date}</span>
                     <button
-                      onClick={() => { setTargetDeleteId(msg.id); setIsDeleteOpen(true); }}
+                      onClick={() => handleOpenDelete(msg)}
                       className="text-stone-300 hover:text-red-500 transition-colors ml-1 p-0.5"
                     >
                       <X size={10} />
@@ -459,7 +580,7 @@ function GuestbookWidget({ section, st }: { section: any; st: any }) {
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-stone-400">{msg.date}</span>
                     <button
-                      onClick={() => { setTargetDeleteId(msg.id); setIsDeleteOpen(true); }}
+                      onClick={() => handleOpenDelete(msg)}
                       className="text-stone-300 hover:text-red-500 transition-colors p-0.5"
                     >
                       <X size={12} />
@@ -488,19 +609,25 @@ function GuestbookWidget({ section, st }: { section: any; st: any }) {
                 key={msg.id}
                 msg={msg}
                 st={st}
-                onOpenDelete={() => { setTargetDeleteId(msg.id); setIsDeleteOpen(true); }}
+                onOpenDelete={() => handleOpenDelete(msg)}
               />
             );
           }
         })}
       </div>
 
-      <button
-        onClick={() => setIsWriteOpen(true)}
-        className="w-full py-4 bg-stone-50 border border-stone-200 text-stone-600 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 hover:bg-stone-100 transition-colors shadow-sm active:scale-[0.99]"
-      >
-        <MessageSquare size={16} /> 방명록 작성하기
-      </button>
+      {isBlocked ? (
+        <div className="w-full py-4 bg-red-50 border border-red-100 text-red-500/80 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 shadow-sm select-none">
+          <MessageSquare size={16} /> 신고 누적으로 인해 방명록 작성이 제한되었습니다
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsWriteOpen(true)}
+          className="w-full py-4 bg-stone-50 border border-stone-200 text-stone-600 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 hover:bg-stone-100 transition-colors shadow-sm active:scale-[0.99]"
+        >
+          <MessageSquare size={16} /> 방명록 작성하기
+        </button>
+      )}
 
       {/* 작성 모달 팝업 - Body Portal 전격 탑재 */}
       {isWriteOpen && mounted && createPortal(
@@ -1002,12 +1129,12 @@ function RsvpSectionRenderer({ section, theme, st }: { section: any; theme: Invi
 
   const renderPreviewModal = (stepCount: number) => (
     <div
-      className={`absolute inset-0 z-[9999] flex items-end justify-center bg-black/45 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}
+      className={`fixed inset-0 z-[9999] flex items-end justify-center bg-black/50 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}
       onClick={(e) => { if (e.target === e.currentTarget) handleCloseModal(); }}
     >
       <div
         className={`relative w-full bg-white shadow-2xl overflow-y-auto no-scrollbar transition-transform duration-300 ease-in-out ${isClosing ? 'translate-y-full' : 'translate-y-0 animate-in slide-in-from-bottom-full'}`}
-        style={{ maxWidth: '100%', maxHeight: '88%', borderRadius: '1.5rem 1.5rem 0 0', padding: '1.5rem 1.5rem 2.5rem' }}
+        style={{ maxWidth: '480px', maxHeight: '88vh', borderRadius: '1.5rem 1.5rem 0 0', padding: '1.5rem 1.5rem 2.5rem' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-10 h-1.5 bg-stone-200 rounded-full mx-auto mb-5" />
@@ -1058,22 +1185,21 @@ function RsvpSectionRenderer({ section, theme, st }: { section: any; theme: Invi
         )}
       </div>
 
-      {displayMode === 'sticky' && isStickyVisible && mounted && createPortal(
-        <div style={{ position: 'absolute', bottom: '32px', left: '50%', transform: 'translateX(-50%)', zIndex: 500 }} className="flex justify-center w-full">
+      {/* sticky 버튼: 포털 제거 — 직접 JSX로 렌더링 */}
+      {displayMode === 'sticky' && isStickyVisible && mounted && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex justify-center">
           <button
             onClick={handleOpenModal}
             className="px-8 py-2.5 rounded-full text-[13px] font-black tracking-wide shadow-[0_6px_22px_rgba(0,0,0,0.15)] active:scale-[0.95] transition-all flex items-center justify-center hover:scale-[1.03] bg-[#2D2D2D] hover:bg-[#1C1917] text-white"
           >
             참석 의사 전달하기
           </button>
-        </div>,
-        document.getElementById('preview-phone-screen') || document.body
+        </div>
       )}
 
-      {/* ── 모든 모달 (버튼, 자동팝업, 스티키): 미리보기 창 내부 absolute, 블러 없음 ── */}
-      {showModal && mounted && (displayMode === 'button' || displayMode === 'popup' || displayMode === 'sticky') && createPortal(
-        renderPreviewModal(3),
-        document.getElementById('preview-phone-screen') || document.body
+      {/* RSVP 모달: fixed 오버레이 — 화면 중앙 하단에 패널 등장 */}
+      {showModal && mounted && (displayMode === 'button' || displayMode === 'popup' || displayMode === 'sticky') && (
+        renderPreviewModal(3)
       )}
     </>
   );
@@ -2197,7 +2323,7 @@ function InnerSectionRenderer({ section, theme, allSections, setCopyToastMessage
           )}
 
           <div className="flex flex-col gap-8 w-full">
-            <p className={`whitespace-pre-line text-[16px] leading-[2.2] font-medium tracking-tight ${getAnimClass()}`} style={{ color: st.color || 'inherit' }}>
+            <p className={`whitespace-pre-line text-[16px] leading-[2.2] font-medium tracking-tight ${getAnimClass()} ${align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center'}`} style={{ color: st.color || 'inherit' }}>
               {section.text || '살아가다 문득 뒤돌아보았을 때\n가장 먼저 떠오르는 사람이\n서로이길 바라는 마음으로\n저희 두 사람이 사랑의 서약을 하려 합니다.'}
             </p>
 
@@ -2512,26 +2638,11 @@ function InnerSectionRenderer({ section, theme, allSections, setCopyToastMessage
             )}
 
             {section.showCopyAddress && (
-              <button
-                onClick={() => {
-                  const fullAddress = `${section.address || ''}${section.detailAddress ? ' ' + section.detailAddress : ''}`.trim();
-                  if (fullAddress) {
-                    navigator.clipboard.writeText(fullAddress)
-                      .then(() => window.alert('주소가 복사되었습니다.'))
-                      .catch(() => window.alert('주소 복사에 실패했습니다. 직접 복사해주세요.'));
-                  } else {
-                    window.alert('복사할 주소 정보가 없습니다.');
-                  }
-                }}
-                className="w-full mt-3 py-3.5 border rounded-2xl text-[13px] font-bold transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)] active:scale-[0.98]"
-                style={{
-                  backgroundColor: theme.bgColor === '#ffffff' ? '#ffffff' : 'rgba(255,255,255,0.07)',
-                  borderColor: theme.bgColor === '#ffffff' ? '#e7e5e4' : 'rgba(255,255,255,0.15)',
-                  color: st.color || '#444444'
-                }}
-              >
-                주소 복사하기
-              </button>
+              <CopyAddressButton
+                address={`${section.address || ''}${section.detailAddress ? ' ' + section.detailAddress : ''}`}
+                theme={theme}
+                st={st}
+              />
             )}
           </div>
         </div>
@@ -2602,7 +2713,10 @@ function InnerSectionRenderer({ section, theme, allSections, setCopyToastMessage
                         }
                       }}
                     >
-                      복사하기
+                      <div className="flex items-center gap-1.5">
+                        <Copy className="w-3 h-3 shrink-0" />
+                        복사하기
+                      </div>
                     </button>
                   </div>
                   <div className="text-[14px] font-medium tracking-tight opacity-75" style={{ color: st.color || 'inherit' }}>
@@ -2964,65 +3078,7 @@ function InnerSectionRenderer({ section, theme, allSections, setCopyToastMessage
     }
 
     case 'photoDrop': {
-      const useBg = (section as any).useBackgroundColor;
-      const align = (section as any).textAlign || 'center';
-      const images = (section as any).images || [];
-
-      return (
-        <div
-          className={`px-8 py-16 relative group overflow-hidden ${useBg ? 'bg-[#F9FAFB]' : 'bg-white'} transition-all`}
-          style={{ ...st }}
-        >
-          {/* 타이틀 및 헤더 */}
-          <SectionHeader
-            title={(section as any).title || '포토드롭'}
-            englishLabel="PHOTO DROP"
-            fontScale={fontScale}
-            textColor={st.color}
-            align={align as any}
-          />
-          {(section as any).description && (
-            <p className="text-[13px] text-stone-500 leading-relaxed text-center -mt-6 mb-10 break-keep mx-auto opacity-75 max-w-[280px]" style={{ fontSize: `${13 * fontScale}px` }}>{(section as any).description}</p>
-          )}
-
-          {/* 사진 콘텐츠 및 호버 드롭 가이드 오버레이 영역 */}
-          <div className="w-full relative rounded-2xl overflow-hidden min-h-[220px] bg-stone-50 border border-stone-200/40 flex flex-col items-center justify-center transition-all shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
-            {images.length > 0 ? (
-              <div className="grid grid-cols-3 gap-1.5 p-2 w-full animate-fade-in">
-                {images.map((img: any, i: number) => (
-                  <div key={i} className="aspect-square bg-stone-100 overflow-hidden rounded-xl">
-                    <img src={img.url} className="w-full h-full object-cover" alt="" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              // 사진이 없는 평상시 뷰 (첫 번째 이미지와 100% 동일한 회색조 마스터피스 배치)
-              <div className="py-12 flex flex-col items-center justify-center gap-4 text-center select-none animate-fade-in">
-                <div className="text-[9.5px] font-bold text-stone-400 tracking-[0.25em] uppercase">PHOTO DROP</div>
-                <h4 className="text-[17px] font-serif font-medium text-stone-700">포토 드롭</h4>
-                <div className="flex items-center gap-2 px-6 py-2.5 bg-white border border-stone-200 rounded-full text-[12px] font-bold text-stone-600 shadow-sm transition-all hover:bg-stone-50 active:scale-95">
-                  <Camera size={14} className="text-stone-400" />
-                  <span>사진 올리기</span>
-                </div>
-                <p className="text-[12px] text-stone-300 font-medium">아직 사진이 없습니다</p>
-              </div>
-            )}
-
-            {/* ── 사진이 전혀 없을 때만 마우스 호버 시 샥 활성화되는 실물 가이드 오버레이 레이어 노출 (사진이 있을 때는 오버레이 완전 차단) ── */}
-            {images.length === 0 && (
-              <div className="absolute inset-0 bg-stone-900/60 flex flex-col items-center justify-center gap-4 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
-                <div className="text-[9.5px] font-bold text-white/80 tracking-[0.25em] uppercase animate-pulse">PHOTO DROP</div>
-                <h4 className="text-[17px] font-serif font-medium text-white">포토 드롭</h4>
-                <div className="flex items-center gap-2 px-6 py-2.5 bg-white text-stone-800 rounded-full text-[12px] font-bold shadow-lg hover:scale-105 active:scale-95 transition-all">
-                  <Camera size={14} className="text-stone-600" />
-                  <span>사진 올리기</span>
-                </div>
-                <p className="text-[12px] text-white/60 font-medium">아직 사진이 없습니다</p>
-              </div>
-            )}
-          </div>
-        </div>
-      );
+      return <PhotoDropWidget section={section} st={st} fontScale={fontScale} />;
     }
 
     case 'notice': {
@@ -3248,10 +3304,10 @@ function InnerSectionRenderer({ section, theme, allSections, setCopyToastMessage
             // [인라인 모드]: 전체 목록이 한눈에 보이는 스타일
             <div className="flex flex-col gap-10">
               {items.map((item: any) => (
-                <div key={item.id} className={`${getCardClasses(true)} flex flex-col gap-5`}>
-                  <div className="flex flex-col gap-2">
+                <div key={item.id} className={`${getCardClasses(true)} flex flex-col gap-5 ${align === 'left' ? 'items-start text-left' : align === 'right' ? 'items-end text-right' : 'items-center text-center'}`}>
+                  <div className={`flex flex-col gap-2 ${align === 'left' ? 'items-start' : align === 'right' ? 'items-end' : 'items-center'}`}>
                     <h5 className="text-[16.5px] font-bold text-stone-800 tracking-tight">{item.title}</h5>
-                    <div className="w-6 h-[1.5px] bg-[#D97706]/40 mx-auto" />
+                    <div className={`w-6 h-[1.5px] bg-[#D97706]/40 ${align === 'left' ? 'ml-0' : align === 'right' ? 'mr-0' : 'mx-auto'}`} />
                   </div>
                   {item.image && (
                     <div className="w-full aspect-[16/9] overflow-hidden rounded-[20px] shadow-sm border border-stone-100">

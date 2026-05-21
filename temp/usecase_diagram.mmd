@@ -1,0 +1,39 @@
+flowchart LR
+    %% Actors
+    Guest(["👤 하객 (Guest)"])
+    Host(["👤 회원/주최자 (Host)"])
+    Admin(["👤 관리자 (Admin)"])
+
+    %% Use Cases
+    subgraph "Wedding Platform (모바일 청첩장 시스템)"
+        direction TB
+        UC1([청첩장 열람 및 3D 애니메이션 뷰])
+        UC2([방명록 작성 및 본인글 삭제])
+        UC3([참석 여부(RSVP) 제출])
+        UC4([간편 축의금 송금])
+        UC5([지도 길안내 확인])
+        
+        UC6([모바일 청첩장 생성 및 수정])
+        UC7([BGM 오디오 파일 업로드])
+        UC8([하객 응답 통계 및 방명록 조회])
+        
+        UC9([전체 청첩장 및 결제 관리])
+    end
+
+    %% Relationships
+    Guest --> UC1
+    Guest --> UC2
+    Guest --> UC3
+    Guest --> UC4
+    Guest --> UC5
+
+    Host --> UC6
+    Host --> UC7
+    Host --> UC8
+    Host --> UC2
+
+    Admin --> UC9
+    
+    style Guest fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style Host fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style Admin fill:#f9f9f9,stroke:#333,stroke-width:2px

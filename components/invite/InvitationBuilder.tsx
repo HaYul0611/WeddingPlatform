@@ -23,7 +23,7 @@ function makeDefaultInvitation(templateId?: string): Invitation {
     templateId: base.id,
     theme: {
       ...base.theme,
-      bgmUrl: 'anime_howl',
+      bgmUrl: 'AboveTheTreetops.mp3',
       bgmAutoPlay: true,
       bgmLoop: true,
       bgmVolume: 50,
@@ -165,11 +165,11 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
   async function handleSave() {
     setIsSaving(true);
     setShowSaveAnimation(true);
-    
+
     // 최종 청첩장 데이터를 로컬스토리지에 완벽 저장!
     localStorage.setItem('wedding_builder_invitation', JSON.stringify(invitation));
     localStorage.setItem('wedding_builder_sections', JSON.stringify(invitation.sections));
-    
+
     setTimeout(() => {
       setIsSaving(false);
       setShowSaveAnimation(false);
@@ -293,6 +293,16 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
       {/* ── 이미지 관리 모달 ── */}
       {showImageEditor && (
         <ImageManagerModal onClose={() => setShowImageEditor(false)} />
+      )}
+
+      {/* ── 저장 중 로딩 오버레이 (블러 없음) ── */}
+      {isSaving && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none">
+          <div className="bg-white px-8 py-6 rounded-2xl shadow-[0_10px_40px_rgb(0,0,0,0.12)] flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-200">
+            <div className="w-8 h-8 border-4 border-[#F1F2F4] border-t-[#3B82F6] rounded-full animate-spin" />
+            <p className="text-[15px] font-bold text-[#111827]">잠시만 기다려 주세요</p>
+          </div>
+        </div>
       )}
     </div>
   );

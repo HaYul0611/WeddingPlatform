@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { background-color: white; padding: 40px; font-family: 'Malgun Gothic', sans-serif; margin: 0; }
+    .diagram { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 900px; }
+    .layer { width: 860px; border-radius: 10px; padding: 18px 24px; box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
+    .layer-title { font-size: 15px; font-weight: bold; margin-bottom: 12px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+    .box-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .box { padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 13px; color: white; text-align: center; min-width: 130px; white-space: nowrap; }
+    .arrow { font-size: 22px; color: #999; text-align: center; margin: -6px 0; }
+
+    .blue   { background-color: #4F81BD; }
+    .green  { background-color: #70AD47; }
+    .orange { background-color: #ED7D31; }
+    .gray   { background-color: #7F7F7F; }
+    .purple { background-color: #7B4F9E; }
+    .teal   { background-color: #2E8B8B; }
+
+    .layer-client  { background: #EBF3FB; border: 2px solid #4F81BD; }
+    .layer-front   { background: #EFF7E8; border: 2px solid #70AD47; }
+    .layer-back    { background: #FEF3EB; border: 2px solid #ED7D31; }
+    .layer-saas    { background: #F3EBF8; border: 2px solid #7B4F9E; }
+    .layer-ext     { background: #F2F2F2; border: 2px solid #AAAAAA; }
+  </style>
+</head>
+<body>
+  <div class="diagram">
+    <!-- Client -->
+    <div class="layer layer-client">
+      <div class="layer-title">🖥️ Client Layer</div>
+      <div class="box-row">
+        <div class="box blue">모바일 Browser</div>
+        <div class="box blue">Desktop Browser</div>
+        <div class="box blue">Tablet Browser</div>
+      </div>
+    </div>
+
+    <div class="arrow">⬆⬇ HTTPS</div>
+
+    <!-- Frontend -->
+    <div class="layer layer-front">
+      <div class="layer-title">⚛️ Frontend Layer (Next.js 14 · App Router)</div>
+      <div class="box-row">
+        <div class="box green">청첩장 뷰어</div>
+        <div class="box green">BGM 플레이어</div>
+        <div class="box green">SaaS 추천 UI</div>
+        <div class="box green">관리자 Dashboard</div>
+      </div>
+    </div>
+
+    <div class="arrow">⬆⬇ SDK / REST</div>
+
+    <!-- Backend -->
+    <div class="layer layer-back">
+      <div class="layer-title">🗄️ Backend Layer (Supabase)</div>
+      <div class="box-row">
+        <div class="box orange">Auth</div>
+        <div class="box orange">PostgreSQL DB</div>
+        <div class="box orange">Storage (Media)</div>
+        <div class="box orange">Realtime</div>
+      </div>
+    </div>
+
+    <div class="arrow">⬆⬇ Internal API</div>
+
+    <!-- SaaS Recommendation Engine -->
+    <div class="layer layer-saas">
+      <div class="layer-title">🤖 SaaS 추천 엔진 (Recommendation Engine)</div>
+      <div class="box-row">
+        <div class="box purple">선호도 분석기</div>
+        <div class="box purple">업체 매칭 알고리즘</div>
+        <div class="box purple">큐레이션 결과 생성</div>
+        <div class="box purple">구독 관리 (SaaS)</div>
+      </div>
+    </div>
+
+    <div class="arrow">⬆⬇ REST API</div>
+
+    <!-- External APIs -->
+    <div class="layer layer-ext">
+      <div class="layer-title">🔌 External APIs</div>
+      <div class="box-row">
+        <div class="box gray">Map API (Naver/Kakao/Google)</div>
+        <div class="box gray">PortOne (결제)</div>
+        <div class="box gray">카카오 알림톡</div>
+        <div class="box gray">웨딩 업체 DB (파트너 API)</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

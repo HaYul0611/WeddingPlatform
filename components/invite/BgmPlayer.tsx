@@ -10,24 +10,10 @@ interface BgmPlayerProps {
   volume?: number;
 }
 
-// 로컬 WAV 파일 매핑 (public/bgm/)
-const BGM_URLS: Record<string, string> = {
-  'anime_howl': '/bgm/anime_howl.wav',
-  'anime_chihiro': '/bgm/anime_chihiro.wav',
-  'anime_summer': '/bgm/anime_summer.wav',
-  'anime_laputa': '/bgm/anime_laputa.wav',
-  'anime_kiki': '/bgm/anime_kiki.wav',
-  'anime_totoro': '/bgm/anime_totoro.wav',
-  'anime_yourname': '/bgm/anime_yourname.wav',
-  'anime_mononoke': '/bgm/anime_mononoke.wav',
-  'anime_ponyo': '/bgm/anime_ponyo.wav',
-  'anime_nausicaa': '/bgm/anime_nausicaa.wav',
-};
-
 function resolveUrl(url: string): string {
-  if (!url) return BGM_URLS['anime_howl'];
+  if (!url) return '/BGM/AboveTheTreetops.mp3';
   if (url.startsWith('blob:') || url.startsWith('http') || url.startsWith('/')) return url;
-  return BGM_URLS[url] ?? BGM_URLS['anime_howl'];
+  return `/BGM/${url}`;
 }
 
 export default function BgmPlayer({ url, autoPlay, loop = true, volume = 50 }: BgmPlayerProps) {
@@ -49,7 +35,6 @@ export default function BgmPlayer({ url, autoPlay, loop = true, volume = 50 }: B
     }
   }, []);
 
-  // 마운트 시 재생 (key 변경 → 새 컴포넌트 마운트 → 1회 실행)
   useEffect(() => {
     const win = window as any;
     const el = audioRef.current;
@@ -58,21 +43,44 @@ export default function BgmPlayer({ url, autoPlay, loop = true, volume = 50 }: B
     el.volume = Math.min(1, Math.max(0, (volume ?? 50) / 100));
 
     const shouldPlay = autoPlay || win.globalAudioPlaying === true;
-    if (!shouldPlay) return;
+    
+    if (shouldPlay) {
+      const tryPlay = () => {
+        el.play()
+          .then(() => { setIsPlaying(true); win.globalAudioPlaying = true; })
+          .catch(() => setIsPlaying(false));
+      };
 
-    const tryPlay = () => {
-      el.play()
-        .then(() => { setIsPlaying(true); win.globalAudioPlaying = true; })
-        .catch(() => setIsPlaying(false));
-    };
+      if (el.readyState >= 3) {
+        tryPlay();
+      } else {
+        el.addEventListener('canplay', tryPlay, { once: true });
+      }
 
-    if (el.readyState >= 3) {
-      tryPlay();
+      // 브라우저 정책으로 인해 실패한 경우 대비 사용자 상호작용 시 재생 시도
+      const handleInteraction = () => {
+        if (el.paused) {
+          el.play()
+            .then(() => { setIsPlaying(true); win.globalAudioPlaying = true; })
+            .catch(() => {});
+        }
+        document.removeEventListener('click', handleInteraction);
+        document.removeEventListener('touchstart', handleInteraction);
+      };
+
+      document.addEventListener('click', handleInteraction);
+      document.addEventListener('touchstart', handleInteraction);
+
+      return () => {
+        document.removeEventListener('click', handleInteraction);
+        document.removeEventListener('touchstart', handleInteraction);
+      };
     } else {
-      el.addEventListener('canplay', tryPlay, { once: true });
+      el.pause();
+      setIsPlaying(false);
+      win.globalAudioPlaying = false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [autoPlay, src]);
 
   // 볼륨 동기화
   useEffect(() => {

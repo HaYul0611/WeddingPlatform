@@ -15,7 +15,11 @@ export default function RootLayout({
   const isAdminPage = pathname?.startsWith('/admin');
   // 청첩장 빌더는 풀스크린 UI이므로 헤더/푸터 제거
   const isBuilderPage = pathname?.startsWith('/invite/create');
-  const hideShell = isAdminPage || isBuilderPage;
+  // 청첩장 미리보기/뷰어 페이지 — 사용자가 만든 콘텐츠만 노출
+  const isLoveCardPage = pathname?.startsWith('/ko/invitation');
+  // 결제/대시보드 페이지 — 독자적 레이아웃 사용
+  const isPaymentPage = pathname?.startsWith('/payment');
+  const hideShell = isAdminPage || isBuilderPage || isLoveCardPage || isPaymentPage;
 
   return (
     <html lang="ko">
