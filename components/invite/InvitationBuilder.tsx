@@ -121,7 +121,15 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
 
   const addSection = useCallback((type: InvitationSection['type']) => {
     const id = crypto.randomUUID();
-    const newSection = { type, id, title: '새 섹션' } as any;
+    const SECTION_LABELS: Record<string, string> = {
+      cover: '메인 이미지', greeting: '인사말', datetime: '날짜/시간', timeline: '타임라인',
+      map: '위치/지도', gallery: '갤러리', contact: '연락처', bankAccount: '계좌번호',
+      guestbook: '방명록', wishlist: '위시리스트', notice: '안내사항', rsvp: '참석 여부',
+      countdown: '카운트다운', closing: '마무리', intro: '신랑신부 소개', photoDrop: '포토 드롭',
+      guestList: '참석자 목록', video: '영상 삽입', text: '텍스트'
+    };
+    const title = SECTION_LABELS[type] || '새 섹션';
+    const newSection = { type, id, title } as any;
     setInvitation((prev) => ({ ...prev, sections: [...prev.sections, newSection] }));
     setExpandedSection(id);
   }, []);

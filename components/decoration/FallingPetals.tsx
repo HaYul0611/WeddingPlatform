@@ -38,8 +38,8 @@ export default function FallingPetals() {
             animationDuration: p.duration,
             transform: `rotate(${p.rotation})`,
             backgroundImage: p.id % 2 === 0 
-              ? "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 75 75, 95 60, 90 25 C 85 10, 65 10, 50 25 C 35 10, 15 10, 10 25 C 5 60, 25 75, 50 100 Z' fill='%23ffd7e6' /%3E%3C/svg%3E\")"
-              : "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 75 75, 95 60, 90 25 C 85 10, 65 10, 50 25 C 35 10, 15 10, 10 25 C 5 60, 25 75, 50 100 Z' fill='%23fff0f5' /%3E%3C/svg%3E\")",
+              ? "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 30 70, 10 40, 25 15 C 35 -5, 50 15, 50 15 C 50 15, 65 -5, 75 15 C 90 40, 70 70, 50 100 Z' fill='%23ffd7e6' /%3E%3C/svg%3E\")"
+              : "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 30 70, 10 40, 25 15 C 35 -5, 50 15, 50 15 C 50 15, 65 -5, 75 15 C 90 40, 70 70, 50 100 Z' fill='%23fff0f5' /%3E%3C/svg%3E\")",
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
@@ -57,8 +57,8 @@ export default function FallingPetals() {
               transform: `rotate(${i * 45}deg) translateY(${Math.random() * 20}px) scaleY(0.6)`, // 바닥에 누운 느낌
               filter: 'drop-shadow(0px 1px 2px rgba(255, 192, 203, 0.3)) blur(0.5px)',
               backgroundImage: i % 3 === 0 
-                ? "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 75 75, 95 60, 90 25 C 85 10, 65 10, 50 25 C 35 10, 15 10, 10 25 C 5 60, 25 75, 50 100 Z' fill='%23ffd7e6' /%3E%3C/svg%3E\")"
-                : "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 75 75, 95 60, 90 25 C 85 10, 65 10, 50 25 C 35 10, 15 10, 10 25 C 5 60, 25 75, 50 100 Z' fill='%23fff0f5' /%3E%3C/svg%3E\")",
+                ? "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 30 70, 10 40, 25 15 C 35 -5, 50 15, 50 15 C 50 15, 65 -5, 75 15 C 90 40, 70 70, 50 100 Z' fill='%23ffd7e6' /%3E%3C/svg%3E\")"
+                : "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 30 70, 10 40, 25 15 C 35 -5, 50 15, 50 15 C 50 15, 65 -5, 75 15 C 90 40, 70 70, 50 100 Z' fill='%23fff0f5' /%3E%3C/svg%3E\")",
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
