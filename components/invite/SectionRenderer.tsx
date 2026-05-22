@@ -855,7 +855,7 @@ function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { s
           ))}
         </div>
       ) : (
-        <div className="w-full flex flex-col items-center mt-2" style={{ position: 'relative' }}>
+        <div className="w-full flex flex-col items-center mt-2">
           <button
             onClick={() => setModalOpen(true)}
             className="w-full max-w-[280px] py-3.5 rounded-full shadow-sm text-[14px] font-bold flex items-center justify-center gap-2 transition-all hover:opacity-90"
@@ -867,22 +867,27 @@ function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { s
 
           {modalOpen && (
             <div
-              className="absolute inset-0 z-[999] flex items-start justify-center pt-8"
-              style={{ background: 'rgba(0,0,0,0.45)', minHeight: '100%' }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center"
+              style={{ background: 'rgba(0,0,0,0.4)' }}
               onClick={() => setModalOpen(false)}
             >
               <div
-                className="w-full max-w-[320px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col animate-in slide-in-from-bottom-6 duration-300 mx-4"
+                className="relative w-[320px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col animate-in slide-in-from-bottom-6 duration-300"
                 onClick={e => e.stopPropagation()}
               >
-                <div className="p-5 flex items-center justify-between border-b border-stone-100 bg-stone-50">
+                {/* 우상단 X 버튼 */}
+                <button
+                  onClick={() => setModalOpen(false)}
+                  className="absolute top-4 right-4 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+
+                <div className="p-5 border-b border-stone-100 bg-stone-50">
                   <span className="font-bold text-[15px] text-stone-800">연락처</span>
-                  <button onClick={() => setModalOpen(false)} className="p-1 rounded-full text-stone-400 hover:bg-stone-200 hover:text-stone-700 transition-colors">
-                    <X size={20} />
-                  </button>
                 </div>
                 
-                <div className="flex flex-col p-5 gap-6 max-h-[50vh] overflow-y-auto custom-scrollbar-preview">
+                <div className="flex flex-col p-5 gap-6 max-h-[65vh] overflow-y-auto custom-scrollbar-preview">
                   {contacts.map((group: any, idx: number) => {
                     const visiblePersons = group.persons.filter((p: any) => p.name || p.phone);
                     return (

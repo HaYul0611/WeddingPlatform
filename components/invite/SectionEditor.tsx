@@ -1710,8 +1710,26 @@ function ContactEditor({ section, onUpdate }: { section: any; onUpdate: (updates
               {group.persons.map((person: any, pIdx: number) => (
                 <div key={pIdx} className="flex items-center gap-1.5">
                   <input type="text" value={person.relation} onChange={(e) => updatePerson(gIdx, pIdx, 'relation', e.target.value)} placeholder="관계" className="w-14 shrink-0 px-2 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[12px] text-center" />
-                  <input type="text" value={person.name} onChange={(e) => updatePerson(gIdx, pIdx, 'name', e.target.value)} placeholder="이름" className="w-[68px] shrink-0 min-w-0 px-2 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[12px]" />
-                  <input type="text" value={person.phone} onChange={(e) => updatePerson(gIdx, pIdx, 'phone', e.target.value)} placeholder="010-0000-0000" className="flex-1 min-w-0 px-2 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[12px]" />
+                  <input type="text" value={person.name} onChange={(e) => updatePerson(gIdx, pIdx, 'name', e.target.value)} placeholder="이름" className="w-[68px] shrink-0 min-w-0 px-2 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[12px] text-center placeholder:text-center" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={person.phone}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+                      let formatted = raw;
+                      if (raw.length <= 3) {
+                        formatted = raw;
+                      } else if (raw.length <= 7) {
+                        formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
+                      } else {
+                        formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7)}`;
+                      }
+                      updatePerson(gIdx, pIdx, 'phone', formatted);
+                    }}
+                    placeholder="010-0000-0000"
+                    className="flex-1 min-w-0 px-2 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[12px]"
+                  />
                   <button onClick={() => removePerson(gIdx, pIdx)} className="p-1.5 shrink-0 text-[#F87171] hover:text-red-500 transition-colors"><X size={15} /></button>
                 </div>
               ))}

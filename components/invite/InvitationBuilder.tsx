@@ -229,7 +229,7 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
         <div className="flex min-h-full p-6 gap-8 relative">
 
           {/* ── 좌측 사이드바 (투명 컨테이너 구조) ── */}
-          <aside className="w-[440px] shrink-0 flex flex-col min-h-[1200px]">
+          <aside className="w-[520px] shrink-0 flex flex-col min-h-[1200px]">
 
             {/* 탭 메뉴 (개별 카드 형태가 아닌 패널 상단 고정 느낌) */}
             <div className="bg-white rounded-2xl border border-[#F1F2F4] shadow-sm overflow-hidden mb-6">
