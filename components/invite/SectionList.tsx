@@ -137,7 +137,7 @@ function SortableItem({
   } = useSortable({ id: section.id });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     zIndex: isDragging ? 1000 : (isExpanded ? 100 : 1),
     position: 'relative' as any,
