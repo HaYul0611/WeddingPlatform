@@ -226,10 +226,10 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
 
       {/* ── 메인 스크롤 영역 ── */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="flex min-h-full p-6 gap-8 relative">
+        <div className="flex min-h-full p-4 gap-4 relative">
 
           {/* ── 좌측 사이드바 (투명 컨테이너 구조) ── */}
-          <aside className="w-[520px] shrink-0 flex flex-col min-h-[1200px]">
+          <aside className="w-[560px] shrink-0 flex flex-col min-h-[1200px]">
 
             {/* 탭 메뉴 (개별 카드 형태가 아닌 패널 상단 고정 느낌) */}
             <div className="bg-white rounded-2xl border border-[#F1F2F4] shadow-sm overflow-hidden mb-6">

@@ -800,6 +800,7 @@ function GuestbookWidget({ section, st }: { section: any; st: any }) {
 
 function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { section: any; theme: InvitationTheme; st: any; setCopyToastMessage?: (msg: string) => void }) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const useBg = section.useBackgroundColor;
   const align = section.textAlign || section.align || 'center';
   const displayStyle = section.displayStyle || 'modal';
@@ -813,6 +814,8 @@ function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { s
   const alignClass = align === 'left' ? 'text-left items-start' : align === 'right' ? 'text-right items-end' : 'text-center items-center';
   const contacts = section.contacts || [];
 
+  useEffect(() => { setMounted(true); }, []);
+
   const handleCopy = (text: string) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -820,6 +823,12 @@ function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { s
       setCopyToastMessage("연락처가 복사되었습니다.");
       setTimeout(() => setCopyToastMessage(""), 2500);
     }
+  };
+
+  // 폰 프레임 컨테이너 찾기 (preview-phone-screen)
+  const getPhoneContainer = () => {
+    if (typeof document === 'undefined') return null;
+    return document.getElementById('preview-phone-screen');
   };
 
   return (
@@ -865,63 +874,70 @@ function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { s
             연락처 보기
           </button>
 
-          {modalOpen && (
-            <div
-              className="fixed inset-0 z-[9999] flex items-center justify-center"
-              style={{ background: 'rgba(0,0,0,0.4)' }}
-              onClick={() => setModalOpen(false)}
-            >
+          {/* 폰 프레임 내부에 portal로 렌더링 */}
+          {modalOpen && mounted && (() => {
+            const container = getPhoneContainer();
+            if (!container) return null;
+            return createPortal(
               <div
-                className="relative w-[320px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col animate-in slide-in-from-bottom-6 duration-300"
-                onClick={e => e.stopPropagation()}
+                className="absolute inset-0 z-[500] flex items-center justify-center"
+                style={{ background: 'rgba(0,0,0,0.45)' }}
+                onClick={() => setModalOpen(false)}
               >
-                {/* 우상단 X 버튼 */}
-                <button
-                  onClick={() => setModalOpen(false)}
-                  className="absolute top-4 right-4 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors"
+                <div
+                  className="relative w-[85%] max-w-[300px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+                  style={{ animation: 'slideUp 0.25s ease' }}
+                  onClick={e => e.stopPropagation()}
                 >
-                  <X size={16} />
-                </button>
+                  {/* 헤더 */}
+                  <div className="px-5 pt-5 pb-4 border-b border-stone-100 bg-stone-50 flex items-center justify-between">
+                    <span className="font-bold text-[15px] text-stone-800">연락처</span>
+                    {/* X 버튼 우상단 */}
+                    <button
+                      onClick={() => setModalOpen(false)}
+                      className="w-7 h-7 flex items-center justify-center rounded-full bg-stone-200 hover:bg-stone-300 text-stone-500 hover:text-stone-700 transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
 
-                <div className="p-5 border-b border-stone-100 bg-stone-50">
-                  <span className="font-bold text-[15px] text-stone-800">연락처</span>
-                </div>
-                
-                <div className="flex flex-col p-5 gap-6 max-h-[65vh] overflow-y-auto custom-scrollbar-preview">
-                  {contacts.map((group: any, idx: number) => {
-                    const visiblePersons = group.persons.filter((p: any) => p.name || p.phone);
-                    return (
-                      <div key={idx} className="flex flex-col gap-3">
-                        <span className="text-[12px] font-bold text-stone-400 tracking-wider">
-                          {group.group}
-                        </span>
-                        <div className="flex flex-col gap-4">
-                          {visiblePersons.length > 0 ? visiblePersons.map((p: any, pIdx: number) => (
-                            <div key={pIdx} className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <span className="text-[12px] text-stone-500 w-12">{p.relation}</span>
-                                <span className="text-[14px] font-medium text-stone-800">{p.name}</span>
+                  <div className="flex flex-col px-5 py-4 gap-5 overflow-y-auto" style={{ maxHeight: '55vh' }}>
+                    {contacts.map((group: any, idx: number) => {
+                      const visiblePersons = group.persons.filter((p: any) => p.name || p.phone);
+                      return (
+                        <div key={idx} className="flex flex-col gap-2">
+                          <span className="text-[11px] font-bold text-stone-400 tracking-wider">
+                            {group.group}
+                          </span>
+                          <div className="flex flex-col gap-3">
+                            {visiblePersons.length > 0 ? visiblePersons.map((p: any, pIdx: number) => (
+                              <div key={pIdx} className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[11px] text-stone-500 w-10">{p.relation}</span>
+                                  <span className="text-[13px] font-medium text-stone-800">{p.name}</span>
+                                </div>
+                                <div className="flex gap-1.5">
+                                  <a href={`tel:${p.phone}`} className="w-7 h-7 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
+                                    <Phone size={12} />
+                                  </a>
+                                  <button onClick={() => handleCopy(p.phone)} className="w-7 h-7 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
+                                    <Copy size={12} />
+                                  </button>
+                                </div>
                               </div>
-                              <div className="flex gap-2">
-                                <a href={`tel:${p.phone}`} className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
-                                  <Phone size={13} />
-                                </a>
-                                <button onClick={() => handleCopy(p.phone)} className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
-                                  <Copy size={13} />
-                                </button>
-                              </div>
-                            </div>
-                          )) : (
-                            <span className="text-[12px] text-stone-400">등록된 연락처가 없습니다.</span>
-                          )}
+                            )) : (
+                              <span className="text-[11px] text-stone-400">등록된 연락처가 없습니다.</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              </div>,
+              container
+            );
+          })()}
         </div>
       )}
     </div>
