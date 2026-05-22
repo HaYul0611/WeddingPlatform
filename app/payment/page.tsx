@@ -1699,16 +1699,24 @@ export default function PaymentPage() {
             {/* 1. 계정 정보 패널 */}
             <div className="bg-white border border-stone-200/60 rounded-[2rem] p-8 flex flex-col sm:flex-row items-center gap-8 mb-6 shadow-[0_8px_30px_rgba(0,0,0,0.01)]">
               {/* 푸 아바타 */}
-              <div className="relative w-20 h-20 rounded-full border border-stone-200/60 overflow-visible shrink-0 bg-stone-50 flex items-center justify-center">
+              <div className="relative w-20 h-20 rounded-full border border-stone-200/60 overflow-visible shrink-0 bg-stone-50 flex items-center justify-center group cursor-pointer">
                 <img
                   src={myInfo.profile_image}
                   alt="Avatar"
                   className="w-full h-full object-cover rounded-full"
                 />
-                <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center text-[10px] cursor-pointer shadow">
-                  <X size={10} strokeWidth={2.5} />
+                
+                {/* 호버 시 나타나는 CRUD 오버레이 및 투명 아이콘들 */}
+                <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-1.5 backdrop-blur-sm z-10">
+                  <button className="w-7 h-7 rounded-full bg-transparent hover:bg-white/20 text-white flex items-center justify-center transition-colors" title="사진 변경">
+                    <Pencil size={12} strokeWidth={2.5} />
+                  </button>
+                  <button className="w-7 h-7 rounded-full bg-transparent hover:bg-white/20 text-rose-300 hover:text-rose-400 flex items-center justify-center transition-colors" title="기본 이미지로 변경">
+                    <X size={14} strokeWidth={2.5} />
+                  </button>
                 </div>
-                <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-stone-100 text-[9px] font-black text-stone-500 border border-stone-200/50 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+
+                <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-stone-100 text-[9px] font-black text-stone-500 border border-stone-200/50 px-2.5 py-0.5 rounded-full whitespace-nowrap z-20 shadow-sm">
                   일반 사용자
                 </div>
               </div>
@@ -1770,7 +1778,13 @@ export default function PaymentPage() {
             </div>
 
             {/* 4. 로그아웃 */}
-            <button className="h-11 px-6 rounded-xl border border-stone-200 hover:bg-stone-50 text-[11px] font-bold text-stone-600 flex items-center justify-center gap-1.5 transition-all mb-10 bg-white">
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut();
+                setActiveTab('invite');
+              }}
+              className="h-11 px-6 rounded-xl border border-stone-200 hover:bg-stone-50 text-[11px] font-bold text-stone-600 flex items-center justify-center gap-1.5 transition-all mb-10 bg-white"
+            >
               <LogOut size={13} />
               로그아웃
             </button>

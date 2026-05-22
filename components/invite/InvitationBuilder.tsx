@@ -12,6 +12,7 @@ import type { Invitation, InvitationSection, InvitationTheme, PreviewDevice } fr
 import { ArrowLeft, Save, Smartphone, Monitor, Play, Palette, LayoutList, Sparkles } from 'lucide-react';
 
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 
 function makeDefaultInvitation(templateId?: string): Invitation {
   const tpl = templateId
@@ -52,6 +53,7 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
   const [expandedSection, setExpandedSection] = useState<string | undefined>(undefined);
   const [showImageEditor, setShowImageEditor] = useState(false);
   const [showSaveAnimation, setShowSaveAnimation] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // 컴포넌트 마운트 완료 후 클라이언트 사이드에서만 로컬스토리지 데이터를 안전하게 복구 및 마이그레이션
   useEffect(() => {
@@ -155,7 +157,6 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
       return { ...prev, sections: next };
     });
   }, []);
-
   const reorderSections = useCallback((newSections: InvitationSection[]) => {
     setInvitation((prev) => ({ ...prev, sections: newSections, updatedAt: new Date().toISOString() }));
   }, []);
@@ -171,6 +172,14 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
   }, []);
 
   async function handleSave() {
+    // 1. 로그인 상태 확인 (세션 체크)
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      // 로그인되어 있지 않으면 블러 없는 모달 노출
+      setShowLoginModal(true);
+      return;
+    }
+
     setIsSaving(true);
     setShowSaveAnimation(true);
 
@@ -303,12 +312,26 @@ export default function InvitationBuilder({ templateId }: InvitationBuilderProps
         <ImageManagerModal onClose={() => setShowImageEditor(false)} />
       )}
 
+      {/* ── 로그인 필요 모달 (블러 없음) ── */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40">
+          <div className="bg-white p-6 rounded-2xl w-[320px] shadow-xl flex flex-col items-center text-center">
+            <h3 className="text-[16px] font-black text-stone-900 mb-2">로그인이 필요합니다</h3>
+            <p className="text-[12px] text-stone-500 mb-6">청첩장을 저장하려면 먼저 로그인해 주세요.</p>
+            <div className="flex gap-2 w-full">
+              <button onClick={() => setShowLoginModal(false)} className="flex-1 py-2.5 bg-stone-100 text-stone-600 text-[12px] font-bold rounded-xl hover:bg-stone-200 transition-colors">취소</button>
+              <button onClick={() => router.push('/admin/login')} className="flex-1 py-2.5 bg-[#3B82F6] text-white text-[12px] font-bold rounded-xl hover:bg-[#2563EB] transition-colors">로그인하기</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── 저장 중 로딩 오버레이 (블러 없음) ── */}
-      {isSaving && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none">
-          <div className="bg-white px-8 py-6 rounded-2xl shadow-[0_10px_40px_rgb(0,0,0,0.12)] flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-200">
-            <div className="w-8 h-8 border-4 border-[#F1F2F4] border-t-[#3B82F6] rounded-full animate-spin" />
-            <p className="text-[15px] font-bold text-[#111827]">잠시만 기다려 주세요</p>
+      {showSaveAnimation && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40">
+          <div className="bg-white px-8 py-6 rounded-2xl shadow-xl flex flex-col items-center gap-4">
+            <div className="w-10 h-10 border-4 border-[#3B82F6]/20 border-t-[#3B82F6] rounded-full animate-spin" />
+            <p className="text-[14px] font-bold text-stone-700 animate-pulse">청첩장을 저장하고 있습니다...</p>
           </div>
         </div>
       )}
