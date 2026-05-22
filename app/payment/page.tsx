@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 import {
   LayoutDashboard,
   Mail,
@@ -113,13 +114,49 @@ export default function PaymentPage() {
   // 통계 탭 상태
   const [statsTab, setStatsTab] = useState<'rsvp' | 'guestbook' | 'gifts'>('rsvp');
 
-  // 로그인한 사용자 데이터 상태 (하드코딩 제거 및 실시간 API 연동)
+  // 로그인한 사용자 데이터 상태 (하드코딩 배제 및 실시간 Supabase API 연동)
   const [myInfo, setMyInfo] = useState({
-    name: '홍길동',
-    email: '[EMAIL_ADDRESS]',
+    name: '하율',
+    email: 'ohayul.me@gmail.com',
     company_id: 'main',
     profile_image: '/images/pooh_profile.png'
   });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setMyInfo({
+          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || '사용자',
+          email: session.user.email || '',
+          company_id: 'main',
+          profile_image: session.user.user_metadata?.avatar_url || '/images/pooh_profile.png'
+        });
+      }
+    };
+    fetchUser();
+    
+    // Auth state listener for real-time updates
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setMyInfo({
+          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || '사용자',
+          email: session.user.email || '',
+          company_id: 'main',
+          profile_image: session.user.user_metadata?.avatar_url || '/images/pooh_profile.png'
+        });
+      } else {
+        setMyInfo({
+          name: '로그인 필요',
+          email: '',
+          company_id: 'main',
+          profile_image: '/images/pooh_profile.png'
+        });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // 초대장 공개하기 모달 상태
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
@@ -976,7 +1013,7 @@ export default function PaymentPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF9F6] text-stone-800 font-sans flex relative overflow-hidden">
+    <main className="h-screen bg-[#FAF9F6] text-stone-800 font-sans flex relative overflow-hidden">
       {/* ── 약관 세부 팝업 바인딩 ────────────────────────────────────── */}
       {openModal === 'terms' && <TermsOfServiceModal onClose={() => { setAgreeTerms(true); setOpenModal(null); }} />}
       {openModal === 'privacy' && <PrivacyPolicyModal onClose={() => { setAgreePrivacy(true); setOpenModal(null); }} />}
