@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { InvitationSection, InvitationTheme } from '@/types/invitation';
-import { MapPin, Calendar, Users, Heart, MessageSquare, ClipboardCheck, Share2, Info, Camera, Bell, CheckCircle2, QrCode, User, ChevronDown, X, Image as ImageIcon, ChevronLeft, ChevronRight, Lock, Play, Pause, SkipBack, SkipForward, Copy } from 'lucide-react';
+import { MapPin, Calendar, Users, Heart, MessageSquare, ClipboardCheck, Share2, Info, Camera, Bell, CheckCircle2, QrCode, User, ChevronDown, X, Image as ImageIcon, ChevronLeft, ChevronRight, Lock, Play, Pause, SkipBack, SkipForward, Copy, Phone } from 'lucide-react';
 import PhotoDropWidget from './PhotoDropWidget';
 
 interface SectionRendererProps {
@@ -793,6 +793,119 @@ function GuestbookWidget({ section, st }: { section: any; st: any }) {
           </div>
         </div>,
         document.body
+      )}
+    </div>
+  );
+}
+
+function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { section: any; theme: InvitationTheme; st: any; setCopyToastMessage?: (msg: string) => void }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const useBg = section.useBackgroundColor;
+  const align = section.textAlign || section.align || 'center';
+  const displayStyle = section.displayStyle || 'modal';
+  const fontScale = section.fontSizePercent ? section.fontSizePercent / 100 : 1;
+  const customSt = {
+    ...st,
+    fontFamily: section.fontFamily || st.fontFamily,
+    fontSize: section.fontSizePercent ? `${15 * fontScale}px` : st.fontSize,
+  };
+
+  const alignClass = align === 'left' ? 'text-left items-start' : align === 'right' ? 'text-right items-end' : 'text-center items-center';
+  const contacts = section.contacts || [];
+
+  const handleCopy = (text: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    if (setCopyToastMessage) {
+      setCopyToastMessage("연락처가 복사되었습니다.");
+      setTimeout(() => setCopyToastMessage(""), 2500);
+    }
+  };
+
+  return (
+    <div className={`px-6 py-16 flex flex-col gap-8 ${alignClass}`} style={{ ...customSt, backgroundColor: useBg ? '#F9FAFB' : customSt.backgroundColor }}>
+      {section.title && (
+        <SectionHeader title={section.title} englishLabel="CONTACT" fontScale={fontScale} textColor={st.color} align={align as any} />
+      )}
+
+      {displayStyle === 'simple' ? (
+        <div className="w-full flex flex-col gap-6 max-w-[400px] mx-auto mt-4">
+          {contacts.map((group: any, idx: number) => (
+            <div key={idx} className="flex flex-col gap-4">
+              <span className="text-[14px] font-bold opacity-80 border-b pb-2 mb-2" style={{ borderColor: theme.dividerColor || '#E5E7EB' }}>
+                {group.group}
+              </span>
+              {group.persons.map((p: any, pIdx: number) => (
+                <div key={pIdx} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[13px] opacity-60 w-12">{p.relation}</span>
+                    <span className="text-[15px] font-medium">{p.name}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <a href={`tel:${p.phone}`} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
+                      <Phone size={14} />
+                    </a>
+                    <button onClick={() => handleCopy(p.phone)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
+                      <Copy size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="w-full flex flex-col items-center mt-2">
+          <button
+            onClick={() => setModalOpen(true)}
+            className="w-full max-w-[280px] py-3.5 rounded-full shadow-sm text-[14px] font-bold flex items-center justify-center gap-2 transition-all hover:opacity-90"
+            style={{ backgroundColor: theme.primaryColor, color: theme.bgColor }}
+          >
+            <Phone size={16} />
+            연락처 보기
+          </button>
+
+          {modalOpen && (
+            <div className="fixed inset-0 z-[999] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-fade-in">
+              <div className="w-full max-w-[360px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col animate-in slide-in-from-bottom-10 duration-300">
+                <div className="p-5 flex items-center justify-between border-b border-stone-100 bg-stone-50">
+                  <span className="font-bold text-[15px] text-stone-800">연락처</span>
+                  <button onClick={() => setModalOpen(false)} className="p-1 rounded-full text-stone-400 hover:bg-stone-200 hover:text-stone-700 transition-colors">
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div className="flex flex-col p-6 gap-8 max-h-[60vh] overflow-y-auto custom-scrollbar-preview">
+                  {contacts.map((group: any, idx: number) => (
+                    <div key={idx} className="flex flex-col gap-4">
+                      <span className="text-[13px] font-bold text-stone-400 tracking-wider">
+                        {group.group}
+                      </span>
+                      <div className="flex flex-col gap-5">
+                        {group.persons.map((p: any, pIdx: number) => (
+                          <div key={pIdx} className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <span className="text-[13px] text-stone-500 w-12">{p.relation}</span>
+                              <span className="text-[15px] font-medium text-stone-800">{p.name}</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <a href={`tel:${p.phone}`} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
+                                <Phone size={14} />
+                              </a>
+                              <button onClick={() => handleCopy(p.phone)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
+                                <Copy size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
@@ -3530,6 +3643,9 @@ function InnerSectionRenderer({ section, theme, allSections, setCopyToastMessage
         </div>
       );
     }
+
+    case 'contact':
+      return <ContactSectionRenderer section={section} theme={theme} st={st} setCopyToastMessage={setCopyToastMessage} />;
 
     case 'rsvp':
       return <RsvpSectionRenderer section={section} theme={theme} st={st} />;
