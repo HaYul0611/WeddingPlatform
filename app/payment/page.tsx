@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -39,6 +39,9 @@ import {
   LogOut,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  Info,
+  XCircle,
   FileText,
   Calendar,
   UserPlus,
@@ -52,7 +55,7 @@ import {
 // ── 타입 정의 ──────────────────────────────────────────────────────────────
 type TabType = 'dashboard' | 'invite' | 'payment' | 'stats' | 'checkin' | 'photodrop' | 'reward' | 'inquiry' | 'profile';
 type PayMethod = 'card' | 'apple' | 'kakao' | 'naver' | 'samsung' | 'toss' | 'payco';
-type ModalType = 'terms' | 'privacy' | 'refund' | null;
+type ModalType = 'terms' | 'privacy' | 'refund' | 'payConfirm' | null;
 
 // ── 약관 콘텐츠 상숫값 ────────────────────────────────────────────────────────
 const TERMS_CONTENT = `
@@ -93,7 +96,16 @@ export default function PaymentPage() {
   const router = useRouter();
 
   // 대시보드 탭 분기 상태
-  const [activeTab, setActiveTab] = useState<TabType>('payment');
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem('wedding_activeTab');
+    if (saved) setActiveTab(saved as TabType);
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem('wedding_activeTab', activeTab);
+  }, [activeTab]);
 
   // 필터 탭 상태
   const [filterTab, setFilterTab] = useState<'all' | 'published' | 'draft' | 'premium'>('all');
@@ -162,8 +174,72 @@ export default function PaymentPage() {
 
   // 체크인 및 1:1 문의 내역 관리
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const [selectedInquiryId, setSelectedInquiryId] = useState<number | null>(null);
+  const [editingInquiryId, setEditingInquiryId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
+  const [premiumFeatureOpen, setPremiumFeatureOpen] = useState(false);
+  const [refundPolicyOpen, setRefundPolicyOpen] = useState(false);
   const [showSheetModal, setShowSheetModal] = useState(false);
   const [sheetUrl, setSheetUrl] = useState('');
+
+  // 커스텀 모달 및 파일 업로드 상태 추가
+  const [cardImage, setCardImage] = useState<string | null>(null);
+  const [cardTitle, setCardTitle] = useState('제목없음');
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  const [dialogState, setDialogState] = useState<{
+    isOpen: boolean;
+    type: 'alert' | 'confirm' | 'prompt';
+    message: string;
+    placeholder?: string;
+    onConfirm?: (value?: string) => void;
+  }>({ isOpen: false, type: 'alert', message: '' });
+
+  // localStorage 연동: cardTitle, cardImage 상태 보존
+  useEffect(() => {
+    const savedTitle = localStorage.getItem('wedding_cardTitle');
+    const savedImage = localStorage.getItem('wedding_cardImage');
+    if (savedTitle) setCardTitle(savedTitle);
+    if (savedImage) setCardImage(savedImage);
+  }, []);
+
+  useEffect(() => {
+    if (cardTitle !== '제목없음') {
+      localStorage.setItem('wedding_cardTitle', cardTitle);
+    }
+  }, [cardTitle]);
+
+  useEffect(() => {
+    // PortOne (Iamport) JS SDK 로드
+    const script = document.createElement('script');
+    script.src = 'https://cdn.iamport.kr/v1/iamport.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (cardImage) {
+      localStorage.setItem('wedding_cardImage', cardImage);
+    }
+  }, [cardImage]);
+
+
+  const closeDialog = () => setDialogState({ ...dialogState, isOpen: false });
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCardImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
   const handleSheetClick = () => {
     setShowSheetModal(true);
@@ -183,8 +259,16 @@ export default function PaymentPage() {
   };
 
   const handleKakaoClick = () => {
-    setShowKakaoToast(true);
-    setTimeout(() => setShowKakaoToast(false), 3000);
+    setDialogState({
+      isOpen: true,
+      type: 'prompt',
+      message: '카카오 알림톡을 수신할 전화번호를 입력해주세요 (예: 010-1234-5678):',
+      onConfirm: (val) => {
+         if(val) {
+           setTimeout(() => setDialogState({ isOpen: true, type: 'alert', message: `전화번호 ${val}로 카카오톡 연동이 진행됩니다.` }), 50);
+         }
+      }
+    });
   };
 
   // 1. 로그인한 계정 정보 실시간 연동 로직
@@ -319,6 +403,30 @@ export default function PaymentPage() {
     }
   };
 
+  const handlePortOnePay = () => {
+    const { IMP } = window as any;
+    if (!IMP) return;
+    setOpenModal(null);
+    IMP.init('imp14397622'); // 포트원 테스트 식별코드
+    IMP.request_pay({
+      pg: 'tosspayments',
+      pay_method: 'card',
+      merchant_uid: `mid_${new Date().getTime()}`,
+      name: '프리미엄 90일 이용권',
+      amount: 14000,
+      buyer_email: 'test@portone.io',
+      buyer_name: '홍길동',
+      buyer_tel: '010-1234-5678',
+    }, (rsp: any) => {
+      if (rsp.success) {
+        setIsSuccess(true);
+        setIsPaymentModalOpen(false);
+      } else {
+        alert(`결제에 실패하였습니다. 에러 내용: ${rsp.error_msg}`);
+      }
+    });
+  };
+
   // 최종 결제 격발 핸들러 (PG API 연동 구조)
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -422,7 +530,7 @@ export default function PaymentPage() {
 
   // ── 약관 팝업 모달창 컴포넌트 ──────────────────────────────────────────
   const ModalPopup = ({ type, title, content }: { type: ModalType; title: string; content: string }) => (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-stone-900/30 animate-in fade-in duration-200" onClick={() => setOpenModal(null)} />
       <div className="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-xl flex flex-col max-h-[75vh] animate-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200">
@@ -523,7 +631,7 @@ export default function PaymentPage() {
     ];
   
     return (
-      <div className="fixed inset-0 z-[200] bg-[#FAF9F6] flex flex-col w-full h-full animate-in fade-in duration-200 overflow-hidden">
+      <div className="fixed inset-0 z-[999] bg-[#FAF9F6] flex flex-col w-full h-full animate-in fade-in duration-200 overflow-hidden">
         {/* Top Header */}
         <div className="w-full bg-white h-[60px] border-b border-stone-200 flex items-center px-6 sticky top-0 z-10 shrink-0">
           <button onClick={onClose} className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-[13px] font-bold">
@@ -635,7 +743,7 @@ export default function PaymentPage() {
     ];
   
     return (
-      <div className="fixed inset-0 z-[200] bg-[#FAF9F6] flex flex-col w-full h-full animate-in fade-in duration-200 overflow-hidden">
+      <div className="fixed inset-0 z-[999] bg-[#FAF9F6] flex flex-col w-full h-full animate-in fade-in duration-200 overflow-hidden">
         {/* Top Header */}
         <div className="w-full bg-white h-[60px] border-b border-stone-200 flex items-center px-6 sticky top-0 z-10 shrink-0">
           <button onClick={onClose} className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-[13px] font-bold">
@@ -703,9 +811,66 @@ export default function PaymentPage() {
     );
   };
 
+  const PaymentAgreementModal = ({ onClose }: { onClose: () => void }) => {
+    return (
+      <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-stone-900/40 animate-in fade-in duration-200" onClick={onClose} />
+        <div className="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-xl flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden">
+          <div className="flex items-start justify-between p-6 pb-2">
+            <div>
+              <h2 className="text-[18px] font-black text-stone-900 tracking-tight">결제 및 개인정보 제공 동의</h2>
+              <p className="text-[13px] text-stone-500 mt-2">결제 진행 시 아래 내용에 동의한 것으로 간주합니다.</p>
+            </div>
+            <button onClick={onClose} className="text-stone-400 hover:text-stone-600 transition-colors mt-1">
+              <X size={18} />
+            </button>
+          </div>
+          <div className="px-6 py-4 space-y-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
+            <div>
+              <h3 className="text-[14px] font-bold text-stone-800 mb-1.5">디지털 콘텐츠 즉시 제공</h3>
+              <p className="text-[13px] text-stone-500 leading-relaxed">
+                결제 완료 즉시 프리미엄 기능이 활성화되며, 디지털 콘텐츠 특성상 사용 개시 후 환불이 제한될 수 있습니다.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-[14px] font-bold text-stone-800 mb-1.5">개인정보 제공</h3>
+              <p className="text-[13px] text-stone-500 leading-relaxed mb-2">
+                원활한 결제 처리를 위해 최소한의 개인정보가 결제 서비스 제공자에게 전달됩니다.
+              </p>
+              <ul className="text-[12px] text-stone-500 space-y-1.5 list-disc list-inside marker:text-stone-300">
+                <li>제공 항목: 결제 수단 정보(마스킹), 결제 금액, 결제 일시</li>
+                <li>이용 목적: 대금 결제, 거래 확인, 고객 상담 및 분쟁 처리</li>
+                <li>보유 기간: 결제일로부터 5년 (관계 법령에 따름)</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-[14px] font-bold text-stone-800 mb-1.5">환불 정책</h3>
+              <p className="text-[13px] text-stone-500 leading-relaxed">
+                결제 후 7일 이내 환불 요청이 가능하며, 프리미엄 기능 사용 이력에 따라 환불이 제한될 수 있습니다.
+              </p>
+            </div>
+          </div>
+          <div className="px-6 pb-6 flex items-center gap-3">
+            <button onClick={() => { setOpenModal('terms'); }} className="text-[12px] font-semibold text-stone-500 hover:text-stone-800 hover:underline underline-offset-4 transition-colors">이용약관 전문</button>
+            <button onClick={() => { setOpenModal('refund'); }} className="text-[12px] font-semibold text-stone-500 hover:text-stone-800 hover:underline underline-offset-4 transition-colors">환불정책 전문</button>
+            <button onClick={() => { setOpenModal('privacy'); }} className="text-[12px] font-semibold text-stone-500 hover:text-stone-800 hover:underline underline-offset-4 transition-colors">개인정보처리방침</button>
+          </div>
+          <div className="p-6 pt-0">
+             <button 
+               onClick={() => handlePortOnePay()} 
+               className="w-full h-12 bg-[#61b0b5] hover:bg-[#529a9e] text-white rounded-xl font-extrabold text-[14px] transition-colors"
+             >
+               동의하고 결제 진행
+             </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const RefundPolicyModal = ({ onClose, onAgree }: { onClose: () => void, onAgree: () => void }) => {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-stone-900/30 animate-in fade-in duration-200" onClick={onClose} />
         <div className="relative z-10 w-full max-w-3xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200 overflow-hidden">
           {/* Header */}
@@ -815,10 +980,11 @@ export default function PaymentPage() {
       {openModal === 'terms' && <TermsOfServiceModal onClose={() => { setAgreeTerms(true); setOpenModal(null); }} />}
       {openModal === 'privacy' && <PrivacyPolicyModal onClose={() => { setAgreePrivacy(true); setOpenModal(null); }} />}
       {openModal === 'refund' && <RefundPolicyModal onClose={() => setOpenModal(null)} onAgree={() => { setAgreeRefund(true); setOpenModal(null); }} />}
+      {openModal === 'payConfirm' && <PaymentAgreementModal onClose={() => setOpenModal(null)} />}
 
       {/* ── 결제 승인 중 & 완료 오버레이 ──────────────────────────────── */}
       {isProcessing && (
-        <div className="fixed inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center z-[100] animate-in fade-in duration-300">
+        <div className="fixed inset-0 bg-white/95 flex flex-col items-center justify-center z-[999] animate-in fade-in duration-300">
           <div className="relative mb-6">
             <div className="w-16 h-16 border-4 border-rose-100 border-t-rose-500 rounded-full animate-spin" />
             <Lock size={18} className="text-rose-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
@@ -830,7 +996,7 @@ export default function PaymentPage() {
 
       {/* isSuccess 오버레이 */}
       {isSuccess && (
-        <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-[100] animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-[999] animate-in zoom-in-95 duration-300">
           <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-100 animate-bounce">
             <CheckCircle2 size={36} className="text-emerald-500" />
           </div>
@@ -894,7 +1060,7 @@ export default function PaymentPage() {
 
         {/* ── 탭 분기 1: 대시보드 (기존 '내 컬렉션' 메인 뷰) ───────────────────────── */}
         {activeTab === 'dashboard' && (
-          <div className="animate-in fade-in duration-200">
+          <div className="animate-in fade-in duration-200 max-w-5xl mx-auto">
             {/* 상단 헤더 */}
             <div className="flex items-start justify-between mb-8">
               <div>
@@ -910,7 +1076,7 @@ export default function PaymentPage() {
             </div>
 
             {/* 중단 가로 탭 바 */}
-            <div className="bg-[#FAF9F6] rounded-2xl p-1 flex gap-1 mb-8 max-w-md border border-stone-200/20">
+            <div className="bg-[#FAF9F6] rounded-2xl p-1 flex gap-1 mb-8 w-full border border-stone-200/20">
               <button
                 onClick={() => setFilterTab('all')}
                 className={`flex-1 px-4 py-2.5 rounded-xl text-[11px] font-black transition-all text-center ${filterTab === 'all'
@@ -950,109 +1116,154 @@ export default function PaymentPage() {
             </div>
 
             {/* 청첩장 리스트 카드 */}
-            <div className="bg-white rounded-[2rem] border border-stone-200/80 p-7 md:p-9 shadow-[0_12px_45px_rgba(0,0,0,0.02)] max-w-3xl">
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-stone-100">
+            {(filterTab === 'all' || filterTab === 'draft') ? (
+              <div className="bg-white rounded-2xl border border-stone-200/60 p-5 md:p-6 shadow-sm w-full">
                 <div className="flex items-start gap-6">
-                  <div className="w-24 h-24 rounded-2xl bg-[#FAF9F6] flex items-center justify-center shrink-0 border border-stone-200/40 text-stone-300">
-                    <Folder size={32} strokeWidth={1.5} />
+                  {/* Left Column: Thumbnail & Badge */}
+                  <div className="flex flex-col items-center gap-2.5 shrink-0">
+                    <div className="relative w-[116px] h-[116px] rounded-[18px] bg-[#FAF9F6] flex items-center justify-center border border-stone-200/40 text-stone-300 overflow-hidden group transition-all hover:border-stone-300 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                      {cardImage ? (
+                        <img src={cardImage} alt="Card Cover" className="w-full h-full object-cover" />
+                      ) : (
+                        <Folder size={32} strokeWidth={1.5} />
+                      )}
+                      <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute inset-0 bg-stone-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Camera size={26} className="text-white" />
+                      </button>
+                      <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-stone-600 bg-stone-100 rounded-md px-3 py-1.5">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                      작성중
+                    </div>
                   </div>
-                  <div className="space-y-3">
-                    <div>
-                      <h3 className="text-base font-extrabold text-stone-900 tracking-tight">제목없음</h3>
-                      <div className="flex items-center gap-1 text-stone-300 text-[10px] font-bold mt-1">
-                        <span className="w-3.5 h-3.5 rounded-full border border-stone-200 flex items-center justify-center text-[8px] font-black">?</span>
-                        <span>조회수 0</span>
+                  
+                  {/* Right Column: Title, Checklist & Actions */}
+                  <div className="flex-1 flex flex-col min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                      <div>
+                        <h3 className="text-[17px] font-extrabold text-stone-900 tracking-tight leading-snug">{cardTitle}</h3>
+                        <div className="flex items-center gap-1 text-stone-400 text-[12px] font-bold mt-1.5">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                          <span>0</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setIsPaymentModalOpen(true)}
+                          className="h-8 px-4 rounded-lg bg-[#61b0b5] hover:bg-[#529a9e] text-white text-[11px] font-bold flex items-center gap-1.5 transition-colors shadow-sm"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                          결제하기
+                        </button>
+                        
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowMoreMenu(!showMoreMenu)}
+                            className="w-8 h-8 rounded-lg border border-stone-200 flex items-center justify-center text-stone-400 hover:bg-stone-50 hover:text-stone-700 transition-colors cursor-pointer"
+                          >
+                            <MoreHorizontal size={15} />
+                          </button>
+                          
+                          {showMoreMenu && (
+                            <>
+                              <div className="fixed inset-0 z-40" onClick={() => setShowMoreMenu(false)} />
+                              <div className="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg shadow-stone-200/50 border border-stone-100 z-50 py-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+                                <button 
+                                  onClick={() => { setShowMoreMenu(false); fileInputRef.current?.click(); }}
+                                  className="w-full text-left px-4 py-2.5 hover:bg-stone-50 text-[11px] font-bold text-stone-700 transition-colors"
+                                >
+                                  대표 이미지 변경
+                                </button>
+                                <button 
+                                  onClick={() => { 
+                                    setShowMoreMenu(false); 
+                                    setDialogState({
+                                      isOpen: true, type: 'prompt', message: '새로운 초대장 이름을 입력하세요:',
+                                      onConfirm: (val) => {
+                                        if (val) {
+                                          setCardTitle(val);
+                                          setTimeout(() => setDialogState({ isOpen: true, type: 'alert', message: `이름이 '${val}'(으)로 변경되었습니다.` }), 50);
+                                        }
+                                      }
+                                    });
+                                  }}
+                                  className="w-full text-left px-4 py-2.5 hover:bg-stone-50 text-[11px] font-bold text-stone-700 transition-colors"
+                                >
+                                  초대장 이름 변경
+                                </button>
+                                <button 
+                                  onClick={() => { setShowMoreMenu(false); setDialogState({ isOpen: true, type: 'alert', message: '초대장이 성공적으로 복제되었습니다.' }); }}
+                                  className="w-full text-left px-4 py-2.5 hover:bg-stone-50 text-[11px] font-bold text-stone-700 transition-colors"
+                                >
+                                  초대장 복제하기
+                                </button>
+                                <div className="h-px bg-stone-100 my-1 mx-2" />
+                                <button 
+                                  onClick={() => { 
+                                    setShowMoreMenu(false); 
+                                    setDialogState({
+                                      isOpen: true, type: 'confirm', message: '정말로 이 초대장을 삭제하시겠습니까?',
+                                      onConfirm: () => setTimeout(() => setDialogState({ isOpen: true, type: 'alert', message: '초대장이 삭제되었습니다.' }), 50)
+                                    });
+                                  }}
+                                  className="w-full text-left px-4 py-2.5 hover:bg-rose-50 text-[11px] font-bold text-rose-600 transition-colors"
+                                >
+                                  초대장 삭제
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="space-y-1.5 text-[11px] font-bold text-stone-500">
+                    
+                    <div className="h-px w-full bg-stone-100 my-3.5" />
+                    
+                    <div className="space-y-2 text-[11px] font-bold text-stone-500 mb-4">
                       <div className="flex items-center gap-2">
-                        <Circle size={10} className="text-stone-300 fill-stone-50" />
+                        <Circle size={12} className="text-stone-300 fill-stone-50" />
                         <span>OG 설정 필요</span>
                       </div>
-                      <div className="flex items-center gap-2 text-emerald-600">
-                        <CheckCircle2 size={11} className="text-emerald-500 fill-emerald-50" />
+                      <div className="flex items-center gap-2 text-[#00D166]">
+                        <CheckCircle2 size={13} className="text-[#00D166] fill-[#00D166]/10" />
                         <span>공유 링크 준비됨</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Circle size={10} className="text-stone-300 fill-stone-50" />
-                        <span>광고 제거 필요</span>
+                        <span className="text-amber-500 font-extrabold flex items-center gap-1.5"><AlertCircle size={12} className="text-amber-500" /> 광고 제거 필요</span>
                       </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full mt-auto">
+                      <button
+                        onClick={() => router.push('/invite/create')}
+                        className="flex-1 h-[38px] rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-600 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <Pencil size={13} />
+                        수정
+                      </button>
+                      <button
+                        onClick={() => setIsPublishModalOpen(true)}
+                        className="flex-1 h-[38px] rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-600 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <Share2 size={13} />
+                        공유 준비하기
+                      </button>
                     </div>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2 self-start md:self-auto">
-                  <button
-                    onClick={() => setIsPaymentModalOpen(true)}
-                    className="h-10 px-5 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-[11px] font-extrabold flex items-center gap-1.5 transition-all shadow-md shadow-rose-500/20"
-                  >
-                    <CreditCard size={13} />
-                    결제하기
-                  </button>
-                  
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowMoreMenu(!showMoreMenu)}
-                      className="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center text-stone-400 hover:bg-stone-50 hover:text-stone-700 transition-colors cursor-pointer"
-                    >
-                      <MoreHorizontal size={16} />
-                    </button>
-                    
-                    {showMoreMenu && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setShowMoreMenu(false)} />
-                        <div className="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg shadow-stone-200/50 border border-stone-100 z-50 py-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-                          <button 
-                            onClick={() => { setShowMoreMenu(false); alert('이름 변경 모달 오픈 (준비중)'); }}
-                            className="w-full text-left px-4 py-2.5 hover:bg-stone-50 text-[11px] font-bold text-stone-700 transition-colors"
-                          >
-                            초대장 이름 변경
-                          </button>
-                          <button 
-                            onClick={() => { setShowMoreMenu(false); alert('초대장이 복제되었습니다.'); }}
-                            className="w-full text-left px-4 py-2.5 hover:bg-stone-50 text-[11px] font-bold text-stone-700 transition-colors"
-                          >
-                            초대장 복제하기
-                          </button>
-                          <div className="h-px bg-stone-100 my-1 mx-2" />
-                          <button 
-                            onClick={() => { 
-                              setShowMoreMenu(false); 
-                              if(confirm('정말로 이 초대장을 삭제하시겠습니까?')) alert('삭제되었습니다.'); 
-                            }}
-                            className="w-full text-left px-4 py-2.5 hover:bg-rose-50 text-[11px] font-bold text-rose-600 transition-colors"
-                          >
-                            초대장 삭제
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
               </div>
-
-              <div className="pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="self-start text-[10px] font-black text-stone-400 bg-stone-100 rounded-lg px-2.5 py-1 tracking-tight">
-                  작성중
-                </span>
-                <div className="flex gap-2.5 w-full sm:w-auto">
-                  <button
-                    onClick={() => router.push('/invite/create')}
-                    className="flex-1 sm:flex-none h-10 px-5 rounded-full bg-stone-500 hover:bg-stone-600 text-white text-[11px] font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md shadow-stone-500/20"
-                  >
-                    <Pencil size={13} />
-                    수정하기
-                  </button>
-                  <button
-                    onClick={() => setIsPublishModalOpen(true)}
-                    className="flex-1 sm:flex-none h-10 px-5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-extrabold flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-500/20"
-                  >
-                    <Share2 size={13} />
-                    공유하기
-                  </button>
-                </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-[72px] bg-white rounded-2xl border border-stone-200/60 shadow-sm w-full text-center">
+                <Folder size={48} className="text-stone-200 mb-4 inline-block" strokeWidth={1} />
+                <p className="text-stone-400 font-extrabold text-[14px] mb-1">해당하는 템플릿이 없습니다</p>
+                <p className="text-stone-400 font-semibold text-[13px]">다른 필터를 선택하거나 새 초대장을 만들어보세요.</p>
               </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -1235,16 +1446,34 @@ export default function PaymentPage() {
                         취소
                       </button>
                       <button
-                        onClick={() => {
+                        onClick={async () => {
                           if (!inquiryTitle.trim() || !inquiryContent.trim()) {
                             alert('제목과 내용을 모두 입력해주세요.');
                             return;
                           }
-                          setInquiries([...inquiries, { title: inquiryTitle, content: inquiryContent, date: new Date().toLocaleDateString(), status: '접수 대기' }]);
+                          const newInquiry = { 
+                            id: Date.now(), 
+                            title: inquiryTitle, 
+                            content: inquiryContent, 
+                            date: new Date().toLocaleDateString(), 
+                            status: '접수 대기' 
+                          };
+                          setInquiries([newInquiry, ...inquiries]);
                           setInquirySubmitted(true);
                           setShowInquiryForm(false);
                           setInquiryTitle('');
                           setInquiryContent('');
+
+                          // API 콜 (이메일 전송)
+                          try {
+                            await fetch('/api/inquiry', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ title: inquiryTitle, content: inquiryContent })
+                            });
+                          } catch (e) {
+                            console.error('Email send failed', e);
+                          }
                         }}
                         className="h-10 px-6 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-[11px] font-bold transition-colors shadow-sm"
                       >
@@ -1255,14 +1484,75 @@ export default function PaymentPage() {
                 )
               ) : inquiries.length > 0 ? (
                 <div className="flex-1 flex flex-col p-8 space-y-4">
-                  {inquiries.map((inq, idx) => (
-                    <div key={idx} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-bold text-rose-500">{inq.status}</span>
-                        <span className="text-[10px] font-bold text-stone-400">{inq.date}</span>
+                  {inquiries.map((inq) => (
+                    <div key={inq.id || Math.random()} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm transition-all">
+                      <div 
+                        className="flex items-center justify-between mb-2 cursor-pointer"
+                        onClick={() => setSelectedInquiryId(selectedInquiryId === inq.id ? null : inq.id)}
+                      >
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-md">{inq.status}</span>
+                            <span className="text-[10px] font-bold text-stone-400">{inq.date}</span>
+                          </div>
+                          <h4 className="text-[14px] font-black text-stone-900 mt-1">{inq.title}</h4>
+                        </div>
+                        <ChevronDown size={18} className={`text-stone-400 transition-transform ${selectedInquiryId === inq.id ? 'rotate-180' : ''}`} />
                       </div>
-                      <h4 className="text-[13px] font-black text-stone-900 mb-2">{inq.title}</h4>
-                      <p className="text-[11px] font-medium text-stone-500 whitespace-pre-wrap">{inq.content}</p>
+                      
+                      {selectedInquiryId === inq.id && (
+                        <div className="mt-4 pt-4 border-t border-stone-100 animate-in fade-in slide-in-from-top-2">
+                          {editingInquiryId === inq.id ? (
+                            <div className="flex flex-col gap-3">
+                              <input 
+                                type="text" 
+                                value={editTitle} 
+                                onChange={e => setEditTitle(e.target.value)} 
+                                className="w-full h-10 px-3 border border-stone-200 rounded-lg text-sm font-medium focus:outline-none focus:border-stone-400 focus:ring-1 focus:ring-stone-400"
+                              />
+                              <textarea 
+                                value={editContent} 
+                                onChange={e => setEditContent(e.target.value)} 
+                                className="w-full h-24 p-3 border border-stone-200 rounded-lg text-sm font-medium resize-none focus:outline-none focus:border-stone-400 focus:ring-1 focus:ring-stone-400"
+                              />
+                              <div className="flex justify-end gap-2 mt-2">
+                                <button onClick={() => setEditingInquiryId(null)} className="px-4 py-2 text-xs font-bold text-stone-500 hover:bg-stone-50 rounded-lg border border-stone-200">취소</button>
+                                <button 
+                                  onClick={() => {
+                                    setInquiries(inquiries.map(i => i.id === inq.id ? { ...i, title: editTitle, content: editContent } : i));
+                                    setEditingInquiryId(null);
+                                  }} 
+                                  className="px-4 py-2 text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 rounded-lg"
+                                >
+                                  저장
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-4">
+                              <p className="text-[13px] leading-relaxed font-medium text-stone-600 whitespace-pre-wrap bg-stone-50 p-4 rounded-xl">{inq.content}</p>
+                              <div className="flex justify-end gap-2">
+                                <button 
+                                  onClick={() => {
+                                    setEditTitle(inq.title);
+                                    setEditContent(inq.content);
+                                    setEditingInquiryId(inq.id);
+                                  }} 
+                                  className="px-3 py-1.5 text-xs font-bold text-stone-500 hover:bg-stone-100 rounded-lg transition-colors"
+                                >
+                                  수정
+                                </button>
+                                <button 
+                                  onClick={() => setInquiries(inquiries.filter(i => i.id !== inq.id))} 
+                                  className="px-3 py-1.5 text-xs font-bold text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                                >
+                                  삭제
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1435,9 +1725,14 @@ export default function PaymentPage() {
               </p>
               <button
                 onClick={() => {
-                  if (confirm('정말로 회원 탈퇴를 신청하시겠습니까? 30일 유예기간이 적용됩니다.')) {
-                    alert('회원 탈퇴 신청이 접수되었습니다. 30일 유예기간 동안 탈퇴가능합니다.');
-                  }
+                  setDialogState({
+                    isOpen: true,
+                    type: 'confirm',
+                    message: '정말로 회원 탈퇴를 신청하시겠습니까? 30일 유예기간이 적용됩니다.',
+                    onConfirm: () => {
+                      setTimeout(() => setDialogState({ isOpen: true, type: 'alert', message: '회원 탈퇴 신청이 접수되었습니다. 30일 유예기간 동안 복구 가능합니다.' }), 50);
+                    }
+                  });
                 }}
                 className="h-10 px-5 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-[11px] font-extrabold transition-all shadow-md shadow-rose-500/20"
               >
@@ -1726,6 +2021,45 @@ export default function PaymentPage() {
 
       </section>
 
+      {/* ── 8-1. 커스텀 다이얼로그 (Alert, Confirm, Prompt 대체) ───────────────────────── */}
+      {dialogState.isOpen && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-stone-900/40 animate-in fade-in duration-200" onClick={closeDialog} />
+          <div className="relative bg-white rounded-2xl w-full max-w-[320px] shadow-2xl p-6 animate-in zoom-in-95 duration-200 border border-stone-100">
+            <h3 className="text-stone-900 text-[15px] font-bold mb-5 leading-relaxed tracking-tight break-keep">{dialogState.message}</h3>
+            {dialogState.type === 'prompt' && (
+              <input 
+                type="text" 
+                id="dialog-prompt-input"
+                autoFocus
+                placeholder={dialogState.placeholder}
+                className="w-full h-11 px-4 rounded-xl bg-stone-50 border border-stone-200 focus:border-stone-400 outline-none text-stone-900 text-[13px] mb-5 transition-colors font-medium"
+              />
+            )}
+            <div className="flex justify-end gap-2 mt-2">
+              <button 
+                onClick={closeDialog}
+                className="h-10 px-5 rounded-xl bg-stone-100 text-stone-600 text-[13px] font-bold hover:bg-stone-200 transition-colors"
+              >
+                {dialogState.type === 'alert' ? '확인' : '취소'}
+              </button>
+              {dialogState.type !== 'alert' && (
+                <button 
+                  onClick={() => {
+                    const val = dialogState.type === 'prompt' ? (document.getElementById('dialog-prompt-input') as HTMLInputElement)?.value : undefined;
+                    closeDialog();
+                    dialogState.onConfirm?.(val);
+                  }}
+                  className="h-10 px-5 rounded-xl bg-stone-900 text-white text-[13px] font-bold hover:bg-stone-800 transition-colors"
+                >
+                  확인
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── 9. [MODIFIED] 초대장 공개하기 모달창 (주소 체계 변경, 고화질 진짜 QR 코드 API 바인딩, 클릭 시 템플릿 이동) ─────── */}
       {isPublishModalOpen && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
@@ -1834,168 +2168,115 @@ export default function PaymentPage() {
       )}
 
       {/* ── 10. 결제 모달 (쇼핑몰 스타일 PG 플로우) ─────────────────────── */}
+      {/* ── 10. 결제 화면 (새 디자인 반영) ─────────────────────── */}
       {isPaymentModalOpen && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-stone-900/50 animate-in fade-in duration-300" onClick={() => setIsPaymentModalOpen(false)} />
-
-          <div className="relative z-10 w-full max-w-[900px] bg-white rounded-[2rem] shadow-2xl flex flex-col lg:flex-row max-h-[92vh] overflow-hidden animate-in zoom-in-95 duration-200">
-            <button onClick={() => setIsPaymentModalOpen(false)} className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors z-20">
-              <X size={15} />
-            </button>
-
-            {/* 왼쪽: 주문 상품 정보 */}
-            <div className="w-full lg:w-[45%] bg-[#F7F6F3] p-8 border-r border-stone-200/60 flex flex-col gap-6 overflow-y-auto">
-              <div>
-                <div className="inline-flex items-center gap-1.5 bg-rose-500 text-white rounded-full px-3 py-1 text-[10px] font-black tracking-widest mb-4">
-                  <Sparkles size={10} /> PREMIUM
-                </div>
-                <h3 className="text-[22px] font-black text-stone-900 tracking-tight leading-snug">프리미엄 플랜<br /><span className="text-rose-500">1년 이용권</span></h3>
-                <p className="text-xs text-stone-400 mt-2 leading-relaxed">결제 즉시 모든 기능이 활성화됩니다</p>
-              </div>
-
-              {/* 주문 항목 */}
-              <div className="bg-white rounded-2xl border border-stone-200/60 divide-y divide-stone-100">
-                {BENEFITS.map((b) => {
-                  const Icon = b.icon;
-                  return (
-                    <div key={b.title} className="flex items-center gap-3 px-4 py-3">
-                      <div className={`w-7 h-7 rounded-lg ${b.bg} flex items-center justify-center shrink-0`}>
-                        <Icon size={13} className={b.color} />
-                      </div>
-                      <span className="text-[12px] font-semibold text-stone-700 flex-1">{b.title}</span>
-                      <Check size={12} className="text-emerald-500 shrink-0" />
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* 금액 요약 */}
-              <div className="bg-white rounded-2xl border border-stone-200/60 p-5 space-y-3 text-[12px]">
-                <div className="flex justify-between text-stone-400">
-                  <span>정가</span>
-                  <span className="line-through">₩{originalPrice.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-rose-500 font-bold">
-                  <span className="flex items-center gap-1"><BadgePercent size={12} /> 런칭 특별 할인 (61%)</span>
-                  <span>-₩{launchDiscount.toLocaleString()}</span>
-                </div>
-                {couponApplied && (
-                  <div className="flex justify-between text-emerald-600 font-bold">
-                    <span>쿠폰 할인</span>
-                    <span>-₩{discountAmount.toLocaleString()}</span>
-                  </div>
-                )}
-                <div className="border-t border-dashed border-stone-200 pt-3 flex justify-between items-center">
-                  <span className="font-black text-stone-900 text-[13px]">최종 결제금액</span>
-                  <span className="text-[22px] font-black text-rose-500">₩{finalPrice.toLocaleString()}</span>
-                </div>
-              </div>
-
-              {/* 쿠폰 */}
-              <div className="flex gap-2">
-                <input type="text" placeholder="쿠폰 코드 입력" value={couponCode} onChange={(e) => { setCouponCode(e.target.value); setCouponError(''); }} disabled={couponApplied} className="flex-1 h-10 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-medium outline-none focus:border-stone-400 disabled:opacity-50" />
-                <button onClick={handleCoupon} disabled={couponApplied || !couponCode.trim()} className="h-10 px-4 rounded-xl bg-stone-900 text-white text-xs font-bold disabled:opacity-40 transition-all shrink-0 hover:bg-black">{couponApplied ? '적용됨 ✓' : '적용'}</button>
-              </div>
-              {couponError && <p className="text-[11px] text-rose-500 flex items-center gap-1 -mt-2"><AlertCircle size={11} /> {couponError}</p>}
-
-              <div className="flex items-center justify-between text-[10px] text-stone-400 font-medium mt-auto pt-2 border-t border-stone-200/50">
-                <span className="flex items-center gap-1"><ShieldCheck size={11} className="text-emerald-500" /> SSL 암호화 보안</span>
-                <span>주식회사 Wedding Platform</span>
-              </div>
+        <div className="fixed inset-0 z-[100] flex items-start justify-center bg-white overflow-y-auto custom-scrollbar">
+          <div className="relative w-full max-w-[500px] min-h-screen bg-white flex flex-col py-12 px-6 animate-in fade-in slide-in-from-bottom-8 duration-300">
+            
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-[28px] font-black tracking-tight text-stone-950 leading-tight">프리미엄으로 업그레이드</h2>
+              <p className="text-stone-500 font-medium mt-1.5 text-[14px]">광고를 제거하고 모든 기능을 사용하세요</p>
             </div>
 
-            {/* 오른쪽: 결제 수단 선택 + 약관 동의 */}
-            <div className="w-full lg:w-[55%] p-8 overflow-y-auto flex flex-col gap-6">
-              <div>
-                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">결제 방법</p>
-                <h4 className="text-base font-black text-stone-900">결제 수단을 선택하세요</h4>
+            <div className="space-y-4">
+              {/* Card 1: Current plan info */}
+              <div className="border border-stone-200 rounded-2xl p-6 bg-white shadow-sm">
+                <h3 className="text-[20px] font-black text-stone-900 tracking-tight">Minjun & Seoyeon</h3>
+                <p className="text-stone-500 font-semibold text-[13px] uppercase tracking-wider mt-1">MINJUN, SEOYEON</p>
+                <div className="inline-flex items-center mt-3 bg-[#FFCDB2] text-[#B54A41] rounded-full px-3 py-1 text-[12px] font-extrabold shadow-[#FFCDB2]/50 shadow-md animate-pulse">
+                  <Clock size={12} className="mr-1.5" /> 90일 프리미엄 이용
+                </div>
               </div>
 
-              {/* PG사 결제 버튼 그룹 */}
-              <div className="grid grid-cols-2 gap-2.5">
-                {[
-                  { id: 'card' as PayMethod, label: '신용 · 체크카드', desc: '국내 모든 카드 가능', icon: CreditCard, style: 'border-stone-200 bg-white text-stone-800 hover:border-stone-400', selectedStyle: 'border-stone-900 bg-stone-900 text-white' },
-                  { id: 'kakao' as PayMethod, label: '카카오페이', desc: 'QR · 카카오톡 간편 인증', icon: Wallet, style: 'border-yellow-200 bg-yellow-50 text-yellow-800 hover:border-yellow-400', selectedStyle: 'border-yellow-400 bg-[#FEE500] text-[#3C1E1E]' },
-                  { id: 'naver' as PayMethod, label: '네이버페이', desc: '포인트 적립 가능', icon: Wallet, style: 'border-green-200 bg-green-50 text-green-800 hover:border-green-400', selectedStyle: 'border-green-600 bg-green-600 text-white' },
-                  { id: 'toss' as PayMethod, label: '토스페이', desc: '1초 결제', icon: Wallet, style: 'border-sky-200 bg-sky-50 text-sky-800 hover:border-sky-400', selectedStyle: 'border-sky-600 bg-sky-600 text-white' },
-                  { id: 'samsung' as PayMethod, label: '삼성페이', desc: '갤럭시 생체인증', icon: CreditCard, style: 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:border-indigo-400', selectedStyle: 'border-indigo-600 bg-indigo-600 text-white' },
-                  { id: 'apple' as PayMethod, label: 'Apple Pay', desc: 'Face / Touch ID', icon: Apple, style: 'border-stone-200 bg-stone-50 text-stone-800 hover:border-stone-400', selectedStyle: 'border-stone-900 bg-stone-900 text-white' },
-                ].map(({ id, label, desc, icon: Icon, style, selectedStyle }) => {
-                  const isSelected = payMethod === id;
-                  return (
-                    <button key={id} onClick={() => setPayMethod(id)}
-                      className={`group relative flex flex-col items-start gap-1 p-4 rounded-2xl border-2 text-left transition-all duration-200 ${
-                        isSelected ? selectedStyle + ' shadow-lg' : style
-                      }`}>
-                      <div className="flex items-center gap-2 w-full">
-                        <Icon size={15} className="shrink-0" />
-                        <span className="text-[12px] font-black">{label}</span>
-                        {isSelected && <Check size={13} className="ml-auto shrink-0" />}
-                      </div>
-                      <p className={`text-[10px] font-medium pl-[23px] ${isSelected ? 'opacity-70' : 'text-stone-400'}`}>{desc}</p>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* 선택한 결제 수단 안내 배너 */}
-              <div className={`rounded-2xl p-4 text-center border text-xs font-semibold ${
-                payMethod === 'kakao' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
-                payMethod === 'card' ? 'bg-stone-50 border-stone-200 text-stone-700' :
-                'bg-stone-50 border-stone-200 text-stone-700'
-              }`}>
-                {payMethod === 'card' && '결제 버튼 클릭 시 카드사 안전결제 창이 팝업으로 열립니다.'}
-                {payMethod === 'kakao' && '결제 버튼 클릭 시 카카오페이 QR 결제 화면으로 이동합니다.'}
-                {payMethod === 'naver' && '결제 버튼 클릭 시 네이버페이 본인인증 화면으로 이동합니다.'}
-                {payMethod === 'toss' && '결제 버튼 클릭 시 토스페이 인증 화면으로 이동합니다.'}
-                {payMethod === 'samsung' && '결제 버튼 클릭 시 삼성페이 생체인증 화면으로 이동합니다.'}
-                {payMethod === 'apple' && '결제 버튼 클릭 시 Apple Pay Face/Touch ID 인증이 실행됩니다.'}
-              </div>
-
-              {/* 약관 동의 섹션 (인라인, 블러 없음) */}
-              <div className="rounded-2xl border border-stone-200 bg-stone-50/50 p-5 space-y-3">
-                <p className="text-[11px] font-black text-stone-500 uppercase tracking-wider">결제 및 개인정보 제공 동의</p>
-                {submitAttempted && (!agreeTerms || !agreePrivacy || !agreeRefund) && (
-                  <p className="text-[11px] text-rose-500 font-bold flex items-center gap-1"><AlertCircle size={12} /> 필수 약관에 모두 동의해 주세요</p>
+              {/* Card 2: 프리미엄 기능 (Accordion) */}
+              <div className="border border-stone-200 rounded-2xl bg-white overflow-hidden shadow-sm transition-all">
+                <button 
+                  onClick={() => setPremiumFeatureOpen(!premiumFeatureOpen)}
+                  className="w-full flex items-center justify-between p-5 hover:bg-stone-50 transition-colors"
+                >
+                  <div className="flex items-center gap-2 text-stone-600 font-bold text-[14px]">
+                    <CheckCircle2 size={16} className="text-stone-400" /> 프리미엄 기능
+                  </div>
+                  <ChevronDown size={18} className={`text-stone-400 transition-transform ${premiumFeatureOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {premiumFeatureOpen && (
+                  <div className="px-5 pb-5 pt-2 border-t border-stone-100 bg-white">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 mb-5">
+                      <div className="flex items-center gap-2 text-stone-800 text-[14px] font-bold"><CheckCircle2 size={16} className="text-stone-800" /> 광고 완전 제거</div>
+                      <div className="flex items-center gap-2 text-stone-800 text-[14px] font-bold"><CheckCircle2 size={16} className="text-stone-800" /> RSVP 참석 관리</div>
+                      <div className="flex items-center gap-2 text-stone-800 text-[14px] font-bold"><CheckCircle2 size={16} className="text-stone-800" /> 방명록 무제한</div>
+                      <div className="flex items-center gap-2 text-stone-800 text-[14px] font-bold"><CheckCircle2 size={16} className="text-stone-800" /> 상세 통계 분석</div>
+                    </div>
+                    <div className="inline-flex items-center bg-[#FFCDB2] text-[#B54A41] rounded-full px-3.5 py-1.5 text-[12px] font-extrabold shadow-[#FFCDB2]/50 shadow-md animate-pulse">
+                      <Clock size={12} className="mr-1.5" /> 90일 프리미엄 이용
+                    </div>
+                  </div>
                 )}
-                {/* 전체 동의 */}
-                <label className="flex items-center gap-3 cursor-pointer py-2 border-b border-stone-200">
-                  <div onClick={() => handleAgreeAll(!agreeAll)} className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${agreeAll ? 'bg-stone-900 border-stone-900 text-white' : 'border-stone-300 bg-white'}`}>
-                    {agreeAll && <Check size={10} strokeWidth={3.5} />}
-                  </div>
-                  <span className="text-[12px] font-black text-stone-800">모든 동의사항 전체 수락</span>
-                </label>
-                {/* 개별 동의 */}
-                {[
-                  { key: 'terms', label: '이용약관 동의', value: agreeTerms, setter: setAgreeTerms, modal: 'terms' as const },
-                  { key: 'privacy', label: '개인정보 수집 및 이용 동의', value: agreePrivacy, setter: setAgreePrivacy, modal: 'privacy' as const },
-                  { key: 'refund', label: '환불 정책 및 디지털콘텐츠 동의', value: agreeRefund, setter: setAgreeRefund, modal: 'refund' as const },
-                ].map(({ key, label, value, setter, modal }) => (
-                  <div key={key} className="flex items-center justify-between">
-                    <label className="flex items-center gap-2.5 cursor-pointer">
-                      <div onClick={() => setter(!value)} className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all ${value ? 'bg-rose-500 border-rose-500 text-white' : 'border-stone-300 bg-white'}`}>
-                        {value && <Check size={9} strokeWidth={3.5} />}
-                      </div>
-                      <span className="text-[11px] text-stone-600 font-semibold"><span className="text-rose-500 font-black">[필수]</span> {label}</span>
-                    </label>
-                    <button type="button" onClick={() => setOpenModal(modal)} className="text-[10px] text-stone-400 hover:text-stone-700 font-bold underline underline-offset-2 shrink-0">보기</button>
-                  </div>
-                ))}
               </div>
 
-              {/* 최종 결제 버튼 */}
-              <button
-                onClick={handlePay}
-                className={`w-full h-14 rounded-2xl text-sm font-black shadow-lg transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 ${
-                  payMethod === 'kakao' ? 'bg-[#FEE500] text-[#3C1E1E] shadow-yellow-200' :
-                  payMethod === 'naver' ? 'bg-green-600 text-white shadow-green-200' :
-                  payMethod === 'toss' ? 'bg-sky-600 text-white shadow-sky-200' :
-                  'bg-stone-900 text-white shadow-stone-200 hover:bg-black'
-                }`}
-              >
-                <Lock size={14} />
-                <span>{finalPrice.toLocaleString()}원 {payMethod === 'kakao' ? '카카오페이로 결제' : payMethod === 'naver' ? '네이버페이로 결제' : payMethod === 'toss' ? '토스페이로 결제' : '안전 결제하기'}</span>
-              </button>
+              {/* Card 3: 환불 정책 안내 (Accordion) */}
+              <div className="border border-stone-200 rounded-2xl bg-white overflow-hidden shadow-sm transition-all">
+                <button 
+                  onClick={() => setRefundPolicyOpen(!refundPolicyOpen)}
+                  className="w-full flex items-center justify-between p-5 hover:bg-stone-50 transition-colors"
+                >
+                  <div className="flex items-center gap-2 text-stone-600 font-bold text-[14px]">
+                    <Info size={16} className="text-stone-400" /> 환불 정책 안내 (전자상거래법 제17조)
+                  </div>
+                  <ChevronDown size={18} className={`text-stone-400 transition-transform ${refundPolicyOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {refundPolicyOpen && (
+                  <div className="px-5 pb-5 pt-2 space-y-3 border-t border-stone-100 bg-white">
+                    <div className="flex items-start gap-2 text-stone-700 text-[13px] font-semibold">
+                      <CheckCircle2 size={14} className="text-stone-500 mt-0.5 shrink-0" /> 
+                      <span className="leading-tight">환불 가능: 결제일로부터 7일 이내, URL 미공유 (조회 0회), RSVP·방명록 0건</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-stone-700 text-[13px] font-semibold">
+                      <XCircle size={14} className="text-stone-500 mt-0.5 shrink-0" /> 
+                      <span className="leading-tight">환불 불가: 7일 경과, URL 공유됨 (조회 1회 이상), RSVP·방명록 수집됨</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-stone-700 text-[13px] font-semibold">
+                      <Clock size={14} className="text-stone-500 mt-0.5 shrink-0" /> 
+                      <span className="leading-tight">처리 기간: 승인 후 3-5 영업일 소요 (카드사/결제사 정책에 따름)</span>
+                    </div>
+                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenModal('refund'); }} className="text-[13px] font-extrabold text-stone-900 hover:underline underline-offset-4 mt-2">전체 환불 정책 보기</button>
+                  </div>
+                )}
+              </div>
+
+              {/* Card 4: 결제하고 업그레이드 */}
+              <div className="border border-stone-200 rounded-2xl bg-white p-6 shadow-sm mt-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <CreditCard size={18} className="text-stone-800" />
+                  <h3 className="text-[16px] font-black text-stone-900 tracking-tight">결제하고 업그레이드</h3>
+                </div>
+                <p className="text-[11px] font-bold text-stone-400 mb-5 ml-[26px]">안전한 결제로 즉시 모든 기능을 사용하세요</p>
+
+                <div className="bg-stone-50 rounded-xl p-5 mb-6">
+                  <p className="text-[12px] font-extrabold text-stone-500 mb-1">결제 금액</p>
+                  <p className="text-[32px] font-black text-stone-900 tracking-tighter leading-none">₩14,000</p>
+                </div>
+
+                <div>
+                  <button 
+                    onClick={() => handlePortOnePay()}
+                    className="w-full h-14 rounded-xl flex items-center justify-center gap-2 font-extrabold text-[15px] transition-colors shadow-sm bg-[#61b0b5] hover:bg-[#529a9e] text-white"
+                  >
+                    안심결제 시작
+                  </button>
+                  <button 
+                    onClick={() => setIsPaymentModalOpen(false)}
+                    className="w-full h-12 mt-3 rounded-xl flex items-center justify-center font-bold text-[13px] text-stone-500 hover:bg-stone-50 border border-stone-200 transition-colors"
+                  >
+                    돌아가기
+                  </button>
+                </div>
+                
+                <p className="text-center text-[10px] text-stone-400 font-semibold mt-6 whitespace-nowrap">
+                  결제 진행 시 이용약관, 환불정책 및 개인정보 제공에 동의한 것으로 간주합니다. <button type="button" onClick={(e) => { e.preventDefault(); setOpenModal('payConfirm'); }} className="underline hover:text-stone-600 ml-1">상세보기</button>
+                </p>
+              </div>
             </div>
           </div>
         </div>

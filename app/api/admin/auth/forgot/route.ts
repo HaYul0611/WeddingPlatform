@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     const tempPassword = Math.random().toString(36).slice(-8);
 
     // 3) DB 업데이트 (임시 비밀번호로 교체)
-    if (targetAdmin.id !== 'mock-id') {
+    if (targetAdmin && targetAdmin.id !== 'mock-id') {
       const { error: updateError } = await supabase
         .from('admins')
         .update({ password: tempPassword })

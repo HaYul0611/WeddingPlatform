@@ -1,0 +1,1047 @@
+/* 이미지 선택 모달 및 스냅포스트 스타일 완벽 대응 CSS (초대형 프리미엄 개편본) */
+
+.image-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.45);
+  animation: picker-fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.image-picker-container {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background-color: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 1px 0 rgba(15, 23, 42, 0.1);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: picker-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+@keyframes picker-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes picker-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.picker-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.picker-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.picker-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.picker-subtitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.btn-picker-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-picker-close:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+  transform: rotate(90deg);
+}
+
+/* 드래그 앤 드롭 업로드 영역 */
+.upload-drag-area {
+  position: relative;
+  height: 130px;
+  background-color: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.upload-drag-area:hover,
+.upload-drag-area.drag-active {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.upload-drag-area.drag-active {
+  transform: scale(0.99);
+}
+
+.upload-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.upload-drag-area:hover .upload-icon-container {
+  color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.upload-text-block {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.upload-primary-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.upload-secondary-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+/* 선명하게 토글 배너 */
+.sharpen-toggle-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f8fafc;
+  border-radius: 16px;
+  padding: 12px 16px;
+  border: 1px solid #f1f5f9;
+}
+
+.sharpen-label-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sharpen-icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background-color: #f5f3ff;
+  color: #8b5cf6;
+}
+
+.sharpen-text-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.sharpen-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.sharpen-desc {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.toggle-container {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #e2e8f0;
+  border-radius: 24px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-input:checked+.toggle-slider {
+  background-color: #8b5cf6;
+}
+
+.toggle-input:checked+.toggle-slider:before {
+  transform: translateX(20px);
+}
+
+/* 모달 탭 바 */
+.picker-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.picker-tabs-container {
+  display: flex;
+  gap: 16px;
+}
+
+.picker-tab-button {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 4px 2px 10px 2px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s ease;
+}
+
+.picker-tab-button:hover {
+  color: #475569;
+}
+
+.picker-tab-button.tab-active {
+  color: #3b82f6;
+}
+
+.picker-tab-button.tab-active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #3b82f6;
+  border-radius: 2px;
+}
+
+.picker-counter {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  background-color: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* 이미지 리스트 스크롤 영역 */
+.picker-content-scroll {
+  max-height: 250px;
+  overflow-y: auto;
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.picker-content-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.picker-content-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.picker-content-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* 엠프티 뷰 가로 중앙 정렬 및 줄바꿈 여백 복원 (레퍼런스 1번 매칭) */
+.picker-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  gap: 16px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.empty-icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #f8fafc;
+  color: #94a3b8;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.empty-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-primary-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #334155;
+  display: block;
+}
+
+.empty-secondary-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+  line-height: 1.5;
+  display: block;
+  max-width: 250px;
+}
+
+/* 이미지 그리드 */
+.picker-image-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 8px 2px;
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.picker-image-grid::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+.picker-image-item {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #f8fafc;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.picker-image-item:hover {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.picker-image-item.image-selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.picker-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.picker-image-item:hover .picker-thumbnail {
+  transform: scale(1.05);
+}
+
+.picker-image-item.sharpen-applied .picker-thumbnail {
+  filter: contrast(1.1) brightness(1.02) saturate(1.05);
+}
+
+/* 삭제 버튼 호버 시 표시 */
+.picker-item-actions {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  opacity: 0;
+  visibility: hidden;
+  display: flex;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+
+.picker-image-item:hover .picker-item-actions {
+  opacity: 1;
+  visibility: visible;
+}
+
+.btn-picker-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
+}
+
+.btn-picker-delete:hover {
+  background-color: #ffffff;
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+.picker-select-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+  color: #ffffff;
+  z-index: 9;
+}
+
+.in-use-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background-color: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1.5px 4.5px;
+  border-radius: 4px;
+  backdrop-filter: blur(2px);
+  z-index: 5;
+}
+
+/* 하단 툴바 조작 행 */
+.picker-bottom-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
+}
+
+.picker-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-toolbar-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #334155;
+  outline: none;
+}
+
+.btn-toolbar-action:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.btn-toolbar-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #ef4444;
+  background-color: #ef4444;
+  color: #ffffff;
+  outline: none;
+}
+
+.btn-toolbar-delete:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+/* 섹션에 적용 드롭다운 메뉴 (스냅포스트 스타일 정밀 대응) */
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 10px;
+  width: 230px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+  z-index: 100;
+  overflow: hidden;
+  max-height: 250px;
+  overflow-y: auto;
+  animation: dropdown-fade-in 0.15s ease-out;
+}
+
+@keyframes dropdown-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+  color: #334155;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-bottom: 1.5px solid #f8fafc;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.dropdown-item-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+
+/* 스냅포스트 드롭다운 뱃지 완벽 매칭 */
+.dropdown-item-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  /* 1장은 연한 회색 텍스트 */
+  background: transparent;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.dropdown-item-badge.multi {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2.5px 8px;
+  border-radius: 9999px;
+  background-color: #eff6ff;
+  /* 다중은 파란색 둥근 배경 뱃지 */
+  color: #3b82f6;
+  white-space: nowrap;
+}
+
+/* 이미지 크로퍼 모달 스타일 (초대형 프리미엄 리뉴얼) */
+.cropper-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.45);
+  animation: picker-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cropper-container {
+  position: relative;
+  width: 100%;
+  /* 웅장하면서도 슬림한 가로폭으로 스냅포스트와 1:1 매칭 */
+  max-width: 540px;
+  background-color: #ffffff;
+  border-radius: 28px;
+  /* 넉넉하고 럭셔리한 패딩 부여 */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.35), 0 0 1px 0 rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  animation: picker-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cropper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1.5px solid #f1f5f9;
+  padding-bottom: 14px;
+}
+
+.cropper-title {
+  /* 웅장한 타이틀 폰트 크기 */
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+}
+
+/* 회전/반전 툴바 버튼 카드 그룹화 */
+.cropper-toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  background-color: #f1f5f9;
+  padding: 6px;
+  border-radius: 16px;
+}
+
+.cropper-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.btn-crop-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 9px 0;
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-crop-tool:hover {
+  background-color: rgba(255, 255, 255, 0.65);
+  color: #0f172a;
+}
+
+.btn-crop-tool.tool-active {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.cropper-divider {
+  color: #cbd5e1;
+  font-weight: 300;
+  font-size: 13px;
+  padding: 0 6px;
+  user-select: none;
+}
+
+/* 비율 조절 탭 웰 구조 */
+.cropper-ratio-bar {
+  display: flex;
+  gap: 4px;
+  background-color: #f1f5f9;
+  padding: 5px;
+  border-radius: 16px;
+}
+
+.btn-ratio-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 0;
+  border-radius: 12px;
+  border: none;
+  background: none;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.btn-ratio-tab:hover {
+  color: #1e293b;
+}
+
+.btn-ratio-tab.ratio-active {
+  background-color: #ffffff;
+  color: #0f172a;
+  font-weight: 900;
+  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.06);
+}
+
+/* 초대형 크롭 중앙 영역 박스 (정사각형 500x500 프리미엄 비율 설계) */
+.cropper-preview-box {
+  position: relative;
+  width: 100%;
+  /* 270px에서 500px로 확장하여 선명도 및 조작 면적 최적화 */
+  height: 500px;
+  background-color: #ffffff;
+  /* 순백색으로 탈바꿈하여 시꺼먼 검정 여백의 불쾌감 완전 소멸 */
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
+  /* 고급스러운 깊이감 섀도우 */
+}
+
+/* 가변 비율에 따라 정밀하게 들어맞는 캔버스 래퍼 가두기 기법 */
+.cropper-canvas-wrapper {
+  background-color: #ffffff;
+  overflow: hidden;
+  width: 500px;
+  height: 500px;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
+  /* 어떠한 반응형 상황에서도 완벽한 정사각형 사수 */
+  box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.25);
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cropper-canvas {
+  display: block;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  /* 캔버스 버퍼 해상도와 화면 비율 1:1 완벽 일치 */
+  object-fit: contain;
+  /* 절대 이미지가 찌부러져 늘어나는 참사 영구 방지 */
+}
+
+/* 실제 마우스 조작이 일어나는 점선 크롭 가이드 */
+.cropper-guide-box {
+  position: absolute;
+  border: none;
+  /* 캔버스를 지배하고 바깥 영역은 짙은 반투명 순수 블랙으로 확실하게 어둡게 가림 (0.65 농도) */
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65);
+  z-index: 50;
+  /* 캔버스 및 렌더러 위를 지배하도록 격상 */
+  touch-action: none;
+}
+
+/* 시계방향 점선 흐름 애니메이션용 SVG 오버레이 */
+.cropper-marching-ants {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 55;
+}
+
+.cropper-marching-ants rect {
+  animation: marching-ants-animation 0.6s linear infinite;
+}
+
+@keyframes marching-ants-animation {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+/* 8각 조작 핸들 - 속이 비친 화이트 투명 스퀘어 (Figma 스타일 고급 디자인) */
+.cropper-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: transparent;
+  /* 안이 훤히 비침! */
+  border: 1.5px solid #ffffff;
+  /* 흰색 선! */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  z-index: 60;
+  /* 핸들 터치가 항상 우선순위를 얻도록 최상위로 격상 */
+  box-sizing: border-box;
+}
+
+/* 모퉁이 네 곳 핸들 오프셋 및 커서 */
+.cropper-handle.tl {
+  top: -6px;
+  left: -6px;
+  cursor: nwse-resize;
+}
+
+.cropper-handle.tr {
+  top: -6px;
+  right: -6px;
+  cursor: nesw-resize;
+}
+
+.cropper-handle.bl {
+  bottom: -6px;
+  left: -6px;
+  cursor: nesw-resize;
+}
+
+.cropper-handle.br {
+  bottom: -6px;
+  right: -6px;
+  cursor: nwse-resize;
+}
+
+/* 변 중앙 네 곳 핸들 오프셋 및 커서 (총 8방향 비례 리사이저 대응) */
+.cropper-handle.tc {
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+
+.cropper-handle.bc {
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+
+.cropper-handle.lc {
+  top: 50%;
+  left: -6px;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+
+.cropper-handle.rc {
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+
+/* 크로퍼 하단 풋터 */
+.cropper-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1.5px solid #f1f5f9;
+  padding-top: 18px;
+}
+
+.btn-crop-cancel {
+  padding: 12px 26px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-crop-cancel:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.btn-crop-submit {
+  padding: 12px 26px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 900;
+  border: none;
+  background-color: #0f172a;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-crop-submit:hover {
+  background-color: #1e293b;
+  transform: translateY(-1px);
+}
+
+/* 삭제 후 되돌리기(Undo) 토스트 스타일 완벽 도입 - 상단 중앙 알약 캡슐 */
+.undo-toast {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100000;
+  animation: undo-slide-down 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes undo-slide-down {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.undo-toast-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 9999px;
+  padding: 8px 10px 8px 20px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+.undo-toast-text {
+  font-size: 12px;
+  font-weight: 800;
+  color: #475569;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* 되돌리기 버튼 - 토스트와 유려하게 어우러지는 소프트 블루 웰 럭셔리 스타일 */
+.btn-undo-action {
+  background-color: #eff6ff;
+  /* 은은하고 고급스러운 연파랑 배경 */
+  color: #3b82f6;
+  /* 명료하고 세련된 파란색 텍스트 */
+  font-size: 11px;
+  font-weight: 800;
+  border: none;
+  border-radius: 9999px;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-undo-action:hover {
+  background-color: #dbeafe;
+  /* 호버 시 깊이감 있는 은은함 */
+  transform: scale(1.03);
+}

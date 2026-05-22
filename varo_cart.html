@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z'/><line x1='3' y1='6' x2='21' y2='6'/><path d='M16 10a4 4 0 0 1-8 0'/></svg>">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VARO 장바구니 — 선택한 상품을 확인하고 주문하세요.">
+  <meta name="theme-color" content="#0D0D0D">
+  <title>VARO — 장바구니</title>
+  <script src="./js/components.js"></script>
+  <!-- PortOne (Iamport) JS SDK 추가 -->
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
+  <link rel="stylesheet" href="./styles/reset.css">
+  <link rel="stylesheet" href="./styles/variables.css">
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="./styles/header.css">
+  <link rel="stylesheet" href="./styles/components.css">
+  <link rel="stylesheet" href="./styles/mega-menu.css">
+  <link rel="stylesheet" href="./styles/cart.css">
+</head>
+
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <div id="overlay-placeholder"></div>
+
+  <main id="main-content">
+    <div class="container u-mb-100">
+
+      <div class="page-header">
+        <h1 class="page-title">장바구니</h1>
+        <p class="cart-step-indicator" aria-label="주문 단계">
+          <span class="step is-active">01 장바구니</span>
+          <span class="step-arrow" aria-hidden="true">/</span>
+          <span class="step">02 주문/결제</span>
+          <span class="step-arrow" aria-hidden="true">/</span>
+          <span class="step">03 주문완료</span>
+        </p>
+      </div>
+
+      <!-- 빈 장바구니 -->
+      <div class="cart-empty" id="cartEmpty" hidden>
+        <div class="cart-empty__inner">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+            aria-hidden="true">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+          <p class="cart-empty__text">당신의 장바구니가 비어 있습니다.</p>
+          <p class="cart-empty__sub u-fs-11 u-color-gray u-mt-15">VARO의 추천 상품들로 가득 채워보세요.</p>
+          <a href="./shop.html" class="btn btn--primary u-mt-15">쇼핑 계속하기</a>
+        </div>
+
+        <!-- 빈 장바구니 하단 추천 상품 -->
+        <div class="cart-empty-recommend u-mt-15">
+          <h3 class="recommend-title">YOU MIGHT ALSO LIKE</h3>
+          <div class="product-grid" id="emptyRecommendGrid">
+            <!-- JS로 채움 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 장바구니 본체 -->
+      <div class="cart-layout" id="cartLayout">
+
+        <!-- 아이템 목록 (좌측) -->
+        <div class="cart-items" id="cartItems">
+
+          <div class="cart-items__header">
+            <label class="cart-check-all">
+              <input type="checkbox" id="cartCheckAll" checked aria-label="전체 선택">
+              <span class="u-ml-10">전체선택</span>
+            </label>
+            <button type="button" class="cart-delete-selected btn-text" id="cartDeleteSelected">선택 삭제</button>
+          </div>
+
+          <ul class="cart-list" id="cartList">
+            <!-- JS로 채워짐 -->
+          </ul>
+
+          <div class="cart-items__footer u-mt-15">
+            <a href="./shop.html" class="btn btn--outline btn--wide">← 계속 쇼핑하기</a>
+          </div>
+        </div>
+
+        <!-- 주문 요약 (우측 스티키) -->
+        <aside class="cart-summary-container">
+          <div class="cart-summary" id="cartSummary" aria-label="주문 금액 요약">
+            <h2 class="cart-summary__title">ORDER SUMMARY</h2>
+
+            <dl class="cart-summary__rows">
+              <div class="cart-summary__row">
+                <dt>상품 금액</dt>
+                <dd id="summaryProductTotal">0원</dd>
+              </div>
+              <div class="cart-summary__row">
+                <dt>배송비</dt>
+                <dd id="summaryShipping">3,000원</dd>
+              </div>
+              <div class="cart-summary__row cart-summary__row--discount" id="discountRow" hidden>
+                <dt>할인</dt>
+                <dd id="summaryDiscount" class="u-color-accent">-0원</dd>
+              </div>
+              <div class="cart-summary__total u-mt-15">
+                <dt>TOTAL</dt>
+                <dd id="summaryFinalTotal">0원</dd>
+              </div>
+            </dl>
+
+            <div class="cart-summary__free-ship" id="freeShipNotice">
+              <div class="free-ship-progress">
+                <div class="free-ship-bar u-w-0" id="freeShipBar"></div>
+              </div>
+              <p id="freeShipText" class="u-fs-11">50,000원 이상 구매 시 무료배송</p>
+            </div>
+
+            <!-- 쿠폰 입력 영역 -->
+            <div class="cart-summary__coupon u-mt-15">
+              <div class="coupon-field">
+                <input type="text" id="couponInput" placeholder="쿠폰 코드를 입력하세요" aria-label="쿠폰 코드 입력">
+                <button type="button" id="applyCoupon" class="btn btn--primary">적용</button>
+              </div>
+              <p id="couponMessage" class="coupon-message" hidden></p>
+            </div>
+
+            <div class="cart-summary__actions u-mt-15">
+              <button class="btn btn--primary btn--full cart-checkout" id="cartCheckout">
+                주문하기
+              </button>
+            </div>
+
+            <ul class="cart-summary__benefits u-mt-15">
+              <li>안전한 결제 시스템</li>
+              <li>7일 이내 무료 반품</li>
+              <li>1~3일 빠른 배송</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+  </main>
+
+  </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="./js/api.js"></script>
+  <script src="./js/data.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/cart.js"></script>
+  <script src="./js/mega-menu.js"></script>
+
+</body>
+
+</html>
