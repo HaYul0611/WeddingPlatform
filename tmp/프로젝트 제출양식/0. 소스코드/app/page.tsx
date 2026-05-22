@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useConsultation } from '@/hooks/useConsultation';
 import ConsultationModal from '@/components/consultation/ConsultationModal';
 
@@ -87,9 +88,48 @@ const ACCENT_COLORS: Record<string, { bg: string; text: string; tag: string }> =
 // ───────────────────────────────
 export default function LandingPage() {
   const { isOpen, openModal, closeModal, sourcePage, defaultCategory } = useConsultation();
+  const [partners, setPartners] = useState<{id: string, name: string}[]>([]);
+  
+  useEffect(() => {
+    fetch('/api/public/companies')
+      .then(res => res.json())
+      .then(json => {
+        if (json.success && json.data.length > 0) {
+          setPartners(json.data);
+        } else {
+          // 샘플 데이터 (초기 노출용)
+          setPartners([
+            { id: '1', name: '루미너스 웨딩' },
+            { id: '2', name: '아뜰리에 쿠' },
+            { id: '3', name: '더 화이트 엘리자베스' },
+            { id: '4', name: '웨딩 스퀘어' },
+            { id: '5', name: '플라워 아트 스튜디오' },
+            { id: '6', name: '마리아쥬' },
+          ]);
+        }
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  // 카드 노출을 위한 추천 파트너 (최대 4개)
+  const featuredPartners = partners.slice(0, 4);
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @keyframes marquee {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee 30s linear infinite;
+        }
+        .animate-marquee:hover {
+          animation-play-state: paused;
+        }
+        `
+      }} />
       <main>
         {/* ── Hero ─────────────────────────── */}
         <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:pt-20">
@@ -149,6 +189,28 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {/* ── 흐르는 로고 띠 (무한 롤링 마키) ─────────────────── */}
+        {partners.length > 0 && (
+          <section className="bg-stone-900 py-6 overflow-hidden">
+            <div className="flex w-[200%] animate-marquee">
+              <div className="flex w-1/2 justify-around items-center px-4">
+                {partners.map(p => (
+                  <div key={p.id} className="text-white/60 font-black text-xl tracking-wider uppercase px-8 hover:text-white transition-colors cursor-default whitespace-nowrap">
+                    {p.name}
+                  </div>
+                ))}
+              </div>
+              <div className="flex w-1/2 justify-around items-center px-4">
+                {partners.map(p => (
+                  <div key={`${p.id}-dup`} className="text-white/60 font-black text-xl tracking-wider uppercase px-8 hover:text-white transition-colors cursor-default whitespace-nowrap">
+                    {p.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ── 소셜 프루프 ─────────────────── */}
         <section className="border-y border-stone-100 bg-white px-4 py-10">
@@ -228,6 +290,48 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {/* ── 프리미엄 카드 그리드 뷰 (추천 협력업체) ─────────────────── */}
+        {featuredPartners.length > 0 && (
+          <section className="px-4 py-14 bg-stone-50/50">
+            <div className="mx-auto max-w-5xl">
+              <div className="mb-10 text-center">
+                <p className="text-xs font-bold uppercase tracking-widest text-rose-500 mb-2">
+                  Premium Partners
+                </p>
+                <h2 className="font-display mb-2 text-3xl font-semibold text-stone-800 sm:text-4xl">
+                  함께하는 프리미엄 브랜드
+                </h2>
+                <p className="text-sm text-stone-400">
+                  웨딩케어가 엄선한 최고의 파트너들과 함께 완벽한 예식을 준비하세요.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {featuredPartners.map((partner) => (
+                  <div key={`grid-${partner.id}`} className="group bg-white rounded-2xl p-6 border border-stone-100 shadow-sm hover:shadow-xl hover:border-rose-100 transition-all cursor-pointer flex flex-col items-center text-center">
+                    <div className="h-16 w-16 mb-4 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 group-hover:bg-rose-50 group-hover:text-rose-500 transition-colors">
+                      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-stone-800 mb-1">{partner.name}</h3>
+                    <p className="text-xs font-medium text-stone-400 mb-5 line-clamp-1">공식 제휴 파트너사</p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal('partner-' + partner.name, 'wedding');
+                      }}
+                      className="w-full py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 group-hover:bg-rose-500 group-hover:border-rose-500 group-hover:text-white transition-colors"
+                    >
+                      상담 신청하기
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ── 하단 강조 CTA ─────────────────── */}
         <section className="px-4 pb-16">

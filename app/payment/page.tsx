@@ -153,6 +153,7 @@ export default function PaymentPage() {
 
   // 개별 약관 팝업 모달 상태
   const [openModal, setOpenModal] = useState<ModalType>(null);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   // 날짜 계산 (공개 시 2일 자동 삭제 안내)
   const [expireDateStr, setExpireDateStr] = useState('2026-05-23');
@@ -422,7 +423,7 @@ export default function PaymentPage() {
         setIsSuccess(true);
         setIsPaymentModalOpen(false);
       } else {
-        alert(`결제에 실패하였습니다. 에러 내용: ${rsp.error_msg}`);
+        setAlertMessage(`결제에 실패하였습니다. 에러 내용: ${rsp.error_msg}`);
       }
     });
   };
@@ -981,6 +982,26 @@ export default function PaymentPage() {
       {openModal === 'privacy' && <PrivacyPolicyModal onClose={() => { setAgreePrivacy(true); setOpenModal(null); }} />}
       {openModal === 'refund' && <RefundPolicyModal onClose={() => setOpenModal(null)} onAgree={() => { setAgreeRefund(true); setOpenModal(null); }} />}
       {openModal === 'payConfirm' && <PaymentAgreementModal onClose={() => setOpenModal(null)} />}
+
+      {/* ── 커스텀 Alert 모달 (이미지 디자인 적용) ───────────────────────── */}
+      {alertMessage && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-[#24251D] p-7 rounded-[20px] w-[460px] max-w-[90vw] shadow-2xl flex flex-col gap-6">
+            <div className="text-[#E8E8E6] whitespace-pre-wrap text-[15px] leading-[1.6]">
+              <span className="text-white block mb-4 text-[17px]">localhost:3000 내용:</span>
+              {alertMessage}
+            </div>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setAlertMessage(null)}
+                className="bg-[#D3E8A3] text-[#24251D] text-[15px] font-bold px-7 py-2.5 rounded-full border-[2.5px] border-[#24251D] outline outline-[2.5px] outline-[#D3E8A3] hover:bg-[#c3d893] transition-all ml-auto block shadow-sm"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── 결제 승인 중 & 완료 오버레이 ──────────────────────────────── */}
       {isProcessing && (

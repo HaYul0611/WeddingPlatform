@@ -1597,6 +1597,115 @@ function GuestbookEditor({ section, onUpdate }: { section: any; onUpdate: (updat
 }
 
 
+/* 디자인 연락처(Contact) 편집기 */
+function ContactEditor({ section, onUpdate }: { section: any; onUpdate: (updates: any) => void }) {
+  const [showFont, setShowFont] = useState(false);
+  const [showFontList, setShowFontList] = useState(false);
+
+  const contacts = section.contacts || [
+    { group: '신랑측', persons: [{ relation: '신랑', name: '', phone: '' }] },
+    { group: '신부측', persons: [{ relation: '신부', name: '', phone: '' }] }
+  ];
+
+  const displayStyles = [
+    { id: 'modal', name: '모달' },
+    { id: 'simple', name: '심플' }
+  ];
+
+  const updateGroup = (gIdx: number, field: string, value: any) => {
+    const next = [...contacts];
+    next[gIdx] = { ...next[gIdx], [field]: value };
+    onUpdate({ contacts: next });
+  };
+
+  const addPerson = (gIdx: number) => {
+    const next = [...contacts];
+    next[gIdx].persons.push({ relation: '관계', name: '', phone: '' });
+    onUpdate({ contacts: next });
+  };
+
+  const removePerson = (gIdx: number, pIdx: number) => {
+    const next = [...contacts];
+    next[gIdx].persons = next[gIdx].persons.filter((_: any, i: number) => i !== pIdx);
+    onUpdate({ contacts: next });
+  };
+
+  const updatePerson = (gIdx: number, pIdx: number, field: string, value: string) => {
+    const next = [...contacts];
+    next[gIdx].persons[pIdx] = { ...next[gIdx].persons[pIdx], [field]: value };
+    onUpdate({ contacts: next });
+  };
+
+  const addParents = (gIdx: number, side: 'groom' | 'bride') => {
+    const next = [...contacts];
+    next[gIdx].persons.push({ relation: side === 'groom' ? '신랑측 부' : '신부측 부', name: '', phone: '' });
+    next[gIdx].persons.push({ relation: side === 'groom' ? '신랑측 모' : '신부측 모', name: '', phone: '' });
+    onUpdate({ contacts: next });
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <span className="text-[12px] font-black text-[#111827]">섹션 타이틀</span>
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-bold text-[#4B5563]">텍스트 정렬</span>
+          <AlignmentBlock value={section.textAlign} onChange={(v) => onUpdate({ textAlign: v })} />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <EditorLabel>예: 연락처</EditorLabel>
+          <EditorInput value={section.title} onChange={(v) => onUpdate({ title: v })} placeholder="연락처" />
+        </div>
+        
+        <div className="flex flex-col gap-2">
+          <EditorLabel>표시 스타일</EditorLabel>
+          <div className="grid grid-cols-2 gap-2">
+            {displayStyles.map(style => (
+              <button key={style.id} onClick={() => onUpdate({ displayStyle: style.id })} className={`py-2.5 text-[12px] font-bold rounded-xl border transition-all ${((section.displayStyle || 'modal') === style.id) ? 'bg-[#EFF6FF] border-[#3B82F6] text-[#3B82F6] shadow-sm' : 'bg-[#F9FAFB] border-[#E5E7EB] text-[#4B5563] hover:bg-[#F3F4F6]'}`}>{style.name}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-6 pt-4 border-t border-[#F1F2F4]">
+        {contacts.map((group: any, gIdx: number) => (
+          <div key={gIdx} className="flex flex-col gap-3">
+            <div className="flex items-center gap-1">
+              <span className="text-[12px] font-black text-[#111827]">{group.group}</span>
+              <span className="text-[11px] font-bold text-[#9ca3af]">({group.persons.length})</span>
+            </div>
+            
+            <div className="flex flex-col gap-2 border border-[#E5E7EB] rounded-2xl p-4 bg-[#F9FAFB]">
+              {group.persons.map((person: any, pIdx: number) => (
+                <div key={pIdx} className="flex items-center gap-2">
+                  <input type="text" value={person.relation} onChange={(e) => updatePerson(gIdx, pIdx, 'relation', e.target.value)} placeholder="관계" className="w-[60px] shrink-0 px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[13px] text-center" />
+                  <input type="text" value={person.name} onChange={(e) => updatePerson(gIdx, pIdx, 'name', e.target.value)} placeholder="이름" className="w-1/3 px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[13px]" />
+                  <input type="text" value={person.phone} onChange={(e) => updatePerson(gIdx, pIdx, 'phone', e.target.value)} placeholder="010-0000-0000" className="flex-1 px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[13px]" />
+                  <button onClick={() => removePerson(gIdx, pIdx)} className="p-2 text-[#F87171] hover:text-red-500 transition-colors"><X size={16} /></button>
+                </div>
+              ))}
+              
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <button onClick={() => addParents(gIdx, group.group === '신랑측' ? 'groom' : 'bride')} className="py-2 bg-[#F5F3FF] text-[#8B5CF6] text-[12px] font-bold rounded-lg border border-[#EDE9FE] hover:bg-[#EDE9FE] flex items-center justify-center gap-1"><Users size={14} /> 부모님 추가</button>
+                <button onClick={() => addPerson(gIdx)} className="py-2 bg-[#EFF6FF] text-[#3B82F6] text-[12px] font-bold rounded-lg border border-[#DBEAFE] hover:bg-[#DBEAFE] flex items-center justify-center gap-1"><Plus size={14} /> 추가</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-1 py-1 border-t border-[#F1F2F4] pt-4">
+        <EditorToggle label="이미지 표시" checked={!!section.showImage} onChange={(v) => onUpdate({ showImage: v })} />
+        <EditorToggle label="배경색 사용" checked={!!section.useBackgroundColor} onChange={(v) => onUpdate({ useBackgroundColor: v })} />
+      </div>
+
+      <FontSettingsBlock section={section} onUpdate={onUpdate} showFont={showFont} setShowFont={setShowFont} showFontList={showFontList} setShowFontList={setShowFontList} />
+    </div>
+  );
+}
+
 /* 메인 섹션 에디터 팩토리 컴포넌트 */
 export default function SectionEditor({ section, onUpdate }: SectionEditorProps) {
   switch (section.type) {
@@ -1625,6 +1734,8 @@ export default function SectionEditor({ section, onUpdate }: SectionEditorProps)
       return <RsvpEditor section={section} onUpdate={onUpdate} />;
     case 'guestbook':
       return <GuestbookEditor section={section} onUpdate={onUpdate} />;
+    case 'contact':
+      return <ContactEditor section={section} onUpdate={onUpdate} />;
     default:
       return (
         <div className="py-10 flex flex-col items-center justify-center gap-4 bg-[#F9FAFB] rounded-2xl border border-dashed border-[#E5E7EB]">

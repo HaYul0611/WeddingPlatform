@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2) 세션 생성 (해시|업체ID|이메일)
-    const token = buildSessionToken(targetAdmin.company_id, targetAdmin.email);
+    const token = buildSessionToken(targetAdmin!.company_id, targetAdmin!.email);
     const res = NextResponse.json({ success: true });
 
     res.cookies.set(COOKIE_NAME, token, {

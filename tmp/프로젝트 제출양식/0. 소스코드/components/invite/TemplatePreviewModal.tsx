@@ -58,22 +58,21 @@ export default function TemplatePreviewModal({ template, onClose }: TemplatePrev
         }
       ` }} />
       <div
-        className="relative flex h-[85vh] max-h-[700px] w-full max-w-4xl mx-4 gap-10 rounded-3xl bg-white p-8 shadow-2xl"
+        className="relative flex flex-col items-center w-auto mx-4 gap-6 rounded-[48px] bg-white p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors"
+          className="absolute right-6 top-6 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors"
         >
           <svg className="h-4 w-4 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        {/* 좌: 모바일 미리보기 */}
-        <div className="flex flex-col items-center justify-center">
-          {/* 스마트폰 프레임 (밝은 테마) */}
+        {/* 스마트폰 프레임 (밝은 테마) */}
+        <div className="flex flex-col items-center justify-center mt-2">
           <div 
             className="relative shrink-0 overflow-hidden rounded-[42px] bg-white w-[310px] h-[590px] border-[4px] border-[#1e1e1e]/90 transition-all duration-300"
             style={{
@@ -92,7 +91,7 @@ export default function TemplatePreviewModal({ template, onClose }: TemplatePrev
                 <svg width="12" height="12" viewBox="0 0 24 24" className="text-rose-500 fill-current"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
               </div>
             </div>
-            {/* 스크롤 가이드 오버레이 (어두운 화면 딤드 + 마우스 휠 스크롤 가이드) */}
+            {/* 스크롤 가이드 오버레이 */}
             {showScrollGuide && (
               <div
                 onClick={(e) => {
@@ -101,12 +100,10 @@ export default function TemplatePreviewModal({ template, onClose }: TemplatePrev
                 }}
                 className="absolute inset-0 z-[150] flex flex-col items-center justify-center bg-black/65 backdrop-blur-[1px] cursor-pointer select-none transition-all duration-300 animate-fade-in"
               >
-                {/* 마우스 외형 캡슐 (애플 마우스 감성의 극도 슬림/미니멀 아웃라인) */}
                 <div
                   className="rounded-full border-[1px] border-white/70 flex justify-center pt-1.5 relative shadow-md"
                   style={{ width: '24px', height: '42px' }}
                 >
-                  {/* 움직이는 휠/도트 */}
                   <div
                     className="w-[1.2px] h-[6px] bg-white/90 rounded-full"
                     style={{
@@ -142,62 +139,14 @@ export default function TemplatePreviewModal({ template, onClose }: TemplatePrev
           </div>
         </div>
 
-        {/* 우: 템플릿 정보 */}
-        <div className="flex flex-1 flex-col justify-between py-4">
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-500">
-                {TEMPLATE_CATEGORIES.find((c) => c.id === template.category)?.label || template.category}
-              </span>
-            </div>
-            <h2 className="text-2xl font-bold text-stone-900">{template.name}</h2>
-            <p className="mt-2 text-sm text-stone-400">
-              모든 섹션을 자유롭게 편집하고<br />나만의 청첩장을 완성해보세요.
-            </p>
-
-            {/* 포함 섹션 목록 */}
-            <div className="mt-6">
-              <p className="mb-3 text-xs font-bold uppercase tracking-wider text-stone-400">포함된 섹션</p>
-              <div className="space-y-2">
-                {SECTION_LABELS.filter(s => template.defaultSections.some(d => d.type === s.type)).map((s) => (
-                  <div key={s.type} className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-stone-50">
-                      <svg className="h-3.5 w-3.5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
-                      </svg>
-                    </div>
-                    <span className="text-xs font-semibold text-stone-600">{s.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 색상 팔레트 */}
-            <div className="mt-6">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-stone-400">색상</p>
-              <div className="flex gap-2">
-                {[theme.primaryColor, theme.accentColor, theme.bgColor].map((c, i) => (
-                  <div key={i} className="h-6 w-6 rounded-full border border-stone-200 shadow-sm" style={{ backgroundColor: c }} title={c} />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* CTA 버튼 */}
-          <div className="flex gap-3">
-            <Link
-              href={`/invite/create?template=${template.id}`}
-              className="flex-1 rounded-full bg-rose-500 py-3 text-center text-sm font-bold text-white hover:bg-rose-600 transition-colors"
-            >
-              이 템플릿으로 만들기 →
-            </Link>
-            <button
-              onClick={onClose}
-              className="rounded-full border border-stone-200 px-6 py-3 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition-colors"
-            >
-              닫기
-            </button>
-          </div>
+        {/* CTA 버튼 */}
+        <div className="flex w-[310px] gap-2">
+          <Link
+            href={`/invite/create?template=${template.id}`}
+            className="flex-1 rounded-full bg-rose-500 py-3.5 text-center text-[14px] font-bold text-white hover:bg-rose-600 transition-colors shadow-sm"
+          >
+            이 템플릿으로 만들기 →
+          </Link>
         </div>
       </div>
     </div>

@@ -98,7 +98,7 @@ export default function AdminClient() {
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 py-4">
           {/* 로고 및 권한 식별 */}
           <div className="flex items-center gap-5">
-            <div className="flex items-center gap-3 group cursor-pointer">
+            <Link href="/" className="flex items-center gap-3 group cursor-pointer">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-stone-900 to-stone-700 shadow-lg shadow-stone-200 transition-transform group-hover:scale-105">
                 <BarChart2 size={22} className="text-white" />
               </div>
@@ -106,7 +106,7 @@ export default function AdminClient() {
                 <p className="text-xl font-bold tracking-tight text-stone-900 leading-none">WeddingCare</p>
                 <p className="mt-1 text-[10px] font-black text-stone-400 tracking-[0.25em] uppercase">Premium Admin</p>
               </div>
-            </div>
+            </Link>
 
             {adminInfo && (
               <div className="hidden sm:block h-6 w-px bg-stone-200 mx-2" />

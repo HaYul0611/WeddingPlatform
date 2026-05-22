@@ -37,6 +37,7 @@
     "node_modules",
     "artifacts",
     "scratch",
-    "docs"
+    "docs",
+    "tmp"
   ]
 }

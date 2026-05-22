@@ -334,8 +334,13 @@ export interface ContactSection {
     group: string;
     persons: { relation: string; name: string; phone: string }[];
   }[];
+  displayStyle?: 'modal' | 'simple';
+  showImage?: boolean;
   align?: 'left' | 'center' | 'right';
+  textAlign?: 'left' | 'center' | 'right';
   useBackgroundColor?: boolean;
+  fontFamily?: string;
+  fontSizePercent?: number;
 }
 
 export interface TextSection {

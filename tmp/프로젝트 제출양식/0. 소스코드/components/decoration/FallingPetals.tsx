@@ -32,28 +32,36 @@ export default function FallingPetals() {
             left: p.left,
             width: p.size,
             height: p.size,
-            backgroundColor: p.id % 2 === 0 ? '#ffd7e6' : '#fff0f5', // 부드러운 핑크톤
-            borderRadius: '10% 90% 10% 90% / 10% 90% 10% 90%', // 더 자연스러운 꽃잎 모양
-            opacity: 0.7,
-            filter: 'blur(0.3px)',
+            opacity: 0.8,
+            filter: 'drop-shadow(0px 2px 4px rgba(255, 192, 203, 0.4))',
             animationDelay: p.delay,
             animationDuration: p.duration,
             transform: `rotate(${p.rotation})`,
+            backgroundImage: p.id % 2 === 0 
+              ? "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 30 70, 10 40, 25 15 C 35 -5, 50 15, 50 15 C 50 15, 65 -5, 75 15 C 90 40, 70 70, 50 100 Z' fill='%23ffd7e6' /%3E%3C/svg%3E\")"
+              : "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 30 70, 10 40, 25 15 C 35 -5, 50 15, 50 15 C 50 15, 65 -5, 75 15 C 90 40, 70 70, 50 100 Z' fill='%23fff0f5' /%3E%3C/svg%3E\")",
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
           } as React.CSSProperties}
         />
       ))}
 
       {/* 바닥에 쌓여있는 정적 꽃잎들 (쌓인 효과 연출) */}
-      <div className="absolute bottom-[-10px] left-0 w-full flex justify-around opacity-40">
+      <div className="absolute bottom-[-10px] left-0 w-full flex justify-around opacity-60">
         {[...Array(15)].map((_, i) => (
           <div
             key={`piled-${i}`}
-            className="h-3 w-4"
+            className="h-4 w-4"
             style={{
-              backgroundColor: i % 3 === 0 ? '#ffd7e6' : '#fff0f5',
-              borderRadius: '10% 90% 10% 90%',
-              transform: `rotate(${i * 45}deg) translateY(${Math.random() * 20}px)`,
-              filter: 'blur(1px)',
+              transform: `rotate(${i * 45}deg) translateY(${Math.random() * 20}px) scaleY(0.6)`, // 바닥에 누운 느낌
+              filter: 'drop-shadow(0px 1px 2px rgba(255, 192, 203, 0.3)) blur(0.5px)',
+              backgroundImage: i % 3 === 0 
+                ? "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 30 70, 10 40, 25 15 C 35 -5, 50 15, 50 15 C 50 15, 65 -5, 75 15 C 90 40, 70 70, 50 100 Z' fill='%23ffd7e6' /%3E%3C/svg%3E\")"
+                : "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 50 100 C 30 70, 10 40, 25 15 C 35 -5, 50 15, 50 15 C 50 15, 65 -5, 75 15 C 90 40, 70 70, 50 100 Z' fill='%23fff0f5' /%3E%3C/svg%3E\")",
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
             }}
           />
         ))}
