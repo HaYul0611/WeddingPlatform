@@ -855,7 +855,7 @@ function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { s
           ))}
         </div>
       ) : (
-        <div className="w-full flex flex-col items-center mt-2">
+        <div className="w-full flex flex-col items-center mt-2" style={{ position: 'relative' }}>
           <button
             onClick={() => setModalOpen(true)}
             className="w-full max-w-[280px] py-3.5 rounded-full shadow-sm text-[14px] font-bold flex items-center justify-center gap-2 transition-all hover:opacity-90"
@@ -866,8 +866,15 @@ function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { s
           </button>
 
           {modalOpen && (
-            <div className="fixed inset-0 z-[999] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-fade-in">
-              <div className="w-full max-w-[360px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col animate-in slide-in-from-bottom-10 duration-300">
+            <div
+              className="absolute inset-0 z-[999] flex items-start justify-center pt-8"
+              style={{ background: 'rgba(0,0,0,0.45)', minHeight: '100%' }}
+              onClick={() => setModalOpen(false)}
+            >
+              <div
+                className="w-full max-w-[320px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col animate-in slide-in-from-bottom-6 duration-300 mx-4"
+                onClick={e => e.stopPropagation()}
+              >
                 <div className="p-5 flex items-center justify-between border-b border-stone-100 bg-stone-50">
                   <span className="font-bold text-[15px] text-stone-800">연락처</span>
                   <button onClick={() => setModalOpen(false)} className="p-1 rounded-full text-stone-400 hover:bg-stone-200 hover:text-stone-700 transition-colors">
@@ -875,32 +882,37 @@ function ContactSectionRenderer({ section, theme, st, setCopyToastMessage }: { s
                   </button>
                 </div>
                 
-                <div className="flex flex-col p-6 gap-8 max-h-[60vh] overflow-y-auto custom-scrollbar-preview">
-                  {contacts.map((group: any, idx: number) => (
-                    <div key={idx} className="flex flex-col gap-4">
-                      <span className="text-[13px] font-bold text-stone-400 tracking-wider">
-                        {group.group}
-                      </span>
-                      <div className="flex flex-col gap-5">
-                        {group.persons.map((p: any, pIdx: number) => (
-                          <div key={pIdx} className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <span className="text-[13px] text-stone-500 w-12">{p.relation}</span>
-                              <span className="text-[15px] font-medium text-stone-800">{p.name}</span>
+                <div className="flex flex-col p-5 gap-6 max-h-[50vh] overflow-y-auto custom-scrollbar-preview">
+                  {contacts.map((group: any, idx: number) => {
+                    const visiblePersons = group.persons.filter((p: any) => p.name || p.phone);
+                    return (
+                      <div key={idx} className="flex flex-col gap-3">
+                        <span className="text-[12px] font-bold text-stone-400 tracking-wider">
+                          {group.group}
+                        </span>
+                        <div className="flex flex-col gap-4">
+                          {visiblePersons.length > 0 ? visiblePersons.map((p: any, pIdx: number) => (
+                            <div key={pIdx} className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <span className="text-[12px] text-stone-500 w-12">{p.relation}</span>
+                                <span className="text-[14px] font-medium text-stone-800">{p.name}</span>
+                              </div>
+                              <div className="flex gap-2">
+                                <a href={`tel:${p.phone}`} className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
+                                  <Phone size={13} />
+                                </a>
+                                <button onClick={() => handleCopy(p.phone)} className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
+                                  <Copy size={13} />
+                                </button>
+                              </div>
                             </div>
-                            <div className="flex gap-2">
-                              <a href={`tel:${p.phone}`} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
-                                <Phone size={14} />
-                              </a>
-                              <button onClick={() => handleCopy(p.phone)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors text-stone-600">
-                                <Copy size={14} />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
+                          )) : (
+                            <span className="text-[12px] text-stone-400">등록된 연락처가 없습니다.</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>

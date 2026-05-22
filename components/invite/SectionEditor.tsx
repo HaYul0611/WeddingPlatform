@@ -85,19 +85,36 @@ const EditorToggle = ({ label, checked, onChange }: { label: string; checked: bo
   </div>
 );
 
-const EditorImagePicker = ({ label, subtitle, value, onChange }: { label: string; subtitle: string; value?: string; onChange: (v: string) => void }) => (
+const EditorImagePicker = ({ label, subtitle, value, onChange, sectionType }: { label: string; subtitle: string; value?: string; onChange: (v: string) => void; sectionType?: string }) => {
+  const handleClick = () => {
+    // photoDrop 제외: 이미지 5개 한도 초과 시 이미지 첨부 불가
+    if (sectionType !== 'photoDrop') {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('wedding_builder_uploaded_images') : null;
+      const isPremium = typeof window !== 'undefined' && localStorage.getItem('wedding_builder_is_premium') === 'true';
+      if (!isPremium && saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length >= 5) {
+            alert('프리미엄 회원만 이미지를 5장 이상 사용할 수 있습니다.\n프리미엄으로 업그레이드하시면 최대 50장까지 사용할 수 있습니다.');
+            return;
+          }
+        } catch (e) { /* ignore */ }
+      }
+    }
+    const event = new CustomEvent('open-image-picker', {
+      detail: {
+        currentValue: value,
+        onSelect: (url: string) => onChange(url)
+      }
+    });
+    window.dispatchEvent(event);
+  };
+
+  return (
   <div className="flex flex-col gap-2">
     <span className="text-[11px] font-bold text-[#4b5563]">{label}</span>
     <div
-      onClick={() => {
-        const event = new CustomEvent('open-image-picker', {
-          detail: {
-            currentValue: value,
-            onSelect: (url: string) => onChange(url)
-          }
-        });
-        window.dispatchEvent(event);
-      }}
+      onClick={handleClick}
       className="relative h-28 bg-[#F9FAFB] rounded-xl border border-dashed border-[#E5E7EB] flex flex-col items-center justify-center gap-2 hover:border-[#3B82F6]/50 hover:bg-[#EFF6FF]/50 transition-all cursor-pointer group/img-upload overflow-hidden"
     >
       {value ? (
@@ -117,7 +134,8 @@ const EditorImagePicker = ({ label, subtitle, value, onChange }: { label: string
     </div>
     <span className="text-[10px] text-[#9ca3af]">{subtitle}</span>
   </div>
-);
+  );
+};
 
 const Tooltip = ({ text, children }: { text: string; children: React.ReactNode }) => {
   const [show, setShow] = useState(false);
@@ -544,8 +562,8 @@ function GreetingEditor({ section, onUpdate }: { section: any; onUpdate: (update
         </div>
 
         <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#F1F2F4]">
-          <div className="flex flex-col gap-2"><EditorLabel>신랑측 혼주</EditorLabel><EditorInput value={section.groomParents} onChange={(v) => onUpdate({ groomParents: v })} placeholder="OOO · OOO의 장남 하율" /></div>
-          <div className="flex flex-col gap-2"><EditorLabel>신부측 혼주</EditorLabel><EditorInput value={section.brideParents} onChange={(v) => onUpdate({ brideParents: v })} placeholder="OOO · OOO의 장녀 채원" /></div>
+          <div className="flex flex-col gap-2"><EditorLabel>신랑측 혼주</EditorLabel><input type="text" value={section.groomParents || ''} onChange={(e) => onUpdate({ groomParents: e.target.value })} placeholder="OOO · OOO의 장남 하율" className="w-full px-3 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-[11px] text-[#111827] placeholder:text-[10px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] transition-all" /></div>
+          <div className="flex flex-col gap-2"><EditorLabel>신부측 혼주</EditorLabel><input type="text" value={section.brideParents || ''} onChange={(e) => onUpdate({ brideParents: e.target.value })} placeholder="OOO · OOO의 장녀 채원" className="w-full px-3 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-[11px] text-[#111827] placeholder:text-[10px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] transition-all" /></div>
         </div>
 
         <div className="flex flex-col gap-3 py-1 border-t border-[#F1F2F4] pt-4">
@@ -625,6 +643,17 @@ function GalleryEditor({ section, onUpdate }: { section: any; onUpdate: (updates
         <EditorLabel>이미지</EditorLabel>
         <div
           onClick={() => {
+            const saved = typeof window !== 'undefined' ? localStorage.getItem('wedding_builder_uploaded_images') : null;
+            const isPremium = typeof window !== 'undefined' && localStorage.getItem('wedding_builder_is_premium') === 'true';
+            if (!isPremium && saved) {
+              try {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length >= 5) {
+                  alert('프리미엄 회원만 이미지를 5장 이상 사용할 수 있습니다.\n프리미엄으로 업그레이드하시면 최대 50장까지 사용할 수 있습니다.');
+                  return;
+                }
+              } catch (e) { /* ignore */ }
+            }
             const event = new CustomEvent('open-image-picker', {
               detail: {
                 onSelect: (url: string) => {
@@ -1679,11 +1708,11 @@ function ContactEditor({ section, onUpdate }: { section: any; onUpdate: (updates
             
             <div className="flex flex-col gap-2 border border-[#E5E7EB] rounded-2xl p-4 bg-[#F9FAFB]">
               {group.persons.map((person: any, pIdx: number) => (
-                <div key={pIdx} className="flex items-center gap-2">
-                  <input type="text" value={person.relation} onChange={(e) => updatePerson(gIdx, pIdx, 'relation', e.target.value)} placeholder="관계" className="w-[60px] shrink-0 px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[13px] text-center" />
-                  <input type="text" value={person.name} onChange={(e) => updatePerson(gIdx, pIdx, 'name', e.target.value)} placeholder="이름" className="w-1/3 px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[13px]" />
-                  <input type="text" value={person.phone} onChange={(e) => updatePerson(gIdx, pIdx, 'phone', e.target.value)} placeholder="010-0000-0000" className="flex-1 px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[13px]" />
-                  <button onClick={() => removePerson(gIdx, pIdx)} className="p-2 text-[#F87171] hover:text-red-500 transition-colors"><X size={16} /></button>
+                <div key={pIdx} className="flex items-center gap-1.5">
+                  <input type="text" value={person.relation} onChange={(e) => updatePerson(gIdx, pIdx, 'relation', e.target.value)} placeholder="관계" className="w-14 shrink-0 px-2 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[12px] text-center" />
+                  <input type="text" value={person.name} onChange={(e) => updatePerson(gIdx, pIdx, 'name', e.target.value)} placeholder="이름" className="w-[68px] shrink-0 min-w-0 px-2 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[12px]" />
+                  <input type="text" value={person.phone} onChange={(e) => updatePerson(gIdx, pIdx, 'phone', e.target.value)} placeholder="010-0000-0000" className="flex-1 min-w-0 px-2 py-2 bg-white border border-[#E5E7EB] rounded-lg text-[12px]" />
+                  <button onClick={() => removePerson(gIdx, pIdx)} className="p-1.5 shrink-0 text-[#F87171] hover:text-red-500 transition-colors"><X size={15} /></button>
                 </div>
               ))}
               
